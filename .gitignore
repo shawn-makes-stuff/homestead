@@ -25,6 +25,7 @@ __pycache__/
 
 source/weapons.json
 source/json/homestead/weapons.ent.json
+source/json/homestead/border.mesh.json
 homestead_paths.json
 
 # the RED4ext plugin build (plugin/CMakeLists.txt)
