@@ -10,7 +10,7 @@ Player documentation: [README_PLAYER.txt](README_PLAYER.txt).
 
 ## Requirements
 
-- Cyberpunk 2077 (2.3) and an installed Fallout 4 (any version; DLCs add their pieces)
+- Cyberpunk 2077 (2.3) and an installed Fallout 4 (post next-gen; DLCs add their pieces)
 - Cyber Engine Tweaks, RED4ext, redscript, Codeware, TweakXL, Audioware, Native Settings UI
 - Windows. The importer does not run natively on Linux; under Proton it is untested.
 
