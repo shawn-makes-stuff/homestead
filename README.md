@@ -6,8 +6,8 @@ workshop pieces and Night City's own props.
 Nothing of Fallout 4 ships with the mod. Its pieces are converted on your PC, once, from your own Fallout 4 install
 by the importer. The only Fallout-derived files in this repository are the menu's thumbnail atlases.
 
-**Download:** the mod on [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/34671), the importer under
-[Releases](https://github.com/shawn-makes-stuff/homestead/releases).
+**Download:** the mod on [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/34671) or under
+[Releases](https://github.com/shawn-makes-stuff/homestead/releases); the importer under Releases.
 
 ## Requirements
 
@@ -26,7 +26,8 @@ by the importer. The only Fallout-derived files in this repository are the menu'
 ## Install
 
 1. Install the requirements above.
-2. Install the mod from [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/34671) with your mod manager, or unpack its zip into your Cyberpunk 2077 folder (the one with
+2. Install the mod from [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/34671) (or `Homestead-<version>.zip` from
+   Releases) with your mod manager, or unpack its zip into your Cyberpunk 2077 folder (the one with
    `bin`, `archive` and `r6` in it).
 3. Download `HomesteadImport-<version>.zip` of the same version from this repository's
    [Releases](https://github.com/shawn-makes-stuff/homestead/releases) and unpack it into the Cyberpunk 2077 folder too. This is the importer: the program
