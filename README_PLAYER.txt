@@ -11,30 +11,20 @@ NEEDS
     (1.11.240); older versions may work but are untested. Its DLCs add their pieces if you have them.
   - Cyber Engine Tweaks, RED4ext, redscript, Codeware, TweakXL, Audioware, Native Settings UI
 
-SIZE AND TIME (measured, Homestead 0.2.0) - for the import, done once; in game Homestead itself is light
-  Download          210 MB zipped, 549 MB unpacked (most of it the importer and the tools it brings: WolvenKit,
+SIZE AND TIME - for the import, done once; in game Homestead itself is light
+  Download          216 MB zipped, 566 MB unpacked (most of it the importer and the tools it brings: WolvenKit,
                     .NET, ffmpeg, Python)
-  While importing   about 20 GB free on the drive Cyberpunk is on (19.0 GB at its peak: its working files plus the
-                    9 GB of pieces it builds); less if you point "Import data folder" at another drive (then 9 GB on
-                    Cyberpunk's)
-  Afterwards        9.6 GB with 0.2.0: 9.1 GB of pieces (archive\pc\mod\Homestead_FO4.archive) + 0.5 GB of
-                    import data. From the next release the import data also keeps each model's collision shapes
-                    (estimated 0.1-0.2 GB more; to be measured). With "Keep import files": about 10 GB of import
-                    data instead
-  First import      14 minutes on an 8-core Ryzen 7 5700X3D, 32 GB RAM, NVMe SSD, nothing else running;
-                    18 minutes started from the game (Cyberpunk open at the main menu meanwhile) - both with 0.2.0.
-                    The next release's first import (finer collision for Fallout's buildings) is not measured yet
-  Re-import         not measured since the importer changed (2026-10-03). Only what changed is made again; with
-                    nothing changed, the pieces already in the game aren't rebuilt, "Keep import files" or not.
-                    Updating to the next release redoes the whole import once
-  Memory            11.8 GB at its peak on that PC (Fallout's textures, 8 workers at once); most of the import
-                    uses under 2 GB. It starts only as many workers as your free memory holds (1.2-1.5 GB each,
-                    1 GB kept back; the collision of Fallout's biggest buildings takes up to ~7 GB each, and only
-                    as many run at once as free memory holds): less RAM means fewer workers and a slower import, not
-                    a failed one. 16 GB of RAM is comfortable with the game open; 8 GB should work, slowly (not
-                    measured)
-  CPU               averages about 3 threads; up to 8 at once for Fallout's models and textures (~7 of the 18
-                    minutes), one thread for most of the rest (WolvenKit). More cores speed up those two steps only
+  While importing   about 20 GB free on the drive Cyberpunk is on; less if you point "Import data folder" at
+                    another drive (then 10 GB on Cyberpunk's)
+  Afterwards        about 10.4 GB: 9.8 GB of pieces (archive\pc\mod\Homestead_FO4.archive and Homestead.archive)
+                    + 0.6 GB of import data. With "Keep import files": about 10 GB of import data instead
+  First import      about 10-15 minutes on an 8-core Ryzen 7 5700X3D, 32 GB RAM, NVMe SSD; a few minutes more when
+                    started from the game (Cyberpunk open at the main menu meanwhile)
+  Re-import         only what changed is made again: under a minute when little did
+  Memory            up to about 12 GB at its peak on that PC; most of the import uses under 2 GB. It starts only as
+                    many workers as your free memory holds: less RAM means a slower import, not a failed one.
+                    16 GB of RAM is comfortable with the game open
+  CPU               up to 8 threads for Fallout's models and textures, one for most of the rest
   GPU               not used
   It runs at below-normal priority: the PC stays usable, and it can be cancelled (Settings > Mods > Homestead).
 
@@ -64,8 +54,7 @@ FIRST START: IMPORT FALLOUT 4
   games. It's the same importer the settings page starts.
 
 THE IMPORT'S DATA
-  In this folder's "import" folder: about 0.5 GB after an import with 0.2.0 (a little more from the next release:
-  the collision shapes; to be measured). "Keep import files" keeps ~9 GB more there, so a re-import after something
+  In this folder's "import" folder: about 0.6 GB after an import. "Keep import files" keeps ~9 GB more there, so a re-import after something
   changed redoes less. "Import data folder" puts it on another drive instead (then
   import again). Delete the folder to free the space - the next import remakes it.
 
@@ -76,7 +65,7 @@ SETTINGS
 
 BUILDING
   Found a settlement (CET binding "Found a settlement here"), walk to its workbench and press F. Hold F anywhere in a
-  settlement (the circle 50 m round where you founded it) to build. Fallout's keys: E place, R scrap, Tab back,
+  settlement (the circle round where you founded it: 50 m, or Settings > Building > Settlement size) to build. Fallout's keys: E place, R scrap, Tab back,
   Q snap / free placement, the mouse buttons turn the piece, the wheel further / nearer, Ctrl the move gizmo.
   Fallout's pieces are held and snap as in Fallout 4: the piece floats in the middle of the view, turns with
   you, and snaps when one of its snap points comes near one that fits; with two snaps on one spot the mouse
