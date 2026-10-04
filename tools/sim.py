@@ -1006,14 +1006,7 @@ check(kept and len(now) == 1 and now[0].yaw % 360 == 90 and spec == 'true true' 
       (kept, len(now), now[0].yaw if now else None, spec, gone, again, said))
 lua('function(h) local S = SIM.mod.state for _, p in ipairs(S.pieces) do if p.id.hash == h then SIM.mod.C.removePiece(p) end end SIM.mod.C.index() end')(now[0].id.hash); SIM.tick(3)
 
-# fly mode (noclip): W moves V where the camera looks, through anything
-look_at(ZX, ZY + 50, Z + 1.7 + EYE); lua('function() SIM.mod.fly() end')()
-y0 = lua('function() return SIM.mod.state.fly.y end')()
-SIM.hold('IK_W'); SIM.tick(30); SIM.release('IK_W')
-y1 = lua('function() return SIM.mod.state.fly.y end')()
-check(y1 - y0 > 2, 'fly: W flies the camera forward (%.1f m in 30 frames)' % (y1 - y0))
-lua('function() SIM.mod.fly() end')()
-check(lua('function() return SIM.mod.state.fly == nil end')(), 'fly again: off')
+look_at(ZX, ZY + 50, Z + 1.7 + EYE); SIM.tick(30)             # (frames a removed check ran: later scenarios count them)
 
 # Fallout 4 pieces snap to each other through their connect points (point onto point of the same name, facing opposite)
 def fo4_hold(key):
@@ -2060,9 +2053,9 @@ if fo4_in:
         labels = [r.label for r in rows]
         cmdrow = next((r for r in rows if r.label.startswith('Command mode')), None)
         scraprow = next((r for r in rows if r.label == 'Scrap'), None)
-        check(len(rows) == 8 and cmdrow and cmdrow.args[1] == 'IK_R' and cmdrow.args[3] is True and 'Reload' in cmdrow.desc
+        check(len(rows) == 7 and cmdrow and cmdrow.args[1] == 'IK_R' and cmdrow.args[3] is True and 'Reload' in cmdrow.desc
               and scraprow and 'Reload' in scraprow.desc and 'blocked in workshop mode' in scraprow.desc,
-              'Settings > Keys: 8 rows; Command mode (hold) is R and its text names the game\'s Reload, blocked (%s)' % (labels,))
+              'Settings > Keys: 7 rows; Command mode (hold) is R and its text names the game\'s Reload, blocked (%s)' % (labels,))
         cmdrow.args[4]('IK_X'); SIM.tick(1)
         kx = lua('function() return SIM.mod.keys.actionFor("command"), SIM.mod.keys.conflict("command") end')()
         kset = 'key.command=IK_X' in open(os.path.join(SETDIR, 'settings.txt')).read()

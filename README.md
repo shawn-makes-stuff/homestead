@@ -33,8 +33,8 @@ by the bundled importer. The only Fallout-derived files in this repository are t
    Cyberpunk again: the pieces are there.
 
 Since the import runs while your game does, it can be a bit resource intensive.<br>
-Skip the in game install by running the import directly: `bin\x64\plugins\cyber_engine_tweaks\mods\Homestead\importer\HomesteadImport.exe`. 
-<br> It has no window; progress is in `...\mods\Homestead\import\fo4\import.log`, and it installs by itself when done.
+Skip the in game install by running the import directly: `bind\plugins\cyber_engine_tweaks\mods\Homestead\importer\HomesteadImport.exe`. 
+<br> It has no window; progress is in `...\mods\Homestead\importo4\import.log`, and it installs by itself when done.
 
 If the import fails, the status line says why and `import.log` has the details. If pieces look broken, switch on
 "Overwrite already imported items" and import again.
@@ -53,7 +53,6 @@ If the import fails, the status line says why and `import.log` has the details. 
 | Left / right mouse | Turn the held piece; step between two snaps on one spot |
 | Mouse wheel | Move the held piece further / nearer |
 | Ctrl | Move gizmo (free placement) |
-| V | Fly: WASD where you look, Space up, C down, Shift fast |
 
 Every key can be changed in Settings > Mods > Homestead > Keys. Fallout's pieces are held and snap as in Fallout 4:
 the piece floats in the middle of the view, turns with you, and snaps when one of its snap points comes near one

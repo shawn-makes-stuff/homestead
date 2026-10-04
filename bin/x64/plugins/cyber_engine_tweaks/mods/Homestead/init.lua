@@ -58,7 +58,7 @@ local HOLD_F = 0.6
 local KEYS = {
     act = "IK_E", act2 = "IK_Enter", scrap = "IK_R", back = "IK_Tab", free = "IK_Q", hold = "IK_F", command = "IK_R",
     left = "IK_Left", right = "IK_Right", down = "IK_Down", up = "IK_Up",
-    rotL = "IK_LeftMouse", rotR = "IK_RightMouse", gizmo = "IK_LControl", fly = "IK_V", far = "IK_MouseWheelUp", near = "IK_MouseWheelDown",
+    rotL = "IK_LeftMouse", rotR = "IK_RightMouse", gizmo = "IK_LControl", far = "IK_MouseWheelUp", near = "IK_MouseWheelDown",
 }
 local PUSH = { step = 0.15, min = 0.25, big = 3, near = 0.5 } -- a wheel notch moves the held piece by step of its distance
                                                               -- (at least min m; Shift: big times that); nearest near m
@@ -108,7 +108,6 @@ local S = {
     info = {},                   -- entity id hash -> tag info (or false), see tagInfo
     fHeld = false, fTime = 0, fUsed = false,
     cHeld = false, cTime = 0, cUsed = false,
-    fly = nil, flyKeys = {},     -- fly mode (noclip): V's position while flying; the movement keys held
     nearBench = false, inZone = false, pins = {}, siteT = 0, refreshT = 0, fx = {}, after = {}, hinted = {}, orphan = {}, nostash = {}, anims = {}, playing = {}, sfx = {}, running = {}, dark = {},
     cost = 0,                    -- the zone's pieces' mesh count, against BUDGET
     checked = {},                -- entity id hash -> true once a placed person's attitude to V was checked
@@ -201,7 +200,6 @@ local function enterBuild()
     Cmd.exit()
     S.build = true
     Homestead.Restrict(true)
-    pcall(Homestead.Fly, true)                              -- (mouse turns reported: fly learns their size on foot)
     S.nearBench = false
     refresh(true)
     Border.update()
@@ -222,22 +220,19 @@ local function exitBuild()
     S.build = false
     Border.update()
     Homestead.Restrict(false)
-    pcall(Homestead.Fly, S.fly ~= nil)
     sfx(SFX.exit)
 end
 C.exitBuild = exitBuild
 
 local frame, wheelFrame = 0, -1
-local FLY_KEYS = { IK_W = true, IK_A = true, IK_S = true, IK_D = true, IK_Space = true, IK_C = true, IK_LShift = true }
 -- a menu or CET's overlay has the keyboard: whatever was held counts as let go (its release comes to the menu, not here:
 -- a held F stayed held and toggled workshop mode by itself), a rotation or a gizmo drag ends as on a release
 local function releaseKeys()
-    S.fHeld, S.fUse, S.cHeld, S.repeatKey, S.flyKeys, S.shiftDown, S.rot = false, nil, false, nil, {}, false, 0
+    S.fHeld, S.fUse, S.cHeld, S.repeatKey, S.shiftDown, S.rot = false, nil, false, nil, false, 0
     if S.gz then Gizmo.press(false); Gizmo.look(false) end
 end
 local function onKey(key, down, shift, rep)
     if S.overlay or Homestead.InMenu() then releaseKeys() return end
-    if FLY_KEYS[key] then S.flyKeys[key] = down or nil end
     if not rep and (key == KEYS.left or key == KEYS.right) then
         if down then S.repeatKey, S.repeatT, S.repeatAcc = key, 0, 0 elseif S.repeatKey == key then S.repeatKey = nil end
     end
@@ -318,7 +313,6 @@ local function onKey(key, down, shift, rep)
         end
         return
     end
-    if key == KEYS.fly then if down then Testing.fly() end return end
     if key == KEYS.free then
         Gizmo.off()
         S.free = not S.free
@@ -385,10 +379,7 @@ registerForEvent("onInit", function()
     Observe("HomesteadService", "HomesteadEntity", function(_, entity) timed("dress", onEntity, entity) end)   -- (clocked: a
                                                              -- piece dressed costs - sites.lua spreads them by distance)
     Observe("HomesteadService", "HomesteadKey", function(_, key, down, shift) onKey(key, down, shift) end)
-    Observe("HomesteadService", "HomesteadMouse", function(_, dx, dy)
-        S.mdx = (S.mdx or 0) + dx                               -- (the frame's mouse turn: Testing.turnTick, flyTick)
-        Gizmo.mouse(dx, dy)
-    end)
+    Observe("HomesteadService", "HomesteadMouse", function(_, dx, dy) Gizmo.mouse(dx, dy) end)
     Observe("HomesteadService", "HomesteadSession", function(_, start) session(start) end)
     print("[Homestead] loaded, " .. #catalog.items .. " pieces in the catalog")
 end)
@@ -407,7 +398,7 @@ local function setZone(z)
 end
 C.setZone = setZone
 
--- the frame: fly mode, the toast, the settlements (every 2 s), what's attaching and animating, the fall guard, the
+-- the frame: the toast, the settlements (every 2 s), what's attaching and animating, the fall guard, the
 -- settlement V is at; people (every second; their walks every frame), held arrows and keys timed; then one of:
 -- Command mode, out of workshop mode (the bench and use prompts), workshop mode (the held piece's turn,
 -- the gizmo, placement, the preview, snap points - or the piece looked at)
@@ -415,7 +406,6 @@ local function update(dt)
     frame = frame + 1
     S.frameDt = dt
     S.cam = nil
-    if S.fly then Testing.flyTick(dt) elseif S.build then Testing.turnTick() end
     if S.popwatch then Testing.popTick(dt) end
     if S.toast then S.toastT = S.toastT - dt; if S.toastT <= 0 then S.toast = nil end end
     local pos = playerPos()
@@ -580,7 +570,7 @@ end
 -- the dev table (GetMod("Homestead")): the console's commands, and what tools/sim.py and tools/dev read
 return {
     tp = tp, info = info, build = enterBuild, exit = exitBuild, reset = reset, found = found, abandon = abandon,
-    fly = Testing.fly, popwatch = Testing.popwatch, prof = Eng.prof, calls = Eng, state = S, tree = tree, key = onKey, refresh = refresh,
+    popwatch = Testing.popwatch, prof = Eng.prof, calls = Eng, state = S, tree = tree, key = onKey, refresh = refresh,
     placement = placement, startMove = startMove, restore = restore, aim = aim, rayBox = rayBox, boundsBox = boundsBox,
     sites = Sites, settings = Settings, anim = Anim, life = Life, keys = Keys, C = C,
     zone = function() return S.zone, tree, CATS end,

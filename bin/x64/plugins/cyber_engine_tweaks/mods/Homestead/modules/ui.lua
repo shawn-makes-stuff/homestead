@@ -198,7 +198,7 @@ return function(C)
         { name = "back", label = "Back", desc = "Workshop mode: back up the menu, put a moved piece back, leave. Command mode: unselect, then leave." },
         { name = "free", label = "Snap / free placement", desc = "Workshop mode: switch between snapping and free placement." },
         { name = "gizmo", label = "Gizmo", desc = "Free placement: the move gizmo on the held piece, or on the piece looked at." },
-        { name = "fly", label = "Fly", desc = "Workshop mode: fly (WASD where you look, Space up, C down, Shift fast) to build in hard to reach places; again to land." },
+
     }
     for _, b in ipairs(Keys.binds) do b.default = KEYS[b.name] end
     Keys.GAME = {

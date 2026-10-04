@@ -6,7 +6,6 @@ import Audioware.*
 
 public class HomesteadService extends ScriptableService {
     private let ui: ref<HomesteadUI>;
-    public let fly: Bool;                                       // flying: mouse motion is reported too (Lua spaces its teleports)
     public let mouse: Bool;                                     // the gizmo's cursor is on: mouse motion goes to Lua
 
     public func UI() -> ref<HomesteadUI> {
@@ -48,7 +47,7 @@ public class HomesteadService extends ScriptableService {
     // arrive here too (and read as wheel notches, so looking down raised a free piece), so check the key.
     private cb func OnAxis(event: ref<AxisInputEvent>) {
         let k = event.GetKey();
-        if Equals(k, EInputKey.IK_MouseX) { if this.mouse || this.fly { this.HomesteadMouse(event.GetValue(), 0.0); } return; }
+        if Equals(k, EInputKey.IK_MouseX) { if this.mouse { this.HomesteadMouse(event.GetValue(), 0.0); } return; }
         if Equals(k, EInputKey.IK_MouseY) { if this.mouse { this.HomesteadMouse(0.0, event.GetValue()); } return; }
         if NotEquals(k, EInputKey.IK_MouseZ) { return; }
         let v = event.GetValue();
@@ -126,11 +125,6 @@ public abstract class Homestead {
     // The free-placement gizmo: V held still and the mouse ours. With the plugin's mouse capture the camera gets no motion
     // (GameplayRestriction.HomesteadHold: no movement); without it the camera is restricted too (HomesteadGizmo: NoCameraControl, which drifts).
     // Returns whether the capture is on (Lua then reads the motion from HomesteadImport.MouseX / MouseY).
-    public static func Fly(on: Bool) -> Void {
-        let service = GameInstance.GetScriptableServiceContainer().GetService(n"HomesteadService") as HomesteadService;
-        if IsDefined(service) { service.fly = on; }
-    }
-
     public static func Gizmo(on: Bool) -> Bool {
         let service = GameInstance.GetScriptableServiceContainer().GetService(n"HomesteadService") as HomesteadService;
         if IsDefined(service) { service.mouse = on; }
