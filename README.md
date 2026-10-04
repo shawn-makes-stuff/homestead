@@ -32,9 +32,9 @@ by the bundled importer. The only Fallout-derived files in this repository are t
 5. When it says "Built - quit Cyberpunk to install it", quit the game. It installs as the game closes. Start
    Cyberpunk again: the pieces are there.
 
-Without the game: with Cyberpunk closed, run
-`bin\x64\plugins\cyber_engine_tweaks\mods\Homestead\importer\HomesteadImport.exe`. It has no window; progress is in
-`...\mods\Homestead\import\fo4\import.log`, and it installs by itself when done.
+Since the import runs while your game does, it can be a bit resource intensive.<br>
+Skip the in game install by running the import directly: `bin\x64\plugins\cyber_engine_tweaks\mods\Homestead\importer\HomesteadImport.exe`. 
+<br> It has no window; progress is in `...\mods\Homestead\import\fo4\import.log`, and it installs by itself when done.
 
 If the import fails, the status line says why and `import.log` has the details. If pieces look broken, switch on
 "Overwrite already imported items" and import again.
