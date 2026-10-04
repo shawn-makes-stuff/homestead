@@ -25,6 +25,7 @@ FO4 = os.path.join(WORK, 'fo4')
 JSON = os.path.join(WORK, 'json')
 CET = paths.CET
 MOD_ARCHIVE = os.path.join(FO4, 'Homestead.archive')
+URL = 'github.com/shawn-makes-stuff/homestead/releases'
 MASTERS = [('Fallout4.esm', 'Fallout 4'), ('DLCRobot.esm', 'Automatron'), ('DLCworkshop01.esm', 'Wasteland Workshop'),
            ('DLCCoast.esm', 'Far Harbor'), ('DLCworkshop02.esm', 'Contraptions Workshop'),
            ('DLCworkshop03.esm', 'Vault-Tec Workshop'), ('DLCNukaWorld.esm', 'Nuka-World')]
@@ -378,6 +379,10 @@ def main():
         log('Homestead import%s' % (' (fresh: --force)' if force else ''))
         check(log, status)
         if '--check' in sys.argv: status(state='found', step=''); return
+        mine, mods = (paths.kv(os.path.join(d, 'build.txt')).get('build') for d in (paths.ROOT, paths.game_cet()))
+        if paths.FROZEN and mine and mods and mine != mods:   # (two downloads: the mod, and this)
+            raise SystemExit('this importer is not the one for the installed Homestead - download the HomesteadImport of the '
+                             'same version (%s)' % URL)
         if game_running() and not from_game: raise SystemExit('close Cyberpunk 2077 first (its archives are locked while it runs)')
         room(paths.get('cp2077'))
         import build_catalog, budget

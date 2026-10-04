@@ -56,7 +56,7 @@ return function(Settings, C)
     local function statusLine()
         if note then return note end
         local st = status.state
-        if not st then return "No import yet" end
+        if not st then return plugin("Path") == "" and "Importer not installed: download HomesteadImport (see the mod page)" or "No import yet" end
         -- A running state with no process: it was killed or the PC went off, and nothing told us.
         if BUSY[st] and plugin("Running") == false then return "Stopped before it finished - import again" end
         if st == "cancelled" then return "Cancelled - import again to finish it" end
@@ -106,7 +106,7 @@ return function(Settings, C)
         note, noteT = nil, os.time() + 8
         if mode ~= 2 and inGame() then note = "Quit to the main menu to import"
         elseif plugin("Running") then note = "The importer is already running"
-        elseif not plugin("Path") or plugin("Path") == "" then note = "The importer isn't installed (the mod's importer folder)"
+        elseif not plugin("Path") or plugin("Path") == "" then note = "The importer isn't installed: download HomesteadImport (github.com/shawn-makes-stuff/homestead/releases) into the game folder"
         elseif plugin("Start", mode) then
             status.state, status.step, status.started = mode == 2 and "checking" or "running", "starting", tostring(os.time())
             say()
