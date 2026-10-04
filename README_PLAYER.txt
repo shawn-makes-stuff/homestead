@@ -7,9 +7,8 @@ PC from your own copy of Fallout 4, once, by Homestead's importer.
 
 NEEDS
   - Cyberpunk 2077 (2.3)
-  - Fallout 4 installed: Steam, GOG, Epic, Game Pass or the Bethesda launcher, any version - from before the 2024
-    update, after it, or a downgraded one (it reads all their archive formats; tested with 1.11.240). Its DLCs add
-    their pieces if you have them.
+  - Fallout 4 installed: Steam, GOG, Epic, Game Pass or the Bethesda launcher. Tested with the next-gen update
+    (1.11.240); older versions may work but are untested. Its DLCs add their pieces if you have them.
   - Cyber Engine Tweaks, RED4ext, redscript, Codeware, TweakXL, Audioware, Native Settings UI
 
 SIZE AND TIME (measured, Homestead 0.2.0) - for the import, done once; in game Homestead itself is light

@@ -9,7 +9,8 @@ by the bundled importer. The only Fallout-derived files in this repository are t
 ## Requirements
 
 - Cyberpunk 2077 (2.3), on Windows
-- Fallout 4 installed (Steam, GOG, Epic, Game Pass or the Bethesda launcher; post next-gen). Its DLCs add their pieces.
+- Fallout 4 installed (Steam, GOG, Epic, Game Pass or the Bethesda launcher). Tested with the next-gen update
+  (1.11.240); older versions may work but are untested. Its DLCs add their pieces.
 - [Cyber Engine Tweaks](https://www.nexusmods.com/cyberpunk2077/mods/107),
   [RED4ext](https://www.nexusmods.com/cyberpunk2077/mods/2380),
   [redscript](https://www.nexusmods.com/cyberpunk2077/mods/1511),
