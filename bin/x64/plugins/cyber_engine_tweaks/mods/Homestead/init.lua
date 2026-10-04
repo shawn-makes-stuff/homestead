@@ -201,6 +201,7 @@ local function enterBuild()
     Cmd.exit()
     S.build = true
     Homestead.Restrict(true)
+    pcall(Homestead.Fly, true)                              -- (mouse turns reported: fly learns their size on foot)
     S.nearBench = false
     refresh(true)
     Border.update()
@@ -221,6 +222,7 @@ local function exitBuild()
     S.build = false
     Border.update()
     Homestead.Restrict(false)
+    pcall(Homestead.Fly, S.fly ~= nil)
     sfx(SFX.exit)
 end
 C.exitBuild = exitBuild
@@ -384,7 +386,7 @@ registerForEvent("onInit", function()
                                                              -- piece dressed costs - sites.lua spreads them by distance)
     Observe("HomesteadService", "HomesteadKey", function(_, key, down, shift) onKey(key, down, shift) end)
     Observe("HomesteadService", "HomesteadMouse", function(_, dx, dy)
-        if S.fly and dx ~= 0 then S.fly.turned = true end
+        S.mdx = (S.mdx or 0) + dx                               -- (the frame's mouse turn: Testing.turnTick, flyTick)
         Gizmo.mouse(dx, dy)
     end)
     Observe("HomesteadService", "HomesteadSession", function(_, start) session(start) end)
@@ -413,7 +415,7 @@ local function update(dt)
     frame = frame + 1
     S.frameDt = dt
     S.cam = nil
-    if S.fly then Testing.flyTick(dt) end
+    if S.fly then Testing.flyTick(dt) elseif S.build then Testing.turnTick() end
     if S.popwatch then Testing.popTick(dt) end
     if S.toast then S.toastT = S.toastT - dt; if S.toastT <= 0 then S.toast = nil end end
     local pos = playerPos()
