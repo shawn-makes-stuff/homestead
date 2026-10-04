@@ -1,0 +1,4058 @@
+{
+ "Header": {
+  "WolvenKitVersion": "9.0.1",
+  "WKitJsonVersion": "0.0.9",
+  "GameVersion": 2310,
+  "ExportedDateTime": "2026-09-29T18:50:38.1068155Z",
+  "DataType": "CR2W",
+  "ArchiveFileName": "D:\\Projects\\Homestead\\source\\tpl\\base\\gameplay\\gui\\common\\icons\\items\\item_icons4.inkatlas"
+ },
+ "Data": {
+  "Version": 195,
+  "BuildVersion": 0,
+  "RootChunk": {
+   "$type": "inkTextureAtlas",
+   "activeTexture": "StaticTexture",
+   "cookingPlatform": "PLATFORM_PC",
+   "dynamicTexture": {
+    "DepotPath": {
+     "$type": "ResourcePath",
+     "$storage": "uint64",
+     "$value": "0"
+    },
+    "Flags": "Soft"
+   },
+   "dynamicTextureSlot": {
+    "$type": "inkDynamicTextureSlot",
+    "parts": [],
+    "texture": {
+     "DepotPath": {
+      "$type": "ResourcePath",
+      "$storage": "uint64",
+      "$value": "0"
+     },
+     "Flags": "Soft"
+    }
+   },
+   "isSingleTextureMode": 1,
+   "parts": [],
+   "slices": [],
+   "slots": {
+    "Elements": [
+     {
+      "$type": "inkTextureSlot",
+      "parts": [
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ziggy_q"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_spr_03_nomad_guy"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq002_aldecaldo_2"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq042_nomad_alice"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sq024_luigi"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sq024_margot"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq002_aldecaldo_1"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_bls_ina_se1_22_psycho"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq005_police_officer_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_maxtac_miniboss_mantis_ma"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_13_auctioneer_ma"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq005_police_officer_03"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_rcr_03_captain"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_13_enemy_mini_boss"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_bunker_security"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.9375,
+         "Right": 1.0,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_maxtac_miniboss_fshotgun_mb"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_rcr_04_captain"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_maxtac_miniboss_frifle_wa"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_06_cop"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_rcr_11_enforcer"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_rcr_16_sec"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_maxtac_miniboss_netrunner_ma"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q303_paradise_ncpd_chief"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_arr_14_john"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq005_police_officer_02"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_cct_dtn_14_lance_hardy"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq010_policeman"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq010_policewoman"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_wat_kab_05_ripperdoc"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_nid_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sq012_market_vendor"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.9375,
+         "Right": 1.0,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_std_arr_foodshop_03"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_nid_foodshop_02"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq022_bar_owner"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_stadium_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_ripperdoc_wa"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_kab_junkshop_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_monument_foodshop_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_stadium_black_market_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_bls_ina_se1_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_wat_kab_08_food_courier"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q301_vendor_crier_female"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq023_bootleg_street_vendor"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_lch_foodshop_02"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_con_junkshop_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q108_ripper"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q304_market_minotaur"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.9375,
+         "Right": 1.0,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sq012_sex_shop_owner"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_std_rcr_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq015_seller"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_std_arr_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_kab_ripperdoc_03"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_kab_medicstore_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_hey_spr_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_con_clothingshop_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq306_bartender"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_kab_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q204_music_store_owner"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_con_medicstore_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q110_butcher_shop_grandma"
+        }
+       }
+      ],
+      "slices": [],
+      "texture": {
+       "DepotPath": {
+        "$type": "ResourcePath",
+        "$storage": "string",
+        "$value": "homestead\\ui\\thumbs_20.xbm"
+       },
+       "Flags": "Soft"
+      }
+     },
+     {
+      "$type": "inkTextureSlot",
+      "parts": [
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ziggy_q"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_spr_03_nomad_guy"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq002_aldecaldo_2"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq042_nomad_alice"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sq024_luigi"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sq024_margot"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq002_aldecaldo_1"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_bls_ina_se1_22_psycho"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq005_police_officer_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_maxtac_miniboss_mantis_ma"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_13_auctioneer_ma"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq005_police_officer_03"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_rcr_03_captain"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_13_enemy_mini_boss"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_bunker_security"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.9375,
+         "Right": 1.0,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_maxtac_miniboss_fshotgun_mb"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_rcr_04_captain"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_maxtac_miniboss_frifle_wa"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_06_cop"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_rcr_11_enforcer"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_rcr_16_sec"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_maxtac_miniboss_netrunner_ma"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q303_paradise_ncpd_chief"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_arr_14_john"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq005_police_officer_02"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_cct_dtn_14_lance_hardy"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq010_policeman"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq010_policewoman"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_wat_kab_05_ripperdoc"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_nid_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sq012_market_vendor"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.9375,
+         "Right": 1.0,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_std_arr_foodshop_03"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_nid_foodshop_02"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq022_bar_owner"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_stadium_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_ripperdoc_wa"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_kab_junkshop_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_monument_foodshop_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_stadium_black_market_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_bls_ina_se1_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_wat_kab_08_food_courier"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q301_vendor_crier_female"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq023_bootleg_street_vendor"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_lch_foodshop_02"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_con_junkshop_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q108_ripper"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q304_market_minotaur"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.9375,
+         "Right": 1.0,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sq012_sex_shop_owner"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_std_rcr_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq015_seller"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_std_arr_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_kab_ripperdoc_03"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_kab_medicstore_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_hey_spr_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_con_clothingshop_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq306_bartender"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_kab_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q204_music_store_owner"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_con_medicstore_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q110_butcher_shop_grandma"
+        }
+       }
+      ],
+      "slices": [],
+      "texture": {
+       "DepotPath": {
+        "$type": "ResourcePath",
+        "$storage": "string",
+        "$value": "homestead\\ui\\thumbs_20.xbm"
+       },
+       "Flags": "Soft"
+      }
+     },
+     {
+      "$type": "inkTextureSlot",
+      "parts": [
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ziggy_q"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_spr_03_nomad_guy"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq002_aldecaldo_2"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq042_nomad_alice"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sq024_luigi"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sq024_margot"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq002_aldecaldo_1"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_bls_ina_se1_22_psycho"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq005_police_officer_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_maxtac_miniboss_mantis_ma"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_13_auctioneer_ma"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq005_police_officer_03"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_rcr_03_captain"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_13_enemy_mini_boss"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_bunker_security"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.0625,
+         "Left": 0.9375,
+         "Right": 1.0,
+         "Top": 0.0
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_maxtac_miniboss_fshotgun_mb"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_rcr_04_captain"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_maxtac_miniboss_frifle_wa"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_06_cop"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_rcr_11_enforcer"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_rcr_16_sec"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_maxtac_miniboss_netrunner_ma"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q303_paradise_ncpd_chief"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_std_arr_14_john"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq005_police_officer_02"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ma_cct_dtn_14_lance_hardy"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq010_policeman"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq010_policewoman"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_wat_kab_05_ripperdoc"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_nid_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sq012_market_vendor"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.125,
+         "Left": 0.9375,
+         "Right": 1.0,
+         "Top": 0.0625
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_std_arr_foodshop_03"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_nid_foodshop_02"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq022_bar_owner"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_stadium_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q305_ripperdoc_wa"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_kab_junkshop_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_monument_foodshop_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_stadium_black_market_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_bls_ina_se1_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_wat_kab_08_food_courier"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q301_vendor_crier_female"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq023_bootleg_street_vendor"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_lch_foodshop_02"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_con_junkshop_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q108_ripper"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q304_market_minotaur"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.1875,
+         "Left": 0.9375,
+         "Right": 1.0,
+         "Top": 0.125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sq012_sex_shop_owner"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_std_rcr_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq015_seller"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_std_arr_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_kab_ripperdoc_03"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_kab_medicstore_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_hey_spr_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_con_clothingshop_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq306_bartender"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_wat_kab_ripperdoc_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q204_music_store_owner"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cz_con_medicstore_01"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.25,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.1875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_q110_butcher_shop_grandma"
+        }
+       }
+      ],
+      "slices": [],
+      "texture": {
+       "DepotPath": {
+        "$type": "ResourcePath",
+        "$storage": "string",
+        "$value": "homestead\\ui\\thumbs_20.xbm"
+       },
+       "Flags": "Soft"
+      }
+     }
+    ]
+   },
+   "texture": {
+    "DepotPath": {
+     "$type": "ResourcePath",
+     "$storage": "uint64",
+     "$value": "0"
+    },
+    "Flags": "Soft"
+   },
+   "textureResolution": "UltraHD_3840_2160"
+  },
+  "EmbeddedFiles": []
+ }
+}

@@ -1,0 +1,36 @@
+# Workshop mode (Homestead.Restrict): the game's NoCombat (weapons holstered, no cyberware combat) plus everything else
+# that would fire on the workshop's keys or take V out of it, as Fallout does in workshop mode: no scanner, zoom,
+# radial menus, weapon wheel, quick melee, consumables, phone, car summoning, photo mode or menus (inventory, map...).
+GameplayRestriction.HomesteadBuild:
+  $base: GameplayRestriction.NoCombat
+  gameplayTags:
+    - GameplayRestriction
+    - NoCombat
+    - NoQuickHacks
+    - NoGrenadeOrGadget
+    - NoScanning
+    - NoZooming
+    - NoRadialMenus
+    - NoWeaponWheel
+    - NoQuickMelee
+    - NoInhalerOrInjector
+    - NoPhone
+    - VehicleNoSummoning
+    - NoPhotoMode
+    - BlockAllHubMenu
+    - HomesteadBuild            # ours: Homestead.reds keeps V from aiming (right mouse turns pieces)
+
+# The free-placement gizmo (Homestead.Gizmo): the mouse drives our cursor, so the camera and V stand still.
+GameplayRestriction.HomesteadGizmo:
+  $base: GameplayRestriction.NoCameraControl
+  gameplayTags:
+    - GameplayRestriction
+    - NoCameraControl
+    - NoMovement
+
+# The gizmo with the plugin taking the mouse: V stands still, the camera is left alone (it gets no motion).
+GameplayRestriction.HomesteadHold:
+  $base: GameplayRestriction.NoCameraControl
+  gameplayTags:
+    - GameplayRestriction
+    - NoMovement

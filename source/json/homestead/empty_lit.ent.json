@@ -1,0 +1,854 @@
+{
+ "Header": {
+  "WolvenKitVersion": "9.0.1",
+  "WKitJsonVersion": "0.0.9",
+  "GameVersion": 2310,
+  "DataType": "CR2W"
+ },
+ "Data": {
+  "Version": 195,
+  "BuildVersion": 0,
+  "RootChunk": {
+   "$type": "entEntityTemplate",
+   "appearances": [],
+   "backendDataOverrides": [],
+   "bindingOverrides": [],
+   "compiledData": {
+    "BufferId": "0",
+    "Flags": 4063232,
+    "Type": "WolvenKit.RED4.Archive.Buffer.RedPackage, WolvenKit.RED4, Version=9.0.1.0, Culture=neutral, PublicKeyToken=null",
+    "Data": {
+     "Version": 4,
+     "Sections": 6,
+     "CruidIndex": 0,
+     "CruidDict": {
+      "0": "0",
+      "1": "5810274981337241857",
+      "2": "5810274981337241858",
+      "3": "5810274981337241859"
+     },
+     "Chunks": [
+      {
+       "$type": "gameObject",
+       "customCameraTarget": "ECCTV_All",
+       "renderSceneLayerMask": "Default",
+       "tags": {
+        "$type": "redTagList",
+        "tags": []
+       },
+       "visibilityCheckDistance": 16000
+      },
+      {
+       "$type": "gameTargetingComponent",
+       "aimAssistData": [],
+       "alwaysInTestRange": 0,
+       "id": "5810274981337241857",
+       "isDirectional": 0,
+       "isEnabled": 1,
+       "isPrimary": 1,
+       "isReplicable": 0,
+       "localTransform": {
+        "$type": "WorldTransform",
+        "Orientation": {
+         "$type": "Quaternion",
+         "i": 0,
+         "j": 0,
+         "k": 0,
+         "r": 1
+        },
+        "Position": {
+         "$type": "WorldPosition",
+         "x": {
+          "$type": "FixedPoint",
+          "Bits": 0
+         },
+         "y": {
+          "$type": "FixedPoint",
+          "Bits": 0
+         },
+         "z": {
+          "$type": "FixedPoint",
+          "Bits": 0
+         }
+        }
+       },
+       "name": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "Component"
+       },
+       "parentTransform": null
+      },
+      {
+       "$type": "gameLightComponent",
+       "allowDistantLight": 0,
+       "areaRectSideA": 1,
+       "areaRectSideB": 1,
+       "areaShape": "ALS_Capsule",
+       "areaTwoSided": 1,
+       "attenuation": "LA_InverseSquare",
+       "autoHideDistance": 40,
+       "autoHideRange": 0,
+       "capsuleLength": 1,
+       "clampAttenuation": 1,
+       "colliderName": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+       },
+       "colliderTag": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+       },
+       "color": {
+        "$type": "Color",
+        "Alpha": 255,
+        "Blue": 84,
+        "Green": 104,
+        "Red": 255
+       },
+       "colorGroupSaturation": 100,
+       "contactShadows": "CSR_None",
+       "destructionEffect": {
+        "DepotPath": {
+         "$type": "ResourcePath",
+         "$storage": "uint64",
+         "$value": "0"
+        },
+        "Flags": "Soft"
+       },
+       "directional": 0,
+       "emissiveOnly": 0,
+       "enableContactShadows": 0,
+       "enableLocalShadows": 0,
+       "enableLocalShadowsForceStaticsOnly": 0,
+       "enableShadowAngleControl": 0,
+       "envColorGroup": "ECG_Default",
+       "EV": 0,
+       "flicker": {
+        "$type": "rendSLightFlickering",
+        "flickerPeriod": 0.2,
+        "flickerStrength": 0,
+        "positionOffset": 0
+       },
+       "forceLODLevel": -1,
+       "genericCurveSetOverride": {
+        "DepotPath": {
+         "$type": "ResourcePath",
+         "$storage": "uint64",
+         "$value": "0"
+        },
+        "Flags": "Default"
+       },
+       "group": "LG_Group0",
+       "id": "5810274981337241858",
+       "iesProfile": {
+        "DepotPath": {
+         "$type": "ResourcePath",
+         "$storage": "uint64",
+         "$value": "0"
+        },
+        "Flags": "Soft"
+       },
+       "initialTransform": null,
+       "innerAngle": 30,
+       "intensity": 40,
+       "isDestructible": 0,
+       "isEnabled": 1,
+       "isReplicable": 0,
+       "lightChannel": "LC_Channel1, LC_Channel2, LC_Channel3, LC_Channel4, LC_Channel5, LC_Channel6, LC_Channel7, LC_Channel8, LC_ChannelWorld",
+       "localTransform": {
+        "$type": "WorldTransform",
+        "Orientation": {
+         "$type": "Quaternion",
+         "i": 0,
+         "j": 0,
+         "k": 0,
+         "r": 1
+        },
+        "Position": {
+         "$type": "WorldPosition",
+         "x": {
+          "$type": "FixedPoint",
+          "Bits": 0
+         },
+         "y": {
+          "$type": "FixedPoint",
+          "Bits": 0
+         },
+         "z": {
+          "$type": "FixedPoint",
+          "Bits": 0
+         }
+        }
+       },
+       "loopCurve": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+       },
+       "loopTime": 0,
+       "materialZone": "Zero",
+       "meshBrokenAppearance": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+       },
+       "name": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "hs_light1"
+       },
+       "noSpecular": 0,
+       "onStrength": 1,
+       "outerAngle": 45,
+       "parentTransform": null,
+       "pathTracingLightUsage": "PTLU_Everywhere",
+       "pathTracingOverrideScaleGI": 1,
+       "placedEditorData": null,
+       "portalAngleCutoff": 0,
+       "radius": 2.5,
+       "rayTracedShadowsPlatform": "RLSP_All",
+       "rayTracingContactShadowRange": -1,
+       "rayTracingIntensityScale": 1,
+       "rayTracingLightSourceRadius": -1,
+       "renderSceneLayerMask": "Default",
+       "roughnessBias": 50,
+       "rtxdiShadowStartingDistance": -1,
+       "scaleEnvProbes": 0,
+       "scaleGI": 0,
+       "scaleVolFog": 0,
+       "sceneDiffuse": 1,
+       "sceneSpecular": 0,
+       "sceneSpecularScale": 100,
+       "shadowAngle": -1,
+       "shadowFadeDistance": 10,
+       "shadowFadeRange": 5,
+       "shadowRadius": -1,
+       "shadowSoftnessMode": "LSSM_Default",
+       "softness": 2,
+       "sourceRadius": 0.05,
+       "spotCapsule": 0,
+       "synchronizedLoop": 0,
+       "temperature": -1,
+       "turnOffCurve": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+       },
+       "turnOffTime": 0.3,
+       "turnOnByDefault": 1,
+       "turnOnCurve": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+       },
+       "turnOnTime": 0.3,
+       "type": "LT_Point",
+       "unit": "LU_Lumen",
+       "useInEnvProbes": 0,
+       "useInFog": 0,
+       "useInGI": 0,
+       "useInParticles": 1,
+       "useInTransparents": 1
+      },
+      {
+       "$type": "gameLightComponent",
+       "allowDistantLight": 0,
+       "areaRectSideA": 1,
+       "areaRectSideB": 1,
+       "areaShape": "ALS_Capsule",
+       "areaTwoSided": 1,
+       "attenuation": "LA_InverseSquare",
+       "autoHideDistance": 40,
+       "autoHideRange": 0,
+       "capsuleLength": 1,
+       "clampAttenuation": 1,
+       "colliderName": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+       },
+       "colliderTag": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+       },
+       "color": {
+        "$type": "Color",
+        "Alpha": 255,
+        "Blue": 84,
+        "Green": 104,
+        "Red": 255
+       },
+       "colorGroupSaturation": 100,
+       "contactShadows": "CSR_None",
+       "destructionEffect": {
+        "DepotPath": {
+         "$type": "ResourcePath",
+         "$storage": "uint64",
+         "$value": "0"
+        },
+        "Flags": "Soft"
+       },
+       "directional": 0,
+       "emissiveOnly": 0,
+       "enableContactShadows": 0,
+       "enableLocalShadows": 0,
+       "enableLocalShadowsForceStaticsOnly": 0,
+       "enableShadowAngleControl": 0,
+       "envColorGroup": "ECG_Default",
+       "EV": 0,
+       "flicker": {
+        "$type": "rendSLightFlickering",
+        "flickerPeriod": 0.2,
+        "flickerStrength": 0,
+        "positionOffset": 0
+       },
+       "forceLODLevel": -1,
+       "genericCurveSetOverride": {
+        "DepotPath": {
+         "$type": "ResourcePath",
+         "$storage": "uint64",
+         "$value": "0"
+        },
+        "Flags": "Default"
+       },
+       "group": "LG_Group0",
+       "id": "5810274981337241859",
+       "iesProfile": {
+        "DepotPath": {
+         "$type": "ResourcePath",
+         "$storage": "uint64",
+         "$value": "0"
+        },
+        "Flags": "Soft"
+       },
+       "initialTransform": null,
+       "innerAngle": 30,
+       "intensity": 40,
+       "isDestructible": 0,
+       "isEnabled": 1,
+       "isReplicable": 0,
+       "lightChannel": "LC_Channel1, LC_Channel2, LC_Channel3, LC_Channel4, LC_Channel5, LC_Channel6, LC_Channel7, LC_Channel8, LC_ChannelWorld",
+       "localTransform": {
+        "$type": "WorldTransform",
+        "Orientation": {
+         "$type": "Quaternion",
+         "i": 0,
+         "j": 0,
+         "k": 0,
+         "r": 1
+        },
+        "Position": {
+         "$type": "WorldPosition",
+         "x": {
+          "$type": "FixedPoint",
+          "Bits": 0
+         },
+         "y": {
+          "$type": "FixedPoint",
+          "Bits": 0
+         },
+         "z": {
+          "$type": "FixedPoint",
+          "Bits": 0
+         }
+        }
+       },
+       "loopCurve": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+       },
+       "loopTime": 0,
+       "materialZone": "Zero",
+       "meshBrokenAppearance": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+       },
+       "name": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "hs_light2"
+       },
+       "noSpecular": 0,
+       "onStrength": 1,
+       "outerAngle": 45,
+       "parentTransform": null,
+       "pathTracingLightUsage": "PTLU_Everywhere",
+       "pathTracingOverrideScaleGI": 1,
+       "placedEditorData": null,
+       "portalAngleCutoff": 0,
+       "radius": 2.5,
+       "rayTracedShadowsPlatform": "RLSP_All",
+       "rayTracingContactShadowRange": -1,
+       "rayTracingIntensityScale": 1,
+       "rayTracingLightSourceRadius": -1,
+       "renderSceneLayerMask": "Default",
+       "roughnessBias": 50,
+       "rtxdiShadowStartingDistance": -1,
+       "scaleEnvProbes": 0,
+       "scaleGI": 0,
+       "scaleVolFog": 0,
+       "sceneDiffuse": 1,
+       "sceneSpecular": 0,
+       "sceneSpecularScale": 100,
+       "shadowAngle": -1,
+       "shadowFadeDistance": 10,
+       "shadowFadeRange": 5,
+       "shadowRadius": -1,
+       "shadowSoftnessMode": "LSSM_Default",
+       "softness": 2,
+       "sourceRadius": 0.05,
+       "spotCapsule": 0,
+       "synchronizedLoop": 0,
+       "temperature": -1,
+       "turnOffCurve": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+       },
+       "turnOffTime": 0.3,
+       "turnOnByDefault": 1,
+       "turnOnCurve": {
+        "$type": "CName",
+        "$storage": "string",
+        "$value": "None"
+       },
+       "turnOnTime": 0.3,
+       "type": "LT_Point",
+       "unit": "LU_Lumen",
+       "useInEnvProbes": 0,
+       "useInFog": 0,
+       "useInGI": 0,
+       "useInParticles": 1,
+       "useInTransparents": 1
+      }
+     ]
+    }
+   },
+   "compiledEntityLODFlags": 0,
+   "componentResolveSettings": [],
+   "components": [
+    {
+     "$type": "gameTargetingComponent",
+     "aimAssistData": [],
+     "alwaysInTestRange": 0,
+     "id": "5810274981337241857",
+     "isDirectional": 0,
+     "isEnabled": 1,
+     "isPrimary": 1,
+     "isReplicable": 0,
+     "localTransform": {
+      "$type": "WorldTransform",
+      "Orientation": {
+       "$type": "Quaternion",
+       "i": 0,
+       "j": 0,
+       "k": 0,
+       "r": 1
+      },
+      "Position": {
+       "$type": "WorldPosition",
+       "x": {
+        "$type": "FixedPoint",
+        "Bits": 0
+       },
+       "y": {
+        "$type": "FixedPoint",
+        "Bits": 0
+       },
+       "z": {
+        "$type": "FixedPoint",
+        "Bits": 0
+       }
+      }
+     },
+     "name": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "Component"
+     },
+     "parentTransform": null
+    },
+    {
+     "$type": "gameLightComponent",
+     "allowDistantLight": 0,
+     "areaRectSideA": 1,
+     "areaRectSideB": 1,
+     "areaShape": "ALS_Capsule",
+     "areaTwoSided": 1,
+     "attenuation": "LA_InverseSquare",
+     "autoHideDistance": 40,
+     "autoHideRange": 0,
+     "capsuleLength": 1,
+     "clampAttenuation": 1,
+     "colliderName": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "None"
+     },
+     "colliderTag": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "None"
+     },
+     "color": {
+      "$type": "Color",
+      "Alpha": 255,
+      "Blue": 84,
+      "Green": 104,
+      "Red": 255
+     },
+     "colorGroupSaturation": 100,
+     "contactShadows": "CSR_None",
+     "destructionEffect": {
+      "DepotPath": {
+       "$type": "ResourcePath",
+       "$storage": "uint64",
+       "$value": "0"
+      },
+      "Flags": "Soft"
+     },
+     "directional": 0,
+     "emissiveOnly": 0,
+     "enableContactShadows": 0,
+     "enableLocalShadows": 0,
+     "enableLocalShadowsForceStaticsOnly": 0,
+     "enableShadowAngleControl": 0,
+     "envColorGroup": "ECG_Default",
+     "EV": 0,
+     "flicker": {
+      "$type": "rendSLightFlickering",
+      "flickerPeriod": 0.2,
+      "flickerStrength": 0,
+      "positionOffset": 0
+     },
+     "forceLODLevel": -1,
+     "genericCurveSetOverride": {
+      "DepotPath": {
+       "$type": "ResourcePath",
+       "$storage": "uint64",
+       "$value": "0"
+      },
+      "Flags": "Default"
+     },
+     "group": "LG_Group0",
+     "id": "5810274981337241858",
+     "iesProfile": {
+      "DepotPath": {
+       "$type": "ResourcePath",
+       "$storage": "uint64",
+       "$value": "0"
+      },
+      "Flags": "Soft"
+     },
+     "initialTransform": null,
+     "innerAngle": 30,
+     "intensity": 40,
+     "isDestructible": 0,
+     "isEnabled": 1,
+     "isReplicable": 0,
+     "lightChannel": "LC_Channel1, LC_Channel2, LC_Channel3, LC_Channel4, LC_Channel5, LC_Channel6, LC_Channel7, LC_Channel8, LC_ChannelWorld",
+     "localTransform": {
+      "$type": "WorldTransform",
+      "Orientation": {
+       "$type": "Quaternion",
+       "i": 0,
+       "j": 0,
+       "k": 0,
+       "r": 1
+      },
+      "Position": {
+       "$type": "WorldPosition",
+       "x": {
+        "$type": "FixedPoint",
+        "Bits": 0
+       },
+       "y": {
+        "$type": "FixedPoint",
+        "Bits": 0
+       },
+       "z": {
+        "$type": "FixedPoint",
+        "Bits": 0
+       }
+      }
+     },
+     "loopCurve": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "None"
+     },
+     "loopTime": 0,
+     "materialZone": "Zero",
+     "meshBrokenAppearance": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "None"
+     },
+     "name": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "hs_light1"
+     },
+     "noSpecular": 0,
+     "onStrength": 1,
+     "outerAngle": 45,
+     "parentTransform": null,
+     "pathTracingLightUsage": "PTLU_Everywhere",
+     "pathTracingOverrideScaleGI": 1,
+     "placedEditorData": null,
+     "portalAngleCutoff": 0,
+     "radius": 2.5,
+     "rayTracedShadowsPlatform": "RLSP_All",
+     "rayTracingContactShadowRange": -1,
+     "rayTracingIntensityScale": 1,
+     "rayTracingLightSourceRadius": -1,
+     "renderSceneLayerMask": "Default",
+     "roughnessBias": 50,
+     "rtxdiShadowStartingDistance": -1,
+     "scaleEnvProbes": 0,
+     "scaleGI": 0,
+     "scaleVolFog": 0,
+     "sceneDiffuse": 1,
+     "sceneSpecular": 0,
+     "sceneSpecularScale": 100,
+     "shadowAngle": -1,
+     "shadowFadeDistance": 10,
+     "shadowFadeRange": 5,
+     "shadowRadius": -1,
+     "shadowSoftnessMode": "LSSM_Default",
+     "softness": 2,
+     "sourceRadius": 0.05,
+     "spotCapsule": 0,
+     "synchronizedLoop": 0,
+     "temperature": -1,
+     "turnOffCurve": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "None"
+     },
+     "turnOffTime": 0.3,
+     "turnOnByDefault": 1,
+     "turnOnCurve": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "None"
+     },
+     "turnOnTime": 0.3,
+     "type": "LT_Point",
+     "unit": "LU_Lumen",
+     "useInEnvProbes": 0,
+     "useInFog": 0,
+     "useInGI": 0,
+     "useInParticles": 1,
+     "useInTransparents": 1
+    },
+    {
+     "$type": "gameLightComponent",
+     "allowDistantLight": 0,
+     "areaRectSideA": 1,
+     "areaRectSideB": 1,
+     "areaShape": "ALS_Capsule",
+     "areaTwoSided": 1,
+     "attenuation": "LA_InverseSquare",
+     "autoHideDistance": 40,
+     "autoHideRange": 0,
+     "capsuleLength": 1,
+     "clampAttenuation": 1,
+     "colliderName": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "None"
+     },
+     "colliderTag": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "None"
+     },
+     "color": {
+      "$type": "Color",
+      "Alpha": 255,
+      "Blue": 84,
+      "Green": 104,
+      "Red": 255
+     },
+     "colorGroupSaturation": 100,
+     "contactShadows": "CSR_None",
+     "destructionEffect": {
+      "DepotPath": {
+       "$type": "ResourcePath",
+       "$storage": "uint64",
+       "$value": "0"
+      },
+      "Flags": "Soft"
+     },
+     "directional": 0,
+     "emissiveOnly": 0,
+     "enableContactShadows": 0,
+     "enableLocalShadows": 0,
+     "enableLocalShadowsForceStaticsOnly": 0,
+     "enableShadowAngleControl": 0,
+     "envColorGroup": "ECG_Default",
+     "EV": 0,
+     "flicker": {
+      "$type": "rendSLightFlickering",
+      "flickerPeriod": 0.2,
+      "flickerStrength": 0,
+      "positionOffset": 0
+     },
+     "forceLODLevel": -1,
+     "genericCurveSetOverride": {
+      "DepotPath": {
+       "$type": "ResourcePath",
+       "$storage": "uint64",
+       "$value": "0"
+      },
+      "Flags": "Default"
+     },
+     "group": "LG_Group0",
+     "id": "5810274981337241859",
+     "iesProfile": {
+      "DepotPath": {
+       "$type": "ResourcePath",
+       "$storage": "uint64",
+       "$value": "0"
+      },
+      "Flags": "Soft"
+     },
+     "initialTransform": null,
+     "innerAngle": 30,
+     "intensity": 40,
+     "isDestructible": 0,
+     "isEnabled": 1,
+     "isReplicable": 0,
+     "lightChannel": "LC_Channel1, LC_Channel2, LC_Channel3, LC_Channel4, LC_Channel5, LC_Channel6, LC_Channel7, LC_Channel8, LC_ChannelWorld",
+     "localTransform": {
+      "$type": "WorldTransform",
+      "Orientation": {
+       "$type": "Quaternion",
+       "i": 0,
+       "j": 0,
+       "k": 0,
+       "r": 1
+      },
+      "Position": {
+       "$type": "WorldPosition",
+       "x": {
+        "$type": "FixedPoint",
+        "Bits": 0
+       },
+       "y": {
+        "$type": "FixedPoint",
+        "Bits": 0
+       },
+       "z": {
+        "$type": "FixedPoint",
+        "Bits": 0
+       }
+      }
+     },
+     "loopCurve": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "None"
+     },
+     "loopTime": 0,
+     "materialZone": "Zero",
+     "meshBrokenAppearance": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "None"
+     },
+     "name": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "hs_light2"
+     },
+     "noSpecular": 0,
+     "onStrength": 1,
+     "outerAngle": 45,
+     "parentTransform": null,
+     "pathTracingLightUsage": "PTLU_Everywhere",
+     "pathTracingOverrideScaleGI": 1,
+     "placedEditorData": null,
+     "portalAngleCutoff": 0,
+     "radius": 2.5,
+     "rayTracedShadowsPlatform": "RLSP_All",
+     "rayTracingContactShadowRange": -1,
+     "rayTracingIntensityScale": 1,
+     "rayTracingLightSourceRadius": -1,
+     "renderSceneLayerMask": "Default",
+     "roughnessBias": 50,
+     "rtxdiShadowStartingDistance": -1,
+     "scaleEnvProbes": 0,
+     "scaleGI": 0,
+     "scaleVolFog": 0,
+     "sceneDiffuse": 1,
+     "sceneSpecular": 0,
+     "sceneSpecularScale": 100,
+     "shadowAngle": -1,
+     "shadowFadeDistance": 10,
+     "shadowFadeRange": 5,
+     "shadowRadius": -1,
+     "shadowSoftnessMode": "LSSM_Default",
+     "softness": 2,
+     "sourceRadius": 0.05,
+     "spotCapsule": 0,
+     "synchronizedLoop": 0,
+     "temperature": -1,
+     "turnOffCurve": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "None"
+     },
+     "turnOffTime": 0.3,
+     "turnOnByDefault": 1,
+     "turnOnCurve": {
+      "$type": "CName",
+      "$storage": "string",
+      "$value": "None"
+     },
+     "turnOnTime": 0.3,
+     "type": "LT_Point",
+     "unit": "LU_Lumen",
+     "useInEnvProbes": 0,
+     "useInFog": 0,
+     "useInGI": 0,
+     "useInParticles": 1,
+     "useInTransparents": 1
+    }
+   ],
+   "cookingPlatform": "PLATFORM_PC",
+   "defaultAppearance": {
+    "$type": "CName",
+    "$storage": "string",
+    "$value": "None"
+   },
+   "entity": {
+    "HandleId": "0",
+    "Data": {
+     "$type": "gameObject",
+     "customCameraTarget": "ECCTV_All",
+     "renderSceneLayerMask": "Default",
+     "tags": {
+      "$type": "redTagList",
+      "tags": []
+     },
+     "visibilityCheckDistance": 16000
+    }
+   },
+   "includeInstanceBuffer": null,
+   "includes": [],
+   "inplaceResources": [],
+   "localData": null,
+   "resolvedDependencies": [],
+   "visualTagsSchema": null
+  },
+  "EmbeddedFiles": []
+ }
+}

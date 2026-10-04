@@ -1,0 +1,40 @@
+# generated from the player's own games (Fallout 4, Cyberpunk 2077): never shipped, never committed
+source/fo4/
+source/harvest/
+source/meshes/
+source/raw/
+source/survey/
+source/nav/
+source/world/
+source/scout/
+source/json/homestead/workspots/
+archive/
+*.archive
+
+# built outputs (tools/import.py, tools/build_catalog.py)
+bin/x64/plugins/cyber_engine_tweaks/mods/Homestead/catalog.lua
+bin/x64/plugins/cyber_engine_tweaks/mods/Homestead/data/
+bin/x64/plugins/cyber_engine_tweaks/mods/Homestead/*.log
+bin/x64/plugins/cyber_engine_tweaks/mods/Homestead/db.sqlite3
+
+# scratch
+__pycache__/
+*.pyc
+*.log
+*.stackdump
+
+source/weapons.json
+source/json/homestead/weapons.ent.json
+homestead_paths.json
+
+# the RED4ext plugin build (plugin/CMakeLists.txt)
+plugin/build/
+
+# release builds (tools/release.py)
+build/
+dist/
+tools/codehash.py
+source/thumbs_raw/
+source/thumbs_tex/
+source/thumbs_nc/
+source/thumb_items.json

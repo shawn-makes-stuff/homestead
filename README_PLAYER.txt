@@ -1,0 +1,100 @@
+HOMESTEAD - Fallout 4's settlement workshop in Cyberpunk 2077
+================================================================
+
+Homestead adds Fallout 4's workshop to Night City: found a settlement anywhere, then build with Fallout 4's
+workshop pieces and Cyberpunk's own props. Nothing of Fallout 4 comes with this mod - the pieces are made on your
+PC from your own copy of Fallout 4, once, by Homestead's importer.
+
+NEEDS
+  - Cyberpunk 2077 (2.3)
+  - Fallout 4 installed: Steam, GOG, Epic, Game Pass or the Bethesda launcher, any version - from before the 2024
+    update, after it, or a downgraded one (it reads all their archive formats; tested with 1.11.240). Its DLCs add
+    their pieces if you have them.
+  - Cyber Engine Tweaks, RED4ext, redscript, Codeware, TweakXL, Audioware, Native Settings UI
+
+SIZE AND TIME (measured, Homestead 0.2.0) - for the import, done once; in game Homestead itself is light
+  Download          210 MB zipped, 549 MB unpacked (most of it the importer and the tools it brings: WolvenKit,
+                    .NET, ffmpeg, Python)
+  While importing   about 20 GB free on the drive Cyberpunk is on (19.0 GB at its peak: its working files plus the
+                    9 GB of pieces it builds); less if you point "Import data folder" at another drive (then 9 GB on
+                    Cyberpunk's)
+  Afterwards        9.6 GB with 0.2.0: 9.1 GB of pieces (archive\pc\mod\Homestead_FO4.archive) + 0.5 GB of
+                    import data. From the next release the import data also keeps each model's collision shapes
+                    (estimated 0.1-0.2 GB more; to be measured). With "Keep import files": about 10 GB of import
+                    data instead
+  First import      14 minutes on an 8-core Ryzen 7 5700X3D, 32 GB RAM, NVMe SSD, nothing else running;
+                    18 minutes started from the game (Cyberpunk open at the main menu meanwhile) - both with 0.2.0.
+                    The next release's first import (finer collision for Fallout's buildings) is not measured yet
+  Re-import         not measured since the importer changed (2026-10-03). Only what changed is made again; with
+                    nothing changed, the pieces already in the game aren't rebuilt, "Keep import files" or not.
+                    Updating to the next release redoes the whole import once
+  Memory            11.8 GB at its peak on that PC (Fallout's textures, 8 workers at once); most of the import
+                    uses under 2 GB. It starts only as many workers as your free memory holds (1.2-1.5 GB each,
+                    1 GB kept back; the collision of Fallout's biggest buildings takes up to ~7 GB each, and only
+                    as many run at once as free memory holds): less RAM means fewer workers and a slower import, not
+                    a failed one. 16 GB of RAM is comfortable with the game open; 8 GB should work, slowly (not
+                    measured)
+  CPU               averages about 3 threads; up to 8 at once for Fallout's models and textures (~7 of the 18
+                    minutes), one thread for most of the rest (WolvenKit). More cores speed up those two steps only
+  GPU               not used
+  It runs at below-normal priority: the PC stays usable, and it can be cancelled (Settings > Mods > Homestead).
+
+INSTALL
+  Install it with your mod manager, or unpack the zip into your Cyberpunk 2077 folder (the one with bin, archive and
+  r6 in it).
+
+FIRST START: IMPORT FALLOUT 4
+  1. Start Cyberpunk. On the main menu: Settings > Mods > Homestead.
+  2. It shows where it found Fallout 4 ("Look again" if it's wrong). Press "Import" on the status line at the top.
+  3. Leave it at the main menu while it works (about 15 minutes the first time, quietly in the background; the
+     status line shows how it's going, and its button turns to "Cancel"). When it says "Built - quit Cyberpunk to install it", quit
+     Cyberpunk: it installs as the game closes. Start Cyberpunk again - the pieces are there.
+
+  Updating Homestead: install the new version over the old one. If the update needs an import, the status line
+  and a message in workshop mode say so: import again - only what changed is made again. Otherwise there is
+  nothing to do.
+  If the import fails, the status line says why (for example what WolvenKit couldn't do); import.log (below) has
+  the details.
+  If pieces look broken: switch on "Overwrite already imported items" and import again - everything is made anew.
+
+  Without the game: with Cyberpunk closed, run (double-click)
+    bin\x64\plugins\cyber_engine_tweaks\mods\Homestead\importer\HomesteadImport.exe
+  It has no window; how it's going is in bin\x64\plugins\cyber_engine_tweaks\mods\Homestead\import\fo4\import.log
+  (and on the settings page next time you start the game). It installs by itself when done - no need to quit
+  anything. From a command prompt, "HomesteadImport.exe --force" makes everything anew; "--check" only looks for the
+  games. It's the same importer the settings page starts.
+
+THE IMPORT'S DATA
+  In this folder's "import" folder: about 0.5 GB after an import with 0.2.0 (a little more from the next release:
+  the collision shapes; to be measured). "Keep import files" keeps ~9 GB more there, so a re-import after something
+  changed redoes less. "Import data folder" puts it on another drive instead (then
+  import again). Delete the folder to free the space - the next import remakes it.
+
+SETTINGS
+  Settings > Mods > Homestead, also from the pause menu: Keys (see KEYS) and Building (the settlement's border, a
+  holographic wall in workshop mode; "Show snap points" draws the snap points round a held piece in snap
+  placement - cyan built ones, yellow the one it snaps to, green its own).
+
+BUILDING
+  Found a settlement (CET binding "Found a settlement here"), walk to its workbench and press F. Hold F anywhere in a
+  settlement (the circle 50 m round where you founded it) to build. Fallout's keys: E place, R scrap, Tab back,
+  Q snap / free placement, the mouse buttons turn the piece, the wheel further / nearer, Ctrl the move gizmo.
+  Fallout's pieces are held and snap as in Fallout 4: the piece floats in the middle of the view, turns with
+  you, and snaps when one of its snap points comes near one that fits; with two snaps on one spot the mouse
+  buttons step between them. A snap that would put it inside something doesn't take.
+  Cyberpunk's own props are in the Night City tab, a folder for each kind (Containers, Decor, Electronics,
+  Furniture, Industrial, Lighting, Nature, Street, Weapons; 2,412 pieces). Lamps and lit signs light up; F on one
+  turns it off and on.
+
+PEOPLE
+  The people you place are props in this release: they stand where you put them.
+
+KEYS
+  Settings > Mods > Homestead > Keys: every Homestead key can be changed. Each one's text says what else the game
+  does on that key - "blocked in workshop mode" is harmless; "CONFLICT" means the game acts too (crouch, jump,
+  sprint...), pick another key. The on-screen hints follow your keys.
+
+UNINSTALL
+  Remove the mod, then archive\pc\mod\Homestead_FO4.archive and Homestead.archive, and mods\Homestead (the sounds).
+
+Bundled programs and their licences: importer\licenses.
