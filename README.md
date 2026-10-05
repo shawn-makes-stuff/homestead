@@ -26,17 +26,15 @@ by the importer. The only Fallout-derived files in this repository are the menu'
 ## Install
 
 1. Install the requirements above.
-2. Install the mod from [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/34671) (or `Homestead-<version>.zip` from
-   Releases) with your mod manager, or unpack its zip into your Cyberpunk 2077 folder (the one with
+2. Install the mod from with your mod manager, or unpack its zip into your Cyberpunk 2077 folder (the one with
    `bin`, `archive` and `r6` in it).
-3. Download `HomesteadImport-<version>.zip` of the same version from this repository's
-   [Releases](https://github.com/shawn-makes-stuff/homestead/releases) and unpack it into the Cyberpunk 2077 folder too. This is the importer: the program
-   that makes the pieces from your Fallout 4. It is a separate download because mod sites flag programs.
-4. Start Cyberpunk. On the main menu open **Settings > Mods > Homestead**. It shows where it found Fallout 4
+3. Download `HomesteadImport-<version>.zip` of the same version from this repository and unpack it into the Cyberpunk 2077 folder too. This is the importer: the program
+   that makes the pieces from your Fallout 4. 
+5. Start Cyberpunk. On the main menu open **Settings > Mods > Homestead**. It shows where it found Fallout 4
    ("Look again" if that is wrong).
-5. Press **Import** on the status line and leave the game at the main menu (about 15 minutes the first time; the
+6. Press **Import** on the status line and leave the game at the main menu (about 15 minutes the first time; the
    status line shows progress).
-6. When it says "Built - quit Cyberpunk to install it", quit the game. It installs as the game closes. Start
+7. When it says "Built - quit Cyberpunk to install it", quit the game. It installs as the game closes. Start
    Cyberpunk again: the pieces are there.
 
 Since the import runs while your game does, it can be a bit resource intensive.<br>
