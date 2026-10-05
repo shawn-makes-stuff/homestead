@@ -3,6 +3,10 @@
 Fallout 4's settlement workshop in Cyberpunk 2077: found a settlement anywhere, hold F, and build with Fallout 4's
 workshop pieces and Night City's own props.
 
+![A Fallout 4 shack built on a Night City overpass](media/screenshot.jpg)
+
+**[Watch the demo on YouTube](https://www.youtube.com/watch?v=S9BXaLte25c)**
+
 Nothing of Fallout 4 ships with the mod. Its pieces are converted on your PC, once, from your own Fallout 4 install
 by the importer. The only Fallout-derived files in this repository are the menu's thumbnail atlases.
 
