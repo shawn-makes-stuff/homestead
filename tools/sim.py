@@ -3042,7 +3042,7 @@ SIM.tick(140)
 check(SIM.opt('Stopped before it finished') is not None, "settings: an importer gone without a word (killed, the PC off) isn't shown importing forever")
 SIM.importer = ''
 lua('function() SIM.importRow().args[3]() end')(); SIM.tick(2)
-check(SIM.opt("The importer isn't installed") is not None, 'settings: no importer installed - they say so')
+check(SIM.opt("The importer isn't there") is not None, 'settings: no importer installed - they say so')
 SIM.mainMenu, SIM.inMenu = False, False
 SIM.press('People walk around')(False)
 walk = lua('function() return SIM.mod.life.allow.walk end')()

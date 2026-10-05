@@ -1,8 +1,7 @@
-"""The player's release, as two downloads, each in the game folder's own layout (a mod manager, or the player,
-unpacks them into the Cyberpunk 2077 folder): the mod - dist/Homestead-<version>.zip, no program in it - and the
-importer with the tools it brings - dist/HomesteadImport-<version>.zip (mod sites flag the .exe: it goes on GitHub).
-Nothing of Bethesda's or CDPR's is in either: the in-game settings run the importer, which makes all that on the
-player's PC from their own games. Both carry build.txt (build_id): the importer refuses a mod of another build.
+"""The player's release: dist/Homestead-<version>.zip, in the game folder's own layout (a mod manager, or the
+player, unpacks it into the Cyberpunk 2077 folder) - the mod, and the importer with the tools it brings.
+Nothing of Bethesda's or CDPR's is in it: the in-game settings run the importer, which makes all that on the
+player's PC from their own games.
   python tools/release.py            (checks first - see stale() - and stops if anything is out of date)
   python tools/release.py --check    the checks alone
 Needs PyInstaller, the plugin built (plugin/CMakeLists.txt), and the tools it bundles (homestead_paths.json or found:
@@ -17,10 +16,9 @@ import paths
 VERSION = '0.2.0'
 ROOT = paths.ROOT
 DIST = os.path.join(ROOT, 'dist')
-OUT = os.path.join(DIST, 'Homestead')                        # the mod
-OUT_IMP = os.path.join(DIST, 'HomesteadImport')              # the importer
+OUT = os.path.join(DIST, 'Homestead')
 CET = paths.CET
-IMP = os.path.join(OUT_IMP, CET, 'importer')
+IMP = os.path.join(OUT, CET, 'importer')
 # the importer's modules PyInstaller can't see (imported inside functions)
 HIDDEN = ['convert', 'build', 'xbm', 'lights', 'sounds', 'furniture', 'anim', 'nif', 'bgsm', 'ba2', 'esm', 'budget',
           'make_workspots', 'make_weapons', 'make_ent', 'make_border', 'build_catalog', 'taxonomy', 'colliders', 'meshes', 'codehash', 'havok']
@@ -101,8 +99,8 @@ def stale():
     return bad
 
 
-def copy(src, *rel, out=None):
-    dst = os.path.join(out or OUT, *rel)
+def copy(src, *rel):
+    dst = os.path.join(OUT, *rel)
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     (shutil.copytree if os.path.isdir(src) else shutil.copy2)(src, dst)
 
@@ -117,7 +115,7 @@ def main():
     if not ff or not os.path.exists(ff): sys.exit('say where an LGPL ffmpeg.exe is: homestead_paths.json "ffmpeg_lgpl"')
     codehash()
     frozen = freeze()
-    shutil.rmtree(OUT, ignore_errors=True); shutil.rmtree(OUT_IMP, ignore_errors=True)
+    shutil.rmtree(OUT, ignore_errors=True)
     # the mod: CET Lua, scripts, tweaks, the RED4ext plugin
     copy(os.path.join(ROOT, CET, 'init.lua'), CET, 'init.lua')
     copy(os.path.join(ROOT, CET, 'modules'), CET, 'modules')
@@ -127,12 +125,12 @@ def main():
     copy(os.path.join(ROOT, 'plugin', 'build', 'Release', 'Homestead.dll'), 'red4ext', 'plugins', 'Homestead', 'Homestead.dll')
     # the importer, and what it brings
     shutil.copytree(frozen, IMP)
-    copy(os.path.join(ROOT, 'source', 'catalog_native.json.gz'), CET, 'importer', 'data', 'catalog_native.json.gz', out=OUT_IMP)
-    copy(os.path.join(ROOT, 'source', 'thumbs.json'), CET, 'importer', 'data', 'thumbs.json', out=OUT_IMP)   # the menu's thumbnails
-    copy(os.path.join(ROOT, 'source', 'json', 'homestead', 'ui'), CET, 'importer', 'data', 'ui', out=OUT_IMP)   # (tools/make_thumbs.py)
-    copy(os.path.dirname(wk), CET, 'importer', 'bin', 'WolvenKit-cli', out=OUT_IMP)
-    copy(dn, CET, 'importer', 'bin', 'dotnet', out=OUT_IMP)
-    copy(ff, CET, 'importer', 'bin', 'ffmpeg', 'ffmpeg.exe', out=OUT_IMP)
+    copy(os.path.join(ROOT, 'source', 'catalog_native.json.gz'), CET, 'importer', 'data', 'catalog_native.json.gz')
+    copy(os.path.join(ROOT, 'source', 'thumbs.json'), CET, 'importer', 'data', 'thumbs.json')   # the menu's thumbnails
+    copy(os.path.join(ROOT, 'source', 'json', 'homestead', 'ui'), CET, 'importer', 'data', 'ui')   # (tools/make_thumbs.py)
+    copy(os.path.dirname(wk), CET, 'importer', 'bin', 'WolvenKit-cli')
+    copy(dn, CET, 'importer', 'bin', 'dotnet')
+    copy(ff, CET, 'importer', 'bin', 'ffmpeg', 'ffmpeg.exe')
     lic = os.path.join(IMP, 'licenses')
     os.makedirs(lic, exist_ok=True)
     for f in ('LICENSE.txt', 'ThirdPartyNotices.txt'):
@@ -145,16 +143,14 @@ def main():
         f.write('Homestead %s bundles these programs, unmodified, to make its pieces on your PC:\n\n' % VERSION)
         for name, (l, src) in LICENSES.items(): f.write('  %-58s %-22s source: %s\n' % (name, l, src))
     shutil.copy2(os.path.join(ROOT, 'README_PLAYER.txt'), os.path.join(OUT, CET, 'README.txt'))
-    for d in (os.path.join(OUT, CET), IMP):                  # (the mod's and the importer's: they must match)
-        with open(os.path.join(d, 'build.txt'), 'w') as f: f.write('build=%s\n' % build_id())
-    for out, name in ((OUT, 'Homestead'), (OUT_IMP, 'HomesteadImport')):
-        z = os.path.join(DIST, '%s-%s.zip' % (name, VERSION))
-        if os.path.exists(z): os.remove(z)
-        with zipfile.ZipFile(z, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
-            for d, _, fs in os.walk(out):
-                for f in fs: zf.write(os.path.join(d, f), os.path.relpath(os.path.join(d, f), out))
-        size = sum(os.path.getsize(os.path.join(d, f)) for d, _, fs in os.walk(out) for f in fs)
-        print('%s: %.1f MB unpacked, %.1f MB zipped' % (z, size / 1e6, os.path.getsize(z) / 1e6))
+    with open(os.path.join(OUT, CET, 'build.txt'), 'w') as f: f.write('build=%s\n' % build_id())
+    z = os.path.join(DIST, 'Homestead-%s.zip' % VERSION)
+    if os.path.exists(z): os.remove(z)
+    with zipfile.ZipFile(z, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as zf:
+        for d, _, fs in os.walk(OUT):
+            for f in fs: zf.write(os.path.join(d, f), os.path.relpath(os.path.join(d, f), OUT))
+    size = sum(os.path.getsize(os.path.join(d, f)) for d, _, fs in os.walk(OUT) for f in fs)
+    print('%s: %.1f MB unpacked, %.1f MB zipped' % (z, size / 1e6, os.path.getsize(z) / 1e6))
 
 
 if __name__ == '__main__':

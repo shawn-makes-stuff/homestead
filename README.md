@@ -6,8 +6,7 @@ workshop pieces and Night City's own props.
 Nothing of Fallout 4 ships with the mod. Its pieces are converted on your PC, once, from your own Fallout 4 install
 by the importer. The only Fallout-derived files in this repository are the menu's thumbnail atlases.
 
-**Download:** the mod under
-[Releases](https://github.com/shawn-makes-stuff/homestead/releases); the importer under Releases.
+**Download:** [Releases](https://github.com/shawn-makes-stuff/homestead/releases).
 
 ## Requirements
 
@@ -26,15 +25,15 @@ by the importer. The only Fallout-derived files in this repository are the menu'
 ## Install
 
 1. Install the requirements above.
-2. Install the mod from with your mod manager, or unpack its zip into your Cyberpunk 2077 folder (the one with
-   `bin`, `archive` and `r6` in it).
-3. Download `HomesteadImport-<version>.zip` of the same version from this repository and unpack it into the Cyberpunk 2077 folder too. This is the importer: the program
-   that makes the pieces from your Fallout 4. 
-5. Start Cyberpunk. On the main menu open **Settings > Mods > Homestead**. It shows where it found Fallout 4
+2. Download `Homestead-<version>.zip` from [Releases](https://github.com/shawn-makes-stuff/homestead/releases)
+   and install it with your mod manager, or unpack it into your Cyberpunk 2077 folder (the one with `bin`,
+   `archive` and `r6` in it). It holds the mod and the importer: the program that makes the pieces from your
+   Fallout 4.
+3. Start Cyberpunk. On the main menu open **Settings > Mods > Homestead**. It shows where it found Fallout 4
    ("Look again" if that is wrong).
-6. Press **Import** on the status line and leave the game at the main menu (about 15 minutes the first time; the
+4. Press **Import** on the status line and leave the game at the main menu (about 15 minutes the first time; the
    status line shows progress).
-7. When it says "Built - quit Cyberpunk to install it", quit the game. It installs as the game closes. Start
+5. When it says "Built - quit Cyberpunk to install it", quit the game. It installs as the game closes. Start
    Cyberpunk again: the pieces are there.
 
 Since the import runs while your game does, it can be a bit resource intensive.<br>
@@ -104,7 +103,7 @@ python tools/import.py --mod-only    # only the mod's own files (Lua, scripts, p
 python -X faulthandler tools/sim.py  # tests; needs an import first (they read the generated catalog)
 cmake -S plugin -B plugin/build -DRED4EXT_SDK=<path to RED4ext.SDK>
 cmake --build plugin/build --config Release
-python tools/release.py              # dist/Homestead-<version>.zip (the mod) and HomesteadImport-<version>.zip
+python tools/release.py              # dist/Homestead-<version>.zip
 ```
 
 An import redoes only the steps whose code or inputs changed.

@@ -29,12 +29,9 @@ SIZE AND TIME - for the import, done once; in game Homestead itself is light
   It runs at below-normal priority: the PC stays usable, and it can be cancelled (Settings > Mods > Homestead).
 
 INSTALL
-  Two downloads, both unpacked into your Cyberpunk 2077 folder (the one with bin, archive and r6 in it):
-  1. Homestead, the mod: with your mod manager, or unpack the zip there.
-  2. HomesteadImport, the importer (the program that makes the pieces from your Fallout 4), of the same version:
-     https://github.com/shawn-makes-stuff/homestead/releases
-     Unpack its zip into the Cyberpunk 2077 folder too. It is a separate download because mod sites flag
-     programs; it only reads your Fallout 4 files and writes into your Cyberpunk folder.
+  With your mod manager, or unpack the zip into your Cyberpunk 2077 folder (the one with bin, archive and r6 in
+  it). It holds the mod and the importer: the program that makes the pieces from your Fallout 4. The importer
+  only reads your Fallout 4 files and writes into your Cyberpunk folder.
 
 FIRST START: IMPORT FALLOUT 4
   1. Start Cyberpunk. On the main menu: Settings > Mods > Homestead.
