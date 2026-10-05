@@ -6,7 +6,7 @@ workshop pieces and Night City's own props.
 Nothing of Fallout 4 ships with the mod. Its pieces are converted on your PC, once, from your own Fallout 4 install
 by the importer. The only Fallout-derived files in this repository are the menu's thumbnail atlases.
 
-**Download:** the mod on [Nexus Mods](https://www.nexusmods.com/cyberpunk2077/mods/34671) or under
+**Download:** the mod under
 [Releases](https://github.com/shawn-makes-stuff/homestead/releases); the importer under Releases.
 
 ## Requirements
