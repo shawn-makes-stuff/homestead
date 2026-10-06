@@ -9,7 +9,7 @@ return function(C)
     local Q, local2world, originAt = C.Q, C.local2world, C.originAt
     local originFromAnchor, cellOf, slotsOf = C.originFromAnchor, C.cellOf, C.slotsOf
     local inZone, Grid, cast, view, groundZ, corners, U = C.inZone, C.Grid, C.cast, C.view, C.groundZ, C.corners, C.U
-    local reach, blockedBy, pairs_, spawnPiece, del = C.reach, C.blockedBy, C.pairs_, C.spawnPiece, C.del
+    local blockedBy, pairs_, spawnPiece, del = C.blockedBy, C.pairs_, C.spawnPiece, C.del
     local removePiece, outline = C.removePiece, C.outline
 
     local SETTLE = 0.12           -- a new held piece waits this long before its preview spawns (fast scrolling)
@@ -21,7 +21,7 @@ return function(C)
     local SNAP = 0.5
 
     -- Is a world hit floor-like? Our pieces have exact normals. The game's hit normal isn't trusted: a short ray straight
-    -- down from just above the hit that lands on the same spot means there is something to stand on there. (Kept on
+    -- down from just above the hit that lands on the same spot means there is something to stand on there. (Kept on the hit.)
     local function floorLike(a)
         if a.piece then return a.normal[3] >= 0.6 end
         if a.floor == nil then
@@ -100,9 +100,7 @@ return function(C)
         return { x = S.zone.x + math.floor((q.x - S.zone.x) / SNAP + 0.5) * SNAP, y = S.zone.y + math.floor((q.y - S.zone.y) / SNAP + 0.5) * SNAP }
     end
 
-    -- Anything that isn't a kit piece in grid mode: the spot is on the crosshair's line (Fallout 4): where it meets the world, or held at arm's
-    -- length (5-15 m by size) when it meets nothing, pulled back along the line until the piece fits inside the zone. Free mode never goes below the
-    -- terrain unless the wheel lowers it. A building is held out in front, far enough to be seen whole (near side 0.6 of its size ahead, 3 m at least).
+    -- A building is held out in front, far enough to be seen whole (near side 0.6 of its size ahead, 3 m at least).
     local function holdOut(it, r, p)
         if it.kind ~= "prefab" then return p end
         local l = math.sqrt(r.dir.x ^ 2 + r.dir.y ^ 2)
@@ -112,13 +110,14 @@ return function(C)
         return { x = r.eye.x + r.dir.x / l * want, y = r.eye.y + r.dir.y / l * want, z = p.z }
     end
 
-    local function propPlacement(h, it, r, snap)
+    -- A person (snap mode; free placement hovers): the spot is on the crosshair's line (Fallout 4), on the 0.5 m grid: where it meets the
+    -- world, or held at arm's length (5-15 m by size) when it meets nothing, pulled back along the line until they fit inside the zone.
+    local function propPlacement(h, it, r)
         local yaw = h.yaw
         local eye, dir = r.eye, r.dir
-        local function spot(p) return snap and snapXY(p) or p end
-        local function ok(p) local s2 = spot(p); return fits(it, originFromAnchor(it, { x = s2.x, y = s2.y, z = 0 }, yaw), yaw) end
+        local function ok(p) local s2 = snapXY(p); return fits(it, originFromAnchor(it, { x = s2.x, y = s2.y, z = 0 }, yaw), yaw) end
         local c
-        if r.wall and snap then
+        if r.wall then
             local ax = axes(yaw)
             local nx, ny = r.wall[1], r.wall[2]
             local depth = math.abs(nx * ax[1] + ny * ax[2]) * it.size[1] / 2 + math.abs(nx * ax[3] + ny * ax[4]) * it.size[2] / 2
@@ -147,19 +146,8 @@ return function(C)
             end
             if r.surface and t >= r.hit.t - 1e-6 then c.z = r.hit.point.z end
         end
-        if it.kind == "prefab" then
-            local q = holdOut(it, r, c)
-            q = ok(q) and q or clampAlong(inside(r), q, ok)
-            if q then c = { x = q.x, y = q.y, z = c.z } end
-        end
-        local xy = spot(c)
-        local z
-        if snap then
-            z = standZ(it, xy, yaw, math.min(c.z, eye.z + 1) + 0.5)
-        else
-            local ok, t = pcall(Eng.terrain, v4(xy.x, xy.y, c.z))
-            z = (ok and t and t.w > 0) and math.max(c.z, t.z) or c.z
-        end
+        local xy = snapXY(c)
+        local z = standZ(it, xy, yaw, math.min(c.z, eye.z + 1) + 0.5)
         if not z then return nil, yaw end
         return originFromAnchor(it, { x = xy.x, y = xy.y, z = z }, yaw), yaw
     end
@@ -482,12 +470,11 @@ return function(C)
         end
         S.snapped = false
         if r.surface then return originFromAnchor(it, r.p, h.yaw), h.yaw end
-        local d = holdDistance(it)
         if a.point then
             local z = standZ(it, r.p, h.yaw, r.p.z + 0.5) or r.p.z
             return originFromAnchor(it, { x = r.p.x, y = r.p.y, z = z }, h.yaw), h.yaw
         end
-        return centred(it, { x = r.eye.x + r.dir.x * d, y = r.eye.y + r.dir.y * d, z = r.eye.z + r.dir.z * d }, h.yaw), h.yaw
+        return hoverPlacement(h, it, r)
     end
 
     local function placement()
@@ -531,7 +518,7 @@ return function(C)
             o, yaw, slot = kitPlacement(h, it, r, p, level, zref)
             S.slot = slot
         else
-            o, yaw = propPlacement(h, it, r, not S.free)
+            o, yaw = propPlacement(h, it, r)
         end
         if not o then return nil, yaw, false, "Nothing to place it on" end
         local key = h.key
@@ -583,6 +570,7 @@ return function(C)
     local function syncGhost(o, yaw, valid, dt)
         local h = S.hold
         if not h or not o then dropGhost() return end
+        if h.live then Life.carry(h.live, o, yaw) return end     -- (a person under the gizmo: moved themselves, no preview)
         local key = S.placeKey or h.key
         local app = finishOf(key, h.app)
         local want = key .. "|" .. app
@@ -627,7 +615,8 @@ return function(C)
 
     local function restore()
         local o = S.hold and S.hold.orig
-        if o then
+        if o and S.hold.live then Life.carry(S.hold.live, o.o, o.yaw); Life.carry(); sfx(SFX.back)
+        elseif o then
             local id = spawnPiece(o.key, o.app, o.o, o.yaw, false, o.q); sfx(SFX.back)
             if o.id then Life.rejob(hashOf(o.id), hashOf(id)) end
         end
@@ -639,11 +628,42 @@ return function(C)
     local function place(keepGizmo)
         local h = S.hold
         if not h then return end
-        local o, yaw, ok, why = placement()
-        if not ok then say(why); sfx(SFX.refuse) return end
+        if h.live then                                        -- a person under the gizmo: they stand where it has them
+            local o, yaw = placement()
+            local p = h.live
+            if not o then return p end
+            Life.carry(p, o, yaw); Life.carry()
+            Life.nudge(hashOf(p.id), o.x - h.orig.o.x, o.y - h.orig.o.y, o.z - h.orig.o.z, yaw - h.orig.yaw, o, yaw)
+            p.o, p.yaw = o, yaw
+            if not keepGizmo then Gizmo.off() end
+            S.hold, S.rot = nil, 0
+            return p
+        end
         local key = S.placeKey or h.key
+        if byKey[key].pose then                               -- an animation's card: given to the person looked at
+            local who = C.aim().piece
+            if not (who and who.it.npc) then say("Look at a person to give them this animation"); sfx(SFX.refuse) return end
+            local took, what = Life.setPose(who, byKey[key].pose)
+            say(who.it.name .. ": " .. what); sfx(took and SFX.build or SFX.refuse)
+            return
+        end
+        local o, yaw, ok, why = placement()
+        -- A person put on a seat, a bed, a stall or with someone (what the crosshair is on): they go there and take it up
+        -- (Life.post); put anywhere else they leave what they had (their pose stays).
+        local at = not keepGizmo and byKey[key].npc and C.aim().piece
+        if at and (at.it.npc or Life.usable(at)) then
+            local so, syaw = Life.spot(at)
+            if not so then say("No room there"); sfx(SFX.refuse) return end
+            o, yaw, ok = so, syaw, true
+        else at = nil end
+        if not ok then say(why); sfx(SFX.refuse) return end
         local id, _, piece = spawnPiece(key, finishOf(key, h.app), o, yaw, false, h.q)
         if h.kind == "move" and h.orig.id then Life.rejob(hashOf(h.orig.id), hashOf(id)) end
+        if byKey[key].npc then
+            -- (the gizmo on someone at a spot: they keep it, moved by as much - Life.nudge; placed by hand: Life.post)
+            if keepGizmo and h.kind == "move" and Life.nudge(hashOf(id), o.x - h.orig.o.x, o.y - h.orig.o.y, o.z - h.orig.o.z, yaw - h.orig.yaw) then
+            else say(byKey[key].name .. ": " .. Life.post(hashOf(id), at)) end
+        end
         for _, c in ipairs(h.carry or {}) do local w, cy, cq = carriedAt(c, o, yaw); spawnPiece(c.key, c.app, w, cy, false, cq) end
         sfx((byKey[h.key].kind and not S.free) and SFX.build or SFX.drop)
         if not keepGizmo then Gizmo.off() end
@@ -676,7 +696,7 @@ return function(C)
         local h, g = S.hold, S.gz
         if not (h and h.kind == "move" and g) then return end
         local _, _, ok = placement()
-        if not ok then return end
+        if not ok and not h.live then return end
         g.piece = place(true)
         if not g.piece then Gizmo.off() return end
         g.o = g.piece.o
@@ -684,6 +704,15 @@ return function(C)
 
     local function gizmoPickup(p)
         local cur = S.byId[hashOf(p.id)]
+        -- A person isn't taken up: the gizmo moves them as they are, sitting or mid-animation (Life.carry), so a seat or a
+        -- work spot that is a bit off is put right by eye (user, 2026-10-05).
+        if cur and cur.it.npc and C.ready(cur) then
+            S.hold = { kind = "move", key = cur.key, app = cur.app, yaw = cur.yaw, q = cur.q or Q.yaw(cur.yaw), flip = false, carry = {}, live = cur,
+                       orig = { key = cur.key, app = cur.app, o = cur.o, yaw = cur.yaw, q = cur.q, id = cur.id } }
+            S.target, S.slot, S.dist, S.free = nil, nil, nil, true
+            dropGhost()
+            return true
+        end
         if not (cur and startMove(cur)) then return false end
         S.free = true
         S.hold.q = S.hold.q or Q.yaw(S.hold.yaw)
@@ -696,6 +725,7 @@ return function(C)
         if h and h.kind == "move" then
             if h.key == "workbench" then say("The workbench can't be scrapped"); sfx(SFX.refuse) return end
             deps = h.carry or {}
+            if h.live then Life.carry(); removePiece(h.live) end
             S.hold, S.rot = nil, 0
         elseif S.target then
             if S.target.bench then say("The workbench can't be scrapped"); sfx(SFX.refuse) return end
@@ -710,6 +740,6 @@ return function(C)
     end
 
     C.placement, C.aimAt, C.holdDistance, C.snapDots, C.dropGhost, C.holdDepth = placement, aimAt, holdDistance, snapDots, dropGhost, holdDepth
-    C.syncGhost, C.carriedAt, C.finishOf, C.restore, C.place = syncGhost, carriedAt, finishOf, restore, place
+    C.syncGhost, C.restore, C.place = syncGhost, restore, place
     C.startMove, C.gizmoApply, C.gizmoPickup, C.scrap = startMove, gizmoApply, gizmoPickup, scrap
 end

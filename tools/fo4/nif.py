@@ -5,6 +5,7 @@ static pieces. Unknown blocks are skipped by their size. Layout: FO4_RESEARCH.md
 import os, struct, sys
 import numpy as np
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import anim
 
 
 class R:
@@ -53,12 +54,6 @@ def mat_quat(M):                                       # rotation matrix -> quat
     return (w, x, y, z)
 
 
-def quat_mul(a, b):
-    aw, ax, ay, az = a; bw, bx, by, bz = b
-    return (aw * bw - ax * bx - ay * by - az * bz, aw * bx + ax * bw + ay * bz - az * by,
-            aw * by - ax * bz + ay * bw + az * bx, aw * bz + ax * by - ay * bx + az * bw)
-
-
 NODES = ('NiNode', 'BSFadeNode', 'BSLeafAnimNode', 'BSMultiBoundNode', 'NiSwitchNode', 'BSOrderedNode', 'NiBillboardNode')
 
 
@@ -93,7 +88,7 @@ class Nif:
         name = self.s(r.u('i'))
         extra = [r.u('i') for _ in range(r.u('I'))]
         r.u('i')                                        # controller
-        flags = r.u('I')
+        r.u('I')                                        # flags
         t = np.array(r.u('3f')); rot = np.array(r.u('9f')).reshape(3, 3); scale = r.u('f')
         r.u('i')                                        # collision
         return name, extra, t, rot, scale
@@ -193,7 +188,7 @@ class Nif:
                     M, T = nt
                     s = np.cbrt(abs(np.linalg.det(M))) or 1.0
                     t = tuple(M @ np.array(t) + T)
-                    q = quat_mul(mat_quat(M / s), q)
+                    q = anim.qmul(mat_quat(M / s), q)
                 out.append(dict(parent=parent, name=name, rot=tuple(float(v) for v in q), pos=tuple(float(v) for v in t), scale=sc))
         return out
 
@@ -313,7 +308,7 @@ class Nif:
                     seq['vis'][node] = keys
             out[name] = seq
         # a node's own keyframe controller, no sequence: it just runs (a windmill's propeller) - as a looping 'Idle'
-        import anim                                      # (and a Havok-driven spinner, from anim.SPIN's recipe)
+        # (and a Havok-driven spinner, from anim.SPIN's recipe)
         idle = dict(cycle=0, start=1e9, stop=-1e9, tracks={}, vis={}, sounds=[])
         line = dict(start=1e9, stop=-1e9, tracks={})         # clamped ones: one timeline
         taken = {n for s in out.values() for n in s['tracks']}
@@ -342,7 +337,6 @@ class Nif:
         # a clamped timeline Havok's behaviour graph plays: on a door or gate (a rolling garage door, a powered gate)
         # it is closed -> open -> closed, so it splits where it's furthest open into Open and Close
         if line['tracks'] and not out and any(w in n.lower() for n in line['tracks'] for w in ('door', 'gate')):
-            import anim
             loc = self.node_locals()
             def away(t):                                 # how far the moving nodes are from where they start
                 d = 0.0
@@ -500,7 +494,6 @@ class Nif:
     def node_locals(self):
         """every named node's own local (translation, quaternion w,x,y,z, scale); with a skeleton attached, its bones
         by the same rule as node_worlds (a sweep's rest turn must be the bone the worlds walk)"""
-        import anim
         out = {}
         for i, (typ, o, _) in enumerate(self.blocks):
             if typ in NODES:

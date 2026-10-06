@@ -1,0 +1,59 @@
+-- What a piece sounds like (anim.lua): `hum` the loops while it runs near V; `seq` per animation sequence its cues
+-- { seconds in, 1 start / 0 stop, event }. The events are catalog.sounds (the import's files).
+-- Ours to edit: these replace the import's at load (init.lua OWN); the import's are used for a piece not listed
+-- (one a player's Fallout mod adds); false takes a listed piece's away.
+return {
+    ["fo4_dlc02workshopdecontaminationarch-01activator"] = { hum = { "hs_objdecontaminationarchlpm" }, seq = { TurningOff = { { 0, 0, "hs_objdecontaminationarchlpm" } }, TurningOn = { { 0, 1, "hs_objdecontaminationarchlpm" } } } },   -- Decontamination Arch
+    fo4_dlc02workshopgeneratorfusion = { hum = { "hs_dlc02objworkshopgeneratorfusionlpm" }, seq = { Off = { { 0, 0, "hs_dlc02objworkshopgeneratorfusionlpm" } }, On = { { 0, 1, "hs_dlc02objworkshopgeneratorfusionlpm" } }, TurningOff = { { 0.433, 0, "hs_dlc02objworkshopgeneratorfusionlpm" } }, TurningOn = { { 0, 1, "hs_dlc02objworkshopgeneratorfusionlpm" } } } },   -- Generator - Fusion
+    fo4_dlc02workshoprelaxsiren = { hum = { "hs_dlc02objquittingtimelightoff" }, seq = { Off = { { 0, 1, "hs_dlc02objquittingtimelighton" } }, On = { { 0, 1, "hs_dlc02objquittingtimelighton" } }, TurningOff = { { 0, 0, "hs_dlc02objquittingtimelightrotatelp" }, { 0, 1, "hs_dlc02objquittingtimelightoff" } }, TurningOn = { { 0, 0, "hs_dlc02objquittingtimelightrotatelp" }, { 0, 1, "hs_dlc02objquittingtimelightoff" } } } },   -- Quitting Time Siren
+    fo4_dlc02workshoptrappoweredspring01 = { hum = {}, seq = { SetTransitionFromTripped = { { 0, 1, "hs_dlc02trpspringreset" } } } },   -- Powered Spring Trap
+    fo4_dlc02workshoptrapspring01 = { hum = {}, seq = { SetTransitionFromTripped = { { 0, 1, "hs_dlc02trpspringreset" } } } },   -- Spring Trap
+    fo4_dlc02workshopwaterpumpindustrial = { hum = {}, seq = { Off = { { 0, 0, "hs_objworkshopgeneratorsmalllpm" } }, On = { { 0, 1, "hs_objworkshopgeneratorsmalllpm" } } } },   -- Water Pump - Powered
+    fo4_dlc03barndoormed01 = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc03drsbarnwoodmediumclose" } }, Open = { { 0, 1, "hs_dlc03drsbarnwoodmediumopen" } } } },   -- Door
+    fo4_dlc03barndoormed01alt = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc03drsbarnwoodmediumclose" } }, Open = { { 0, 1, "hs_dlc03drsbarnwoodmediumopen" } } } },   -- Door
+    fo4_dlc03barndoormed02 = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc03drsbarnwoodmediumclose" } }, Open = { { 0, 1, "hs_dlc03drsbarnwoodmediumopen" } } } },   -- Door
+    fo4_dlc03barndoormed02alt = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc03drsbarnwoodmediumclose" } }, Open = { { 0, 1, "hs_dlc03drsbarnwoodmediumopen" } } } },   -- Door
+    fo4_dlc03barndoorsm01 = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc03drsbarnwoodsmallclose" } }, Open = { { 0, 1, "hs_dlc03drsbarnwoodsmallopen" } } } },   -- Door
+    fo4_dlc03barndoorsm02 = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc03drsbarnwoodsmallclose" } }, Open = { { 0, 1, "hs_dlc03drsbarnwoodsmallopen" } } } },   -- Door
+    fo4_dlc03barnouthousedoor01 = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc03drsouthousewoodclose" } }, Open = { { 0, 1, "hs_dlc03drsouthousewoodopen" } } } },   -- Door
+    fo4_dlc03barnouthousedoor02 = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc03drsouthousewoodclose" } }, Open = { { 0, 1, "hs_dlc03drsouthousewoodopen" } } } },   -- Door
+    fo4_dlc05_boxcar_door01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drstrainboxcarclose" } }, Open = { { 0, 1, "hs_drstrainboxcaropen" } } } },   -- Box Car Door
+    fo4_dlc05_boxcar_door02 = { hum = {}, seq = { Close = { { 0, 1, "hs_drstrainboxcarclose" } }, Open = { { 0, 1, "hs_drstrainboxcaropen" } } } },   -- Box Car Door
+    fo4_dlc05grnhsdoorsm01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drsgreenhousesmallclose" } }, Open = { { 0, 1, "hs_drsgreenhousesmallopen" } } } },   -- Door
+    fo4_dlc05grnhsdoorsm02 = { hum = {}, seq = { Close = { { 0, 1, "hs_drsgreenhousesmallclose" } }, Open = { { 0, 1, "hs_drsgreenhousesmallopen" } } } },   -- Door
+    fo4_dlc05wrhsdoormed01 = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc05drswoodsinglewarehousemedium01close" } }, Open = { { 0, 1, "hs_dlc05drswoodsinglewarehousemedium01open" } } } },   -- Door
+    fo4_dlc05wrhsdoormed01alt = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc05drswoodsinglewarehousemedium01close" } }, Open = { { 0, 1, "hs_dlc05drswoodsinglewarehousemedium01open" } } } },   -- Door
+    fo4_dlc05wrhsdoormed02 = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc05drswoodsinglewarehousemedium01close" } }, Open = { { 0, 1, "hs_dlc05drswoodsinglewarehousemedium01open" } } } },   -- Door
+    fo4_dlc05wrhsdoormed02alt = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc05drswoodsinglewarehousemedium01close" } }, Open = { { 0, 1, "hs_dlc05drswoodsinglewarehousemedium01open" } } } },   -- Door
+    fo4_dlc05wrhsdoorsm01 = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc05drsmetalsinglewarehouse01close" } }, Open = { { 0, 1, "hs_dlc05drsmetalsinglewarehouse01open" } } } },   -- Door
+    fo4_dlc05wrhsdoorsm02 = { hum = {}, seq = { Close = { { 0, 1, "hs_dlc05drsmetalsinglewarehouse01close" } }, Open = { { 0, 1, "hs_dlc05drsmetalsinglewarehouse01open" } } } },   -- Door
+    fo4_dlc06vaultworkshopgenerator01 = { hum = { "hs_dlc06objworkshopvaulttransformerahumlp", "hs_dlc06objworkshopvaulttransformerapoweron" }, seq = { On = { { 0.033, 1, "hs_ambelectricarclarge" }, { 0.367, 1, "hs_ambelectricarcsmall" }, { 0.9, 1, "hs_ambelectricarcsmall" }, { 1.067, 1, "hs_ambelectricarclarge" }, { 1.233, 1, "hs_ambelectricarcsmall" }, { 1.333, 1, "hs_ambelectricarcsmall" }, { 1.6, 1, "hs_ambelectricarcsmall" }, { 1.6, 1, "hs_ambelectricarclarge" }, { 1.733, 1, "hs_ambelectricarcsmall" }, { 1.9, 1, "hs_ambelectricarcsmall" }, { 2.067, 1, "hs_ambelectricarcsmall" }, { 2.1, 1, "hs_ambelectricarclarge" }, { 2.8, 1, "hs_ambelectricarcsmall" }, { 3.867, 1, "hs_ambelectricarcsmall" }, { 4.267, 1, "hs_ambelectricarclarge" }, { 5.3, 1, "hs_ambelectricarcsmall" }, { 6, 1, "hs_ambelectricarclarge" } }, TurningOff = { { 0, 0, "hs_dlc06objworkshopvaulttransformerahumlp" }, { 0, 1, "hs_dlc06objworkshopvaulttransformerapoweroff" } }, TurningOn = { { 0, 1, "hs_dlc06objworkshopvaulttransformerahumlp" }, { 0, 1, "hs_dlc06objworkshopvaulttransformerapoweron" } } } },   -- Vault-Tec Reactor
+    fo4_dlc06vaultworkshopgenerator02 = { hum = { "hs_dlc06objworkshopvaulttransformerbpoweron", "hs_dlc06objworkshopvaulttransformerbclose" }, seq = { On = { { 0, 1, "hs_dlc06objworkshopvaulttransformerbhumlp" } }, TurningOff = { { 0, 0, "hs_dlc06objworkshopvaulttransformerbhumlp" }, { 0, 1, "hs_dlc06objworkshopvaulttransformerbpoweroff" }, { 0, 1, "hs_dlc06objworkshopvaulttransformerbopen" } }, TurningOn = { { 0, 1, "hs_dlc06objworkshopvaulttransformerbpoweron" }, { 0, 1, "hs_dlc06objworkshopvaulttransformerbclose" } } } },   -- Vault-Tec Super-Reactor
+    fo4_dlc06workshop_vaultdoor01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drsmetalsingleutil01close" } }, Open = { { 0, 1, "hs_drsmetalsingleutil01open" } } } },   -- Door
+    fo4_paintedwooddoora01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drswoodsinglelightaclose" } }, Open = { { 0, 1, "hs_drswoodsinglelightaopen" } } } },   -- Door
+    fo4_paintedwooddoorb01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drswoodsinglelightaclose" } }, Open = { { 0, 1, "hs_drswoodsinglelightaopen" } } } },   -- Door
+    fo4_paintedwooddoorc01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drswoodsinglelightaclose" } }, Open = { { 0, 1, "hs_drswoodsinglelightaopen" } } } },   -- Door
+    fo4_paintedwooddoord01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drswoodsinglelightaclose" } }, Open = { { 0, 1, "hs_drswoodsinglelightaopen" } } } },   -- Door
+    fo4_paintedwooddoorwina01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drswoodsinglelightaclose" } }, Open = { { 0, 1, "hs_drswoodsinglelightaopen" } } } },   -- Door
+    fo4_paintedwooddoorwinb01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drswoodsinglelightaclose" } }, Open = { { 0, 1, "hs_drswoodsinglelightaopen" } } } },   -- Door
+    fo4_paintedwooddoorwinc01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drswoodsinglelightaclose" } }, Open = { { 0, 1, "hs_drswoodsinglelightaopen" } } } },   -- Door
+    fo4_paintedwooddoorwind01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drswoodsinglelightaclose" } }, Open = { { 0, 1, "hs_drswoodsinglelightaopen" } } } },   -- Door
+    fo4_workbenchcookingfireworkshop = { hum = { "hs_fxfiresmalladdonnodelpm" }, seq = {} },   -- Cooking Station
+    fo4_workshop_bldwoodpdoor01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drswoodsinglelightaclose" } }, Open = { { 0, 1, "hs_drswoodsinglelightaopen" } } } },   -- Door
+    fo4_workshop_bldwoodpdoor02 = { hum = {}, seq = { Close = { { 0, 1, "hs_drswoodsinglelightaclose" } }, Open = { { 0, 1, "hs_drswoodsinglelightaopen" } } } },   -- Door
+    fo4_workshop_bldwoodpdoorbroke01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drswoodsinglelightaclose" } }, Open = { { 0, 1, "hs_drswoodsinglelightaopen" } } } },   -- Door
+    fo4_workshop_bldwoodpdoorbroke02 = { hum = {}, seq = { Close = { { 0, 1, "hs_drswoodsinglelightaclose" } }, Open = { { 0, 1, "hs_drswoodsinglelightaopen" } } } },   -- Door
+    fo4_workshop_deerfence_gate01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drsgatewoodclose" } }, Open = { { 0, 1, "hs_drsgatewoodopen" } } } },   -- Gate
+    fo4_workshop_indmetaldoor01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drsmetalsingleutil01close" } }, Open = { { 0, 1, "hs_drsmetalsingleutil01open" } } } },   -- Door
+    fo4_workshop_junkwallgate01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drsjunkwallgateaclose" } }, Open = { { 0, 1, "hs_drsjunkwallgateaopen" } } } },   -- Gate
+    fo4_workshop_metalmeshdoorsm01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drsmetalsingleutil01close" } }, Open = { { 0, 1, "hs_drsmetalsingleutil01open" } } } },   -- Door
+    fo4_workshop_steamtmetaldoor01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drsmetalsingleutil01close" } }, Open = { { 0, 1, "hs_drsmetalsingleutil01open" } } } },   -- Door
+    fo4_workshop_utilmetaldoor01 = { hum = {}, seq = { Close = { { 0, 1, "hs_drsmetalsingleutil01close" } }, Open = { { 0, 1, "hs_drsmetalsingleutil01open" } } } },   -- Door
+    fo4_workshopcampfire01 = { hum = { "hs_fxfiresmalladdonnodelpm" }, seq = {} },   -- Camp Fire
+    fo4_workshopgenerator = { hum = { "hs_objworkshopgeneratorsmalllpm" }, seq = { TurningOff = { { 0, 0, "hs_objworkshopgeneratorsmalllpm" } }, TurningOn = { { 0, 1, "hs_objworkshopgeneratorsmalllpm" } } } },   -- Generator - Small
+    fo4_workshopgeneratorlarge = { hum = { "hs_objworkshopgeneratorlargelpm" }, seq = { TurningOff = { { 0.033, 0, "hs_objworkshopgeneratorlargelpm" } }, TurningOn = { { 0, 1, "hs_objworkshopgeneratorlargelpm" } } } },   -- Generator - Large
+    fo4_workshopgeneratormedium = { hum = { "hs_objworkshopgeneratormediumlpm" }, seq = { TurningOff = { { 0, 0, "hs_objworkshopgeneratormediumlpm" } }, TurningOn = { { 0, 1, "hs_objworkshopgeneratormediumlpm" } } } },   -- Generator - Medium
+    fo4_workshoppressureplate01 = { hum = { "hs_trpworkshoppressureplatedown" }, seq = { TurningOff = { { 0, 1, "hs_trpworkshoppressureplateup" } }, TurningOn = { { 0, 1, "hs_trpworkshoppressureplatedown" } } } },   -- Pressure Plate
+    fo4_workshopwaterpurifier = { hum = { "hs_objworkshopwaterpurifiermediumlpm" }, seq = { TurningOff = { { 0, 0, "hs_objworkshopwaterpurifiermediumlpm" } }, TurningOn = { { 0, 1, "hs_objworkshopwaterpurifiermediumlpm" } } } },   -- Water Purifier
+    fo4_workshopwaterpurifierlarge = { hum = { "hs_objworkshopwaterpurifierlargelpm" }, seq = { TurningOff = { { 0, 0, "hs_objworkshopwaterpurifierlargelpm" } }, TurningOn = { { 0, 1, "hs_objworkshopwaterpurifierlargelpm" } } } },   -- Water Purifier - Industrial
+}

@@ -3992,6 +3992,28 @@
         "clippingRectInUVCoords": {
          "$type": "RectF",
          "Bottom": 0.75,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.6875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "wpn_preset_achilles_default"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.75,
          "Left": 0.25,
          "Right": 0.3125,
          "Top": 0.6875
@@ -4835,7 +4857,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_cbj_ep1_011_cyberjunkie"
+         "$value": "npc_kabuki_cat"
         }
        },
        {
@@ -4857,7 +4879,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_sts_ep1_06_drug_dealer"
+         "$value": "npc_q110_cage_chicken"
         }
        },
        {
@@ -4879,7 +4901,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_we_ep1_01_mini_boss_1st_phase"
+         "$value": "npc_q005_penthouse_iguana"
         }
        },
        {
@@ -4901,7 +4923,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_mws_cz_14_robo"
+         "$value": "npc_q003_cat"
         }
        },
        {
@@ -4923,7 +4945,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_sts_hey_rey_09_tobias"
+         "$value": "npc_sq021_fake_cow_npc"
         }
        },
        {
@@ -4941,6 +4963,336 @@
          "Left": 0.9375,
          "Right": 1.0,
          "Top": 0.8125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ue_cat_black"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ue_cat_pink"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ue_cat_tricolor"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ue_cat_white"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cbj_ep1_011_cyberjunkie"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_07_kurtz_ma_aziz"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_06_drug_dealer"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_07_kurt_worker_ma_patrick"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_we_ep1_01_mini_boss_1st_phase"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_07_kurt_officer"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_dogtown_barghest_dispatch"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_06_enemy_bouncer"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_dogtown_barghest_soldier"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_hey_rey_09_tobias"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq008_male_crowd_ent"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.875
         },
         "partName": {
          "$type": "CName",
@@ -4960,8 +5312,8 @@
         "clippingRectInUVCoords": {
          "$type": "RectF",
          "Bottom": 0.9375,
-         "Left": 0.0,
-         "Right": 0.0625,
+         "Left": 0.9375,
+         "Right": 1.0,
          "Top": 0.875
         },
         "partName": {
@@ -4981,10 +5333,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.0625,
-         "Right": 0.125,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5003,10 +5355,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.125,
-         "Right": 0.1875,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5025,10 +5377,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.1875,
-         "Right": 0.25,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5047,10 +5399,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.25,
-         "Right": 0.3125,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5069,10 +5421,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.3125,
-         "Right": 0.375,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5091,10 +5443,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.375,
-         "Right": 0.4375,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5113,10 +5465,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.4375,
-         "Right": 0.5,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5135,10 +5487,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.5,
-         "Right": 0.5625,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5157,10 +5509,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.5625,
-         "Right": 0.625,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5179,10 +5531,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.625,
-         "Right": 0.6875,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5201,10 +5553,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.6875,
-         "Right": 0.75,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5223,10 +5575,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.75,
-         "Right": 0.8125,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5245,10 +5597,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.8125,
-         "Right": 0.875,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5267,10 +5619,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.875,
-         "Right": 0.9375,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5289,10 +5641,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.9375,
-         "Right": 1.0,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -5312,336 +5664,6 @@
         "clippingRectInUVCoords": {
          "$type": "RectF",
          "Bottom": 1.0,
-         "Left": 0.0,
-         "Right": 0.0625,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_q110_contact"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.0625,
-         "Right": 0.125,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_ina_09_benedict"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.125,
-         "Right": 0.1875,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq304_bennett"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.1875,
-         "Right": 0.25,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq032_monk_brother"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.25,
-         "Right": 0.3125,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_ina_02_new_big_pete"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.3125,
-         "Right": 0.375,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sts_ep1_10_bill"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.375,
-         "Right": 0.4375,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sq017_blue_moon"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.4375,
-         "Right": 0.5,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sts_std_arr_01_fixer_contacct"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.5,
-         "Right": 0.5625,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq306_referee"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.5625,
-         "Right": 0.625,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mws_wat_01_robot"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.625,
-         "Right": 0.6875,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq013_punk_01"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.6875,
-         "Right": 0.75,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sts_ep1_03_client"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.75,
-         "Right": 0.8125,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_q304_broker"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.8125,
-         "Right": 0.875,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sts_bls_ina_05_bruce"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.875,
-         "Right": 0.9375,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq025_buck"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
          "Left": 0.9375,
          "Right": 1.0,
          "Top": 0.9375
@@ -5649,7 +5671,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_q112_camera_drone"
+         "$value": "npc_q110_contact"
         }
        }
       ],
@@ -9616,6 +9638,28 @@
         "clippingRectInUVCoords": {
          "$type": "RectF",
          "Bottom": 0.75,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.6875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "wpn_preset_achilles_default"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.75,
          "Left": 0.25,
          "Right": 0.3125,
          "Top": 0.6875
@@ -10459,7 +10503,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_cbj_ep1_011_cyberjunkie"
+         "$value": "npc_kabuki_cat"
         }
        },
        {
@@ -10481,7 +10525,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_sts_ep1_06_drug_dealer"
+         "$value": "npc_q110_cage_chicken"
         }
        },
        {
@@ -10503,7 +10547,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_we_ep1_01_mini_boss_1st_phase"
+         "$value": "npc_q005_penthouse_iguana"
         }
        },
        {
@@ -10525,7 +10569,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_mws_cz_14_robo"
+         "$value": "npc_q003_cat"
         }
        },
        {
@@ -10547,7 +10591,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_sts_hey_rey_09_tobias"
+         "$value": "npc_sq021_fake_cow_npc"
         }
        },
        {
@@ -10565,6 +10609,336 @@
          "Left": 0.9375,
          "Right": 1.0,
          "Top": 0.8125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ue_cat_black"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ue_cat_pink"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ue_cat_tricolor"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ue_cat_white"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cbj_ep1_011_cyberjunkie"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_07_kurtz_ma_aziz"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_06_drug_dealer"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_07_kurt_worker_ma_patrick"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_we_ep1_01_mini_boss_1st_phase"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_07_kurt_officer"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_dogtown_barghest_dispatch"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_06_enemy_bouncer"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_dogtown_barghest_soldier"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_hey_rey_09_tobias"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq008_male_crowd_ent"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.875
         },
         "partName": {
          "$type": "CName",
@@ -10584,8 +10958,8 @@
         "clippingRectInUVCoords": {
          "$type": "RectF",
          "Bottom": 0.9375,
-         "Left": 0.0,
-         "Right": 0.0625,
+         "Left": 0.9375,
+         "Right": 1.0,
          "Top": 0.875
         },
         "partName": {
@@ -10605,10 +10979,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.0625,
-         "Right": 0.125,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10627,10 +11001,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.125,
-         "Right": 0.1875,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10649,10 +11023,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.1875,
-         "Right": 0.25,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10671,10 +11045,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.25,
-         "Right": 0.3125,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10693,10 +11067,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.3125,
-         "Right": 0.375,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10715,10 +11089,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.375,
-         "Right": 0.4375,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10737,10 +11111,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.4375,
-         "Right": 0.5,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10759,10 +11133,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.5,
-         "Right": 0.5625,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10781,10 +11155,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.5625,
-         "Right": 0.625,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10803,10 +11177,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.625,
-         "Right": 0.6875,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10825,10 +11199,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.6875,
-         "Right": 0.75,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10847,10 +11221,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.75,
-         "Right": 0.8125,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10869,10 +11243,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.8125,
-         "Right": 0.875,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10891,10 +11265,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.875,
-         "Right": 0.9375,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10913,10 +11287,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.9375,
-         "Right": 1.0,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -10936,336 +11310,6 @@
         "clippingRectInUVCoords": {
          "$type": "RectF",
          "Bottom": 1.0,
-         "Left": 0.0,
-         "Right": 0.0625,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_q110_contact"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.0625,
-         "Right": 0.125,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_ina_09_benedict"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.125,
-         "Right": 0.1875,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq304_bennett"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.1875,
-         "Right": 0.25,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq032_monk_brother"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.25,
-         "Right": 0.3125,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_ina_02_new_big_pete"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.3125,
-         "Right": 0.375,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sts_ep1_10_bill"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.375,
-         "Right": 0.4375,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sq017_blue_moon"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.4375,
-         "Right": 0.5,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sts_std_arr_01_fixer_contacct"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.5,
-         "Right": 0.5625,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq306_referee"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.5625,
-         "Right": 0.625,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mws_wat_01_robot"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.625,
-         "Right": 0.6875,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq013_punk_01"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.6875,
-         "Right": 0.75,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sts_ep1_03_client"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.75,
-         "Right": 0.8125,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_q304_broker"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.8125,
-         "Right": 0.875,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sts_bls_ina_05_bruce"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.875,
-         "Right": 0.9375,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq025_buck"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
          "Left": 0.9375,
          "Right": 1.0,
          "Top": 0.9375
@@ -11273,7 +11317,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_q112_camera_drone"
+         "$value": "npc_q110_contact"
         }
        }
       ],
@@ -15240,6 +15284,28 @@
         "clippingRectInUVCoords": {
          "$type": "RectF",
          "Bottom": 0.75,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.6875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "wpn_preset_achilles_default"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.75,
          "Left": 0.25,
          "Right": 0.3125,
          "Top": 0.6875
@@ -16083,7 +16149,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_cbj_ep1_011_cyberjunkie"
+         "$value": "npc_kabuki_cat"
         }
        },
        {
@@ -16105,7 +16171,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_sts_ep1_06_drug_dealer"
+         "$value": "npc_q110_cage_chicken"
         }
        },
        {
@@ -16127,7 +16193,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_we_ep1_01_mini_boss_1st_phase"
+         "$value": "npc_q005_penthouse_iguana"
         }
        },
        {
@@ -16149,7 +16215,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_mws_cz_14_robo"
+         "$value": "npc_q003_cat"
         }
        },
        {
@@ -16171,7 +16237,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_sts_hey_rey_09_tobias"
+         "$value": "npc_sq021_fake_cow_npc"
         }
        },
        {
@@ -16189,6 +16255,336 @@
          "Left": 0.9375,
          "Right": 1.0,
          "Top": 0.8125
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ue_cat_black"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ue_cat_pink"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ue_cat_tricolor"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_ue_cat_white"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_cbj_ep1_011_cyberjunkie"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_07_kurtz_ma_aziz"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_06_drug_dealer"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_07_kurt_worker_ma_patrick"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_we_ep1_01_mini_boss_1st_phase"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_07_kurt_officer"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_dogtown_barghest_dispatch"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_ep1_06_enemy_bouncer"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_dogtown_barghest_soldier"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_sts_hey_rey_09_tobias"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.875
+        },
+        "partName": {
+         "$type": "CName",
+         "$storage": "string",
+         "$value": "npc_mq008_male_crowd_ent"
+        }
+       },
+       {
+        "$type": "inkTextureAtlasMapper",
+        "clippingRectInPixels": {
+         "$type": "Rect",
+         "bottom": 0,
+         "left": 0,
+         "right": 0,
+         "top": 0
+        },
+        "clippingRectInUVCoords": {
+         "$type": "RectF",
+         "Bottom": 0.9375,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.875
         },
         "partName": {
          "$type": "CName",
@@ -16208,8 +16604,8 @@
         "clippingRectInUVCoords": {
          "$type": "RectF",
          "Bottom": 0.9375,
-         "Left": 0.0,
-         "Right": 0.0625,
+         "Left": 0.9375,
+         "Right": 1.0,
          "Top": 0.875
         },
         "partName": {
@@ -16229,10 +16625,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.0625,
-         "Right": 0.125,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.0,
+         "Right": 0.0625,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16251,10 +16647,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.125,
-         "Right": 0.1875,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.0625,
+         "Right": 0.125,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16273,10 +16669,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.1875,
-         "Right": 0.25,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.125,
+         "Right": 0.1875,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16295,10 +16691,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.25,
-         "Right": 0.3125,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.1875,
+         "Right": 0.25,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16317,10 +16713,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.3125,
-         "Right": 0.375,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.25,
+         "Right": 0.3125,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16339,10 +16735,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.375,
-         "Right": 0.4375,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.3125,
+         "Right": 0.375,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16361,10 +16757,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.4375,
-         "Right": 0.5,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.375,
+         "Right": 0.4375,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16383,10 +16779,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.5,
-         "Right": 0.5625,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.4375,
+         "Right": 0.5,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16405,10 +16801,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.5625,
-         "Right": 0.625,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.5,
+         "Right": 0.5625,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16427,10 +16823,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.625,
-         "Right": 0.6875,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.5625,
+         "Right": 0.625,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16449,10 +16845,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.6875,
-         "Right": 0.75,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.625,
+         "Right": 0.6875,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16471,10 +16867,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.75,
-         "Right": 0.8125,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.6875,
+         "Right": 0.75,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16493,10 +16889,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.8125,
-         "Right": 0.875,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.75,
+         "Right": 0.8125,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16515,10 +16911,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.875,
-         "Right": 0.9375,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.8125,
+         "Right": 0.875,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16537,10 +16933,10 @@
         },
         "clippingRectInUVCoords": {
          "$type": "RectF",
-         "Bottom": 0.9375,
-         "Left": 0.9375,
-         "Right": 1.0,
-         "Top": 0.875
+         "Bottom": 1.0,
+         "Left": 0.875,
+         "Right": 0.9375,
+         "Top": 0.9375
         },
         "partName": {
          "$type": "CName",
@@ -16560,336 +16956,6 @@
         "clippingRectInUVCoords": {
          "$type": "RectF",
          "Bottom": 1.0,
-         "Left": 0.0,
-         "Right": 0.0625,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_q110_contact"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.0625,
-         "Right": 0.125,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_ina_09_benedict"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.125,
-         "Right": 0.1875,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq304_bennett"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.1875,
-         "Right": 0.25,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq032_monk_brother"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.25,
-         "Right": 0.3125,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_ina_02_new_big_pete"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.3125,
-         "Right": 0.375,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sts_ep1_10_bill"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.375,
-         "Right": 0.4375,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sq017_blue_moon"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.4375,
-         "Right": 0.5,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sts_std_arr_01_fixer_contacct"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.5,
-         "Right": 0.5625,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq306_referee"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.5625,
-         "Right": 0.625,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mws_wat_01_robot"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.625,
-         "Right": 0.6875,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq013_punk_01"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.6875,
-         "Right": 0.75,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sts_ep1_03_client"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.75,
-         "Right": 0.8125,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_q304_broker"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.8125,
-         "Right": 0.875,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_sts_bls_ina_05_bruce"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
-         "Left": 0.875,
-         "Right": 0.9375,
-         "Top": 0.9375
-        },
-        "partName": {
-         "$type": "CName",
-         "$storage": "string",
-         "$value": "npc_mq025_buck"
-        }
-       },
-       {
-        "$type": "inkTextureAtlasMapper",
-        "clippingRectInPixels": {
-         "$type": "Rect",
-         "bottom": 0,
-         "left": 0,
-         "right": 0,
-         "top": 0
-        },
-        "clippingRectInUVCoords": {
-         "$type": "RectF",
-         "Bottom": 1.0,
          "Left": 0.9375,
          "Right": 1.0,
          "Top": 0.9375
@@ -16897,7 +16963,7 @@
         "partName": {
          "$type": "CName",
          "$storage": "string",
-         "$value": "npc_q112_camera_drone"
+         "$value": "npc_q110_contact"
         }
        }
       ],

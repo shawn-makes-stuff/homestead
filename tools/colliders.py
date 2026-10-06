@@ -253,7 +253,7 @@ def box_of(p, r=0.0):
     return [round(float(v), 3) for v in (*((lo + hi) / 2), *np.maximum((hi - lo) / 2, HMIN))]
 
 
-def hull_volume(p):
+def hull_volume(p):                                          # (of points in a plane: their hull's area)
     try: return ConvexHull(p).volume
     except Exception: return 0.0                             # (flat, a line, a point)
 
@@ -353,11 +353,6 @@ def regions(m):
     return out
 
 
-def hull_area(q):
-    try: return ConvexHull(q).volume
-    except Exception: return 0.0                             # (a line, a point)
-
-
 def patches(F, V2, area):
     """a flat region's triangles (their vertex indices F, the vertices in its plane V2, their areas) -> convex patches
     (lists of triangles): grown from the biggest over shared edges while the patch stays about convex (its hull within
@@ -375,7 +370,7 @@ def patches(F, V2, area):
         patch, pts, a, todo = [seed], set(F[seed]), area[seed], list(nb[seed])
         while todo:
             t = todo.pop()
-            if left[t] and hull_area(V2[list(pts | set(F[t]))]) <= 1.12 * (a + area[t]):
+            if left[t] and hull_volume(V2[list(pts | set(F[t]))]) <= 1.12 * (a + area[t]):
                 left[t] = False
                 patch.append(t); pts |= set(F[t]); a += area[t]; todo += nb[t]
         out.append(patch)

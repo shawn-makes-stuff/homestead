@@ -12,7 +12,7 @@ from PIL import Image
 from concurrent.futures import ThreadPoolExecutor
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # (tools/: paths.py)
-import paths
+import budget, paths
 from convert import RAW, DEPOT, FO4
 
 ARC = os.path.join(FO4, 'archive')                          # the files to pack, at their depot paths
@@ -67,9 +67,6 @@ def material(m):
     return {'$type': 'CMaterialInstance', 'audioTag': cname('None'),
             'baseMaterial': {'DepotPath': {'$type': 'ResourcePath', '$storage': 'string', '$value': 'engine\\materials\\metal_base.remt'}, 'Flags': 'Default'},
             'cookingPlatform': 'PLATFORM_None', 'enableMask': 1 if m['alpha_test'] else 0, 'metadata': None, 'resourceVersion': 4, 'values': vals}
-
-
-import budget
 
 
 def split(items, n):                                         # n near-equal parts (one WolvenKit run each; a run works
@@ -164,7 +161,7 @@ def main():
         dst = os.path.join(ARC, mesh)
         if not stale(p['glb'], dst): continue
         os.makedirs(os.path.dirname(dst), exist_ok=True)
-        shutil.copy(template(), dst)
+        shutil.copy(template(), dst); os.utime(dst, (0, 0))  # (not yet the model: a run stopped here finds it stale)
         todo.append(mesh)
     paths.progress('meshes')
     if todo:
@@ -236,8 +233,9 @@ def main():
     json.dump(stamp, open(stamp_path, 'w'))
     print('materials', len(res) - len(bad), 'ok,', len(bad), 'failed', bad[:3], flush=True)
     # the archive (as it was if nothing in it changed: here, or already moved into the game - installed.json)
-    final = os.path.join(FO4, 'Homestead_FO4.archive')
-    if not (jobs or todo or mtodo) and (os.path.exists(final) or installed()):
+    final, dirty = os.path.join(FO4, 'Homestead_FO4.archive'), os.path.join(FO4, 'pack.todo')
+    if jobs or todo or mtodo: open(dirty, 'w').close()      # (till it is packed: a run that dies packing packs next time)
+    if not os.path.exists(dirty) and (os.path.exists(final) or installed()):
         print('archive kept (nothing in it changed)'); return
     paths.progress('pack')
     out = os.path.join(FO4, 'packed')
@@ -246,6 +244,7 @@ def main():
     print(paths.said(paths.wk(['pack', ARC, '-o', out], expect=[os.path.join(out, '*.archive')], what="pack Fallout 4's pieces")))
     for f in os.listdir(out):
         if f.endswith('.archive'): shutil.move(os.path.join(out, f), os.path.join(FO4, 'Homestead_FO4.archive'))
+    if os.path.exists(dirty): os.remove(dirty)
     print('->', os.path.join(FO4, 'Homestead_FO4.archive'))
 
 

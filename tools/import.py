@@ -28,9 +28,12 @@ MOD_ARCHIVE = os.path.join(FO4, 'Homestead.archive')
 MASTERS = [('Fallout4.esm', 'Fallout 4'), ('DLCRobot.esm', 'Automatron'), ('DLCworkshop01.esm', 'Wasteland Workshop'),
            ('DLCCoast.esm', 'Far Harbor'), ('DLCworkshop02.esm', 'Contraptions Workshop'),
            ('DLCworkshop03.esm', 'Vault-Tec Workshop'), ('DLCNukaWorld.esm', 'Nuka-World')]
+LEVEL = 9                                                    # what this importer's output can do, for the mod (settings.lua NEEDS):
+                                                             # raised with NEEDS when the mod can't work with older imports
 T, F = TOOLS, os.path.join(TOOLS, 'fo4')
 CODE = {                                                     # what a step's output depends on: any change redoes it
-    'workspots': [os.path.join(T, 'make_workspots.py'), os.path.join(paths.mod_cet(), 'modules', 'life.lua')],
+    'workspots': [os.path.join(T, 'make_workspots.py'), os.path.join(paths.mod_cet(), 'modules', 'life.lua'),
+                  os.path.join(paths.mod_cet(), 'modules', 'own', 'poses.lua')],
     'weapons': [os.path.join(T, 'make_weapons.py'), os.path.join(T, 'make_ent.py')],   # (weapons.ent is empty.ent's copy)
     'border': [os.path.join(T, 'make_border.py')],          # (the settlement border's mesh: its shape and its look)
     # the converted models: what model() runs (budget.py only sizes the pool: no output of its own)
@@ -59,7 +62,7 @@ class Log:
     def __call__(self, *a):
         line = ' '.join(str(x) for x in a)
         print(line, flush=True)
-        self.f.write(time.strftime('%Y-%m-%d %H:%M:%S ') + line + '\n'); self.f.flush()
+        self.f.write(time.strftime('%Y-%m-%d %H:%M:%S ') + line + '\n')   # (line-buffered: log_file)
 
 
 class Status:
@@ -200,12 +203,23 @@ def archives(fo4):
     return dict(sorted(c.items()))
 
 
+def want(key):
+    """the in-game settings' Fallout 4 pieces (importFo4) / Night City pieces (importNC): wanted? Ours, from the
+    repo: always. Not wanted: that part of the import is left out - not made, and not in the catalog"""
+    return not paths.FROZEN or paths.kv(os.path.join(paths.game_cet(), 'settings.txt')).get(key) != '0'
+def want_fo4(): return want('importFo4')
+
+
 def check(log, status):
     """the games and tools; which of Fallout's masters are there (a missing DLC: its pieces left out)"""
     cp = paths.get('cp2077', required=False)
     fo4 = paths.get('fo4', required=False)
     status(fo4=fo4 or 'not found', cp2077=cp or 'not found')
     log('Fallout 4:', fo4); log('Cyberpunk 2077:', cp); log('import data:', WORK)
+    if not want_fo4():                                       # (Settings > Fallout 4 pieces off: not needed, not read)
+        if not cp: raise SystemExit('Cyberpunk 2077 not found')
+        log('Fallout 4 pieces are switched off (Settings > Mods > Homestead): left out'); log('WolvenKit CLI:', paths.get('wolvenkit'))
+        return
     if not fo4: raise SystemExit('Fallout 4 not found - say where it is in homestead_paths.json')
     if not cp: raise SystemExit('Cyberpunk 2077 not found')
     log('WolvenKit CLI:', paths.get('wolvenkit'))
@@ -255,8 +269,8 @@ def game_assets(st):
     if st.changed('workspots') or not os.path.isdir(os.path.join(JSON, 'homestead', 'workspots')):
         make_workspots.main(); st.done('workspots')
     paths.progress('weapons')
-    if st.changed('weapons') or not os.path.exists(os.path.join(JSON, 'homestead', 'weapons.ent.json')):
-        make_weapons.main(); st.done('weapons')
+    if want('importNC') and (st.changed('weapons') or not os.path.exists(os.path.join(JSON, 'homestead', 'weapons.ent.json'))):
+        make_weapons.main(); st.done('weapons')         # (Night City's pieces off: its weapons aren't made)
     if st.changed('border') or not os.path.exists(os.path.join(JSON, make_border.MESH + '.json')):
         make_border.main(); st.done('border')
 
@@ -264,9 +278,6 @@ def game_assets(st):
 def fallout(st):
     """Fallout 4's pieces, then their game files and archive; a step whose code changed is done again in full (told
     through the environment: the steps' worker processes read it too)"""
-    redo = [s for s in ('convert', 'collision', 'post', 'xbm', 'build') if st.changed(s)]
-    if 'convert' in redo: redo.append('build')               # (new models: new materials)
-    os.environ['HOMESTEAD_FORCE'] = ','.join(redo)
     import convert, build
     convert.main()                                           # (collision, the post steps and xbm run in it)
     for s in ('convert', 'collision', 'post', 'xbm'): st.done(s)
@@ -321,7 +332,7 @@ def install(log, mod_only=False):
         os.replace(dst + '.part', dst)
         json.dump({'size': os.path.getsize(dst), 'inputs': inputs}, open(os.path.join(FO4, 'installed.json'), 'w'))
         n += 1
-    if not mod_only and not os.path.exists(dst):             # (never "done" without Fallout's pieces)
+    if not mod_only and want_fo4() and not os.path.exists(dst):   # (never "done" without Fallout's pieces - when they are wanted)
         raise SystemExit("Fallout 4's pieces were not packed (no Homestead_FO4.archive) - see fo4\\import.log")
     if not mod_only:
         n += put(os.path.join(paths.out_cet(), 'catalog.lua'), os.path.join(CET, 'catalog.lua'))
@@ -335,8 +346,9 @@ def install(log, mod_only=False):
         n += put_dir(os.path.join(R, 'r6', 'scripts', 'Homestead'), os.path.join('r6', 'scripts', 'Homestead'))
         n += put(os.path.join(R, 'r6', 'tweaks', 'Homestead.yaml'), os.path.join('r6', 'tweaks', 'Homestead.yaml'))
         n += put(os.path.join(R, 'plugin', 'build', 'Release', 'Homestead.dll'), os.path.join('red4ext', 'plugins', 'Homestead', 'Homestead.dll'))
-    b = os.path.join(paths.game_cet(), 'build.txt')         # (the release this import is of: the mod asks for one after an update)
-    if not mod_only and os.path.exists(b): shutil.copyfile(b, os.path.join(paths.game_cet(), 'imported.txt'))
+    if not mod_only:                                         # (what made this import: the mod asks for another only when it
+        b = paths.kv(os.path.join(paths.game_cet(), 'build.txt')).get('build', '')   # needs a higher level - settings.lua NEEDS)
+        with open(os.path.join(paths.game_cet(), 'imported.txt'), 'w') as f: f.write('build=%s\nlevel=%d\n' % (b, LEVEL))
     log('installed into', cp, '(%d changed) - start Cyberpunk to load it' % n)
 
 
@@ -358,15 +370,10 @@ def tidy(log):
     log('working files tidied away: %.1f GB freed' % (gone / 1e9))
 
 
-def quiet():
-    """the frozen importer has no console (its tools start hidden: paths.py): what it prints goes to a file"""
-    if sys.stdout is None: sys.stdout = sys.stderr = log_file('console.log')
-
-
 def main():
     multiprocessing.freeze_support()
     from_game = '--from-game' in sys.argv
-    quiet()
+    if sys.stdout is None: sys.stdout = sys.stderr = log_file('console.log')   # (the frozen importer has no console)
     log, status = Log(), Status()
     if '--mod-only' in sys.argv:                             # (ours: the mod's own files into the game, no import)
         if game_running(): sys.exit('Homestead: close Cyberpunk 2077 first')
@@ -383,6 +390,11 @@ def main():
         import build_catalog, budget
         if from_game: os.environ['HOMESTEAD_PRIORITY'] = 'normal'   # (the player waits at the main menu: not below the idling game)
         st = Stamps(force)
+        # (Fallout's steps to do again in full, said before anything imports them: they read it as they load, and the
+        # border's step loads them first)
+        redo = [s for s in ('convert', 'collision', 'post', 'xbm', 'build') if st.changed(s)]
+        if 'convert' in redo: redo.append('build')           # (new models: new materials)
+        os.environ['HOMESTEAD_FORCE'] = ','.join(redo)
         paths.listener = Progress(status)
         def step(name, fn):
             t = time.time()
@@ -399,7 +411,7 @@ def main():
             paths.listener.hidden = {'workspots', 'weapons'}
             side = threading.Thread(target=aside, daemon=True); side.start()
         else: step('Cyberpunk assets', lambda: game_assets(st))
-        step('Fallout 4', lambda: fallout(st))
+        if want_fo4(): step('Fallout 4', lambda: fallout(st))
         if side:
             side.join()
             if err: raise err[0]
@@ -409,10 +421,7 @@ def main():
             log('built - waiting for Cyberpunk to close to install'); status(state='waiting', step='', pct=99, eta=0)
             while game_running(): time.sleep(5)
             time.sleep(3)                                    # (its files let go)
-        t = time.time()
-        log('== install'); status(state='running'); paths.progress('install')
-        install(log)
-        log('   install: %.0f s' % (time.time() - t))
+        status(state='running'); paths.progress('install'); step('install', lambda: install(log))
         tidy(log)
         m = (time.time() - t0) / 60
         log('done in %.1f min' % m)

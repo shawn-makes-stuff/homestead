@@ -3,9 +3,9 @@ Character record's entity template (the game's tweakdb.bin: <record>.entityTempl
 template's appearance (the record's, else its default, else its first), and that appearance's cooked components in
 its .app - each mesh, its look and its chunk mask (the body's parts hidden under the clothes). Reads the player's
 game through WolvenKit; writes <work>/survey/people_looks.json: {record: [[mesh, look, chunk mask], ...]}.
-  python tools/npc_looks.py
+  python tools/npc_looks.py [record ...]      (records: only those, the rest of the file kept)
 """
-import glob, json, os, re, struct, zlib
+import glob, json, os, re, struct, sys, zlib
 import paths
 from make_weapons import BATCH, D, depot, unbundle, val
 
@@ -62,19 +62,25 @@ def read(tmp, files):
 
 
 def meshes(o):                                               # an appearance's, or a template's: [mesh, look, chunk mask]
-    return [[depot(c, 'mesh'), val(c, 'meshAppearance') or 'default', int(c.get('chunkMask', 2 ** 64 - 1))]
-            for c in map(D, o.get('components') or []) if 'MeshComponent' in c.get('$type', '') and depot(c, 'mesh')
-            and not SKIP.search(depot(c, 'mesh') + (val(c, 'name') or ''))]
+    return [[m, val(c, 'meshAppearance') or 'default', int(c.get('chunkMask', 2 ** 64 - 1))]   # (cloth too: a coat,
+            for c in map(D, o.get('components') or []) if re.search('MeshComponent|ClothComponent', c.get('$type', ''))   # Rogue's sweater -
+            for m in [depot(c, 'mesh') or depot(c, 'graphicsMesh')] if m and not SKIP.search(m + (val(c, 'name') or ''))]   # its mesh is graphicsMesh)
 
 
-def main():
-    import icon_audit
-    records = sorted({r['record'] for r in icon_audit.rows() if r.get('npc')})
+def templates(records):
+    """{record: (its entity template - None: the record has none, or names a file the game hasn't -, its appearance)}"""
     cache = os.path.join(paths.get('cp2077'), 'r6', 'cache')
     b = open(next(p for p in (os.path.join(cache, n) for n in ('tweakdb_ep1.bin', 'tweakdb.bin')) if os.path.exists(p)), 'rb').read()
     F = flats(b, {'CName': 'name', 'raRef:CResource': 'res'})
     ents = {fnv(l): l for l in (l.strip().replace('/', '\\') for l in open(os.path.join(paths.work(), 'survey', 'all_paths.txt'))) if l.endswith('.ent')}
-    who = {r: (ents.get(F.get(tid(r + '.entityTemplatePath'))), F.get(tid(r + '.appearanceName'))) for r in records}
+    return {r: (ents.get(F.get(tid(r + '.entityTemplatePath'))), F.get(tid(r + '.appearanceName'))) for r in records}
+
+
+def main():
+    import icon_audit
+    pp = os.path.join(paths.work(), 'survey', 'people.json')   # (the catalog's, and tools/people.py's since it was built)
+    records = sys.argv[1:] or sorted({r['record'] for r in icon_audit.rows() if r.get('npc')} | {p['record'] for p in json.load(open(pp, encoding='utf-8'))})
+    who = templates(records)
     print(len(records), 'people,', sum(1 for e, _ in who.values() if e), 'with a template')
     out = {}
     with paths.scratch('npc_looks') as tmp:
@@ -94,6 +100,7 @@ def main():
             a = next((a for a in looks if val(a, 'name') == look), looks[0] if looks else None)
             if not a: continue
             if meshes(a): out[r] = meshes(a)
+    if sys.argv[1:]: out = {**json.load(open(OUT)), **out}
     json.dump(out, open(OUT, 'w'), indent=0)
     print(len(out), 'looks,', len({(p[0], p[1]) for v in out.values() for p in v}), 'mesh looks,', len({p[0] for v in out.values() for p in v}), 'meshes;',
           'none for', [r for r in records if r not in out][:40])

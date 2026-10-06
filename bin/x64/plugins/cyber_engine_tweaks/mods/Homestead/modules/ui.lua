@@ -101,7 +101,7 @@ return function(C)
                 if l.cx and l.cx >= 0 then cx, cy = l.cx, l.cy end
             end
         end
-        Eng.ui("Gizmo", all, cx, cy, "")
+        Eng.ui("Gizmo", all, cx, cy)
     end
 
     -- Night City's plants: the game's outline doesn't draw on foliage, so a looked-at one is drawn in lines of its own
@@ -140,7 +140,6 @@ return function(C)
     end
     end
 
-
     local function root() return tree[CATS[S.cat]] end
     local function rowNode()
         local n = root()
@@ -170,18 +169,17 @@ return function(C)
     local function benchPrompt(pos)
         local b = S.bench
         local near = false
-        if b and not Game.GetMountedVehicle(Game.GetPlayer()) then
+        if b then
             local dx, dy = b.at.x - pos.x, b.at.y - pos.y
             local d = math.sqrt(dx * dx + dy * dy)
             local _, f = C.view()
             local fl = math.sqrt(f.x * f.x + f.y * f.y)
             near = d < 3 and math.abs(b.at.z - pos.z) < 2.5 and (d < 1 or fl < 0.2 or (dx * f.x + dy * f.y) / (d * fl) > 0.5)
         end
-        S.nearBench = near
+        S.nearBench = near and not Game.GetMountedVehicle(Game.GetPlayer())   -- (the game asked only at the bench)
     end
 
     -- Hints are listed bottom first, like the game's own: label, key, label, key, ...
-
     -- Our hints live in the game's own list (Homestead.Hint): its look, its order, and it moves when the list does (a
     -- weapon drawn). Each key is shown through an input action the game has on it, so it follows the player's bindings
     -- (a hint shows only for an action that is live where V is: F is Choice1_Hold, not Choice1). Outside workshop mode:
@@ -198,7 +196,6 @@ return function(C)
         { name = "back", label = "Back", desc = "Workshop mode: back up the menu, put a moved piece back, leave. Command mode: unselect, then leave." },
         { name = "free", label = "Snap / free placement", desc = "Workshop mode: switch between snapping and free placement." },
         { name = "gizmo", label = "Gizmo", desc = "Free placement: the move gizmo on the held piece, or on the piece looked at." },
-
     }
     for _, b in ipairs(Keys.binds) do b.default = KEYS[b.name] end
     Keys.GAME = {
@@ -304,7 +301,7 @@ return function(C)
     end
 
     local function usePrompt()
-        local p = not S.build and not S.overlay and S.use
+        local p = not S.build and not S.overlay and not S.hand and S.use   -- (S.hand: the game's hand cursor says it)
         local u, v
         if p then
             local it = p.it
@@ -415,10 +412,9 @@ return function(C)
             detail = e and not e.key and (e.count .. (e.count == 1 and " item" or " items")) or ""
         end
         Eng.ui("Render", prompt, S.build, S.level, CATS, S.cat - 1, crumb, names, thumbs, sel, detail,   -- (CET: 15 at most)
-                           S.cost, BUDGET, Keys.label(KEYS.hold), S.toast or "")
+                           S.cost, C.Settings.on("buildLimit") and BUDGET or 0, Keys.label(KEYS.hold), S.toast or "")   -- (0: no limit - no size bar)
     end
 
-    C.tree, C.CATS, C.root, C.rowNode, C.picked, C.holdNew = tree, CATS, root, rowNode, picked, holdNew
-    C.syncHold, C.Lines, C.plant, C.plantLines, C.benchPrompt = syncHold, Lines, plant, plantLines, benchPrompt
-    C.Keys, C.gameHints, C.usePrompt, C.hints, C.syncUI = Keys, gameHints, usePrompt, hints, syncUI
+    C.tree, C.CATS, C.root, C.picked, C.syncHold, C.Lines = tree, CATS, root, picked, syncHold, Lines
+    C.plant, C.plantLines, C.benchPrompt, C.Keys, C.usePrompt, C.syncUI = plant, plantLines, benchPrompt, Keys, usePrompt, syncUI
 end

@@ -7,9 +7,19 @@ import lupa.luajit21 as lupa                      # CET runs LuaJIT 2.1: test on
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MOD = os.path.join(ROOT, 'bin', 'x64', 'plugins', 'cyber_engine_tweaks', 'mods', 'Homestead')
 L = lupa.LuaRuntime(unpack_returned_tuples=True)
+# Lua's print through Python's: one buffer for the two. With Lua's own (C stdio) an `ok` line landed behind a mod line
+# cut at its newline by the other buffer, and a count of `^ok ` came out one short (stdout to a file, 2026-10-06)
+L.execute('''local out = ...
+print = function(...)
+    local t = {}
+    for i = 1, select("#", ...) do t[i] = tostring((select(i, ...))) end
+    out(table.concat(t, "\\t"))
+end''', print)
 import tempfile
 SETDIR = tempfile.mkdtemp(prefix='hs_sim_') + os.sep         # (the settings' files: CET keeps them in the mod's folder)
 os.environ['HS_SIM_DIR'] = SETDIR
+STATIC = os.environ.get('HS_SIM_STATIC') != '0'              # our pieces static, as in the game (modules/world.lua); 0: a game with
+                                                             # no static entity system (an old Codeware) - every piece dynamic
 L.execute(r'''
 MOD_DIR = ...
 local ground = 180.4
@@ -24,7 +34,7 @@ EulerAngles = { new = function(r, p, y)
         return { yaw = y, i = 0, j = 0, k = math.sin(a / 2), r = math.cos(a / 2), Transform = function(_, v)
             return vec(v.x * math.cos(a) - v.y * math.sin(a), v.x * math.sin(a) + v.y * math.cos(a), v.z, v.w) end }
     end } end }
-StatusEffectHelper = { ApplyStatusEffect = function() end, RemoveStatusEffect = function() end }   -- (fly holds V still)
+AnimationControllerComponent = { SetAnimWrapperWeight = function(e, n, w) e.wrap = w > 0 and n.hash or nil end }
 CName = { new = function(s) return { hash = s } end }        -- CET: no readable text, like the game's name hashes
 ResRef = { FromString = function(s) return s end }
 local function ctor() return { new = function(t) return t or {} end } end
@@ -39,7 +49,6 @@ WorldPosition = { new = function() local w = {} function w:SetVector4(v) w.v = v
 AIPositionSpec = { new = function() local p = {} function p:SetWorldPosition(w) p.w = w end return p end }
 moveMovementType = { Walk = 0 }
 gamedataMappinVariant = setmetatable({}, { __index = function(_, k) return k end })
-gameinteractionsChoiceType = gamedataMappinVariant
 
 -- dynamic entity system. SIM.defer = K: the game's deferred lifecycle - an entity made now attaches (onEntity; GetEntity
 -- and GetTaggedIDs see it) K frames on, not in the call. Either way the lifetime guard's rule is held: the mod deletes
@@ -53,7 +62,7 @@ local function byMod(level)                      -- (called from the mod's own f
     return i ~= nil and i.source:sub(1, 1) == "@" and i.source:find("Homestead", 1, true) ~= nil
 end
 local function guarded(what, id)                 -- (the mod touching an entity: has it settled?)
-    if not byMod(3) then return end
+    if SIM.asked or not byMod(3) then return end   -- (SIM.asked: a check asking through the mod's own system, HS_SIM_STATIC)
     local e = ents[id.hash]
     local why = unborn[id.hash] and "before it attached" or (e and e.attached and SIM.frame - e.attached < 2 and "a frame after it attached")
     if why then table.insert(SIM.violations, string.format("%s %s %s (frame %d)", what, tostring(id.hash), why, SIM.frame)) end
@@ -161,12 +170,63 @@ end
 function DES:GetTaggedIDs(tag)
     local out = {}
     for _, set in ipairs({ ents, SIM.off }) do
-        for h, e in pairs(set) do for _, t in ipairs(e.spec.tags) do if t.hash == tag.hash then table.insert(out, e.id) end end end
+        for h, e in pairs(set) do if not e.static then for _, t in ipairs(e.spec.tags) do if t.hash == tag.hash then table.insert(out, e.id) end end end end
     end
     table.sort(out, function(a, b) return a.hash < b.hash end)
     return out
 end
 function DES:IsPopulated(tag) return #self:GetTaggedIDs(tag) > 0 end
+SIM.DES = DES
+-- Codeware's static entity system (modules/world.lua): no tags asked of it, no save - an entity spawned detached is
+-- initialised (dressed) and not in the world; detach / attach keep the entity and its id. SIM.facts: the game's facts
+-- a save keeps (only hs_world is there to ask: the others fail as they always did here)
+StaticEntitySpec = ctor()
+SIM.detached, SIM.statics, SIM.facts = {}, 0, {}
+local SES = {}
+function SES:IsReady() return true end
+function SES:SpawnEntity(spec)
+    local id = { hash = nextId }; nextId = nextId + 1
+    local e = entity(id, spec)
+    e.static = true
+    SIM.created, SIM.statics = SIM.created + 1, SIM.statics + 1
+    if spec.attached == false then SIM.detached[id.hash] = e; SIM.init(e) return id end
+    if SIM.defer and not SIM.now then unborn[id.hash] = { e = e, at = SIM.frame + SIM.defer } return id end
+    ents[id.hash], e.attached = e, SIM.frame
+    SIM.init(e)
+    return id
+end
+function SES:DespawnEntity(id) guarded("delete", id); ents[id.hash], unborn[id.hash], SIM.detached[id.hash] = nil, nil, nil; return true end
+function SES:GetEntity(id) return ents[id.hash] or SIM.detached[id.hash] end
+function SES:IsTagged(id, tag)
+    local e = ents[id.hash] or SIM.detached[id.hash] or (unborn[id.hash] and unborn[id.hash].e)
+    if not e or not e.static then return false end
+    for _, t in ipairs(e.spec.tags) do if t.hash == tag.hash then return true end end
+    return false
+end
+function SES:DetachEntity(id) local e = ents[id.hash]; if not e then return false end ents[id.hash], SIM.detached[id.hash] = nil, e; return true end
+function SES:AttachEntity(id) local e = SIM.detached[id.hash]; if not e then return false end SIM.detached[id.hash], ents[id.hash] = nil, e; return true end
+-- HS_SIM_STATIC=1: every check run with our pieces static. What a check asks of "the dynamic entity system" it then
+-- asks of the mod's own (modules/world.lua: both kinds), and a piece a check makes itself - a save's - is a static one
+-- kept in the save, there at once.
+SIM.static = os.getenv("HS_SIM_STATIC") ~= "0"
+ALL = setmetatable({}, { __index = function(_, k)
+    local W = SIM.mod and SIM.mod.world
+    if not W or not W[k] then return DES[k] end
+    return function(_, a, b)
+        local function text(v) if type(v) == "table" and type(v.hash) == "string" then return v.hash end return v end   -- (a check's tag name: the mod's own system takes text)
+        if k ~= "CreateEntity" then SIM.asked = true; local r = W[k](W, text(a), text(b)); SIM.asked = nil; return r end
+        if a.recordID or a.templatePath then return DES:CreateEntity(a) end
+        local tags, p, q = {}, a.position, a.orientation
+        for i, t in ipairs(a.tags or {}) do tags[i] = t.hash end
+        SIM.now = true
+        local id = W:CreateEntity(a, { path = "homestead\\empty.ent", x = p.x, y = p.y, z = p.z, i = q.i, j = q.j, k = q.k, r = q.r, tags = tags, keep = a.persistSpawn ~= false })
+        SIM.now = nil
+        return id
+    end
+end })
+local QS = {}
+function QS:SetFactStr(k, v) assert(k == "hs_world"); SIM.facts[k] = v end
+function QS:GetFactStr(k) assert(k == "hs_world"); return SIM.facts[k] or 0 end
 
 SIM.player = vec(4938, 1594, ground)
 -- the world: flat ground plus one rock (a solid box) east of the zone centre
@@ -202,13 +262,21 @@ local cam = {}
 function cam:GetActiveCameraForward() return SIM.fwd end
 function cam:ProjectPoint(p) return vec(0.1, 0.1, 0, 1) end
 Game = {
-    GetDynamicEntitySystem = function() return DES end,
+    GetDynamicEntitySystem = function() if SIM.static and not byMod(2) then return ALL end return DES end,
+    GetStaticEntitySystem = function() return SIM.static and SES or nil end,
+    GetQuestsSystem = function() return QS end,
     GetPlayer = function() return { GetWorldPosition = function() return SIM.player end } end,   -- (the main menu has one too)
     GetSystemRequestsHandler = function() return { IsPreGame = function() return SIM.mainMenu == true end } end,
     GetCameraSystem = function() return cam end,
     GetMountedVehicle = function() return nil end,
     GetFxSystem = function() return { SpawnEffect = function() SIM.fx = (SIM.fx or 0) + 1 return { Kill = function() end } end } end,
     GetMappinSystem = function() return { RegisterMappin = function() return 1 end } end,
+    GetResourceDepot = function() return { LoadResource = function(_, path)   -- (Codeware's: a token, loaded SIM.late looks later)
+        local t = { path = path, n = 0 }
+        function t:IsLoaded() self.n = self.n + 1 return self.n > (SIM.late or 0) end
+        function t:IsFailed() return false end
+        SIM.token = t
+        return t end } end,
     GetWorkspotSystem = function() return { PlayInDeviceSimple = function(_, dev, npc) SIM.ws[npc:GetEntityID().hash] = dev end,
                                             IsActorInWorkspot = function(_, npc) return SIM.ws[npc:GetEntityID().hash] ~= nil end,
                                             GetExtendedInfo = function() return { isActive = true, entering = false, exiting = false } end,
@@ -235,7 +303,6 @@ Homestead = {
     Sfx = function(id, ev, play, loop, vol) SIM.sfx = SIM.sfx or {}; table.insert(SIM.sfx, { ev = ev, play = play, loop = loop }) return true end,
     SfxForget = function() end,
 }
-GetDisplayResolution = function() return 1920, 1080 end
 SIM.ui = {}
 HomesteadUI = {
     Render = function(prompt, build, level, cats, cat, crumb, names, thumbs, item, detail, count, budget, key, toast, extra)
@@ -244,7 +311,7 @@ HomesteadUI = {
                    detail = detail, key = key, toast = toast }
     end,
     Use = function(show, x, y, label, key) SIM.useUI = show and { x = x, y = y, label = label, key = key } or nil end,
-    Gizmo = function(segs, cx, cy, label) SIM.gz = { n = #segs / 6, cx = cx, cy = cy, label = label } SIM.gzSegs, SIM.gzCx = segs, cx end,
+    Gizmo = function(segs, cx, cy) SIM.gz = { n = #segs / 6, cx = cx, cy = cy } SIM.gzSegs, SIM.gzCx = segs, cx end,
     Target = function(name) SIM.targetName = name end,       -- (the looked-at piece's name: its own widget)
 }
 HomesteadImport = {                                          -- (the RED4ext plugin's natives)
@@ -264,14 +331,11 @@ WorldTransform = { new = function()
     return t
 end }
 function GetSingleton(n) return { ToEulerAngles = function(_, q) return { yaw = q.yaw } end } end
-local function yes() return true end                            -- (one function for every call: a new one each made garbage
-local noop = setmetatable({}, { __index = function() return yes end })   -- the mod doesn't, and the garbage checks count it)
-ImGui = noop
-ImGuiCond, ImGuiCol, ImGuiWindowFlags = setmetatable({}, { __index = function() return 1 end }), setmetatable({}, { __index = function() return 1 end }), setmetatable({}, { __index = function() return 1 end })
 local handlers, observers = {}, {}
 function registerForEvent(n, f) handlers[n] = f end
 function registerHotkey(id, label, f) SIM.hotkeys = SIM.hotkeys or {}; SIM.hotkeys[id] = f end
 function Observe(c, m, f) observers[c .. "." .. m] = f end
+ObserveAfter = Observe
 function SIM.init(e) SIM.inits = SIM.inits + 1 local f = observers["HomesteadService.HomesteadEntity"]; if f then f(nil, e) end end
 function SIM.key(k, shift)                -- a press; arrows are tapped (pressed and let go), other keys stay down until SIM.release
     observers["HomesteadService.HomesteadKey"](nil, k, true, shift or false)
@@ -283,9 +347,21 @@ function SIM.mouse(dx, dy) observers["HomesteadService.HomesteadMouse"](nil, dx,
 function SIM.tick(n) for _ = 1, n or 1 do SIM.frame = SIM.frame + 1; SIM.attach(); handlers.onUpdate(1 / 60) end end
 function SIM.step() SIM.frame = SIM.frame + 1; SIM.attach(); SIM.mod.calls.frame() end   -- (a bare frame: a check's own loop)
 function SIM.session()                           -- (a load: what isn't saved - a preview, the border's wall - is gone)
-    for h, e in pairs(ents) do if e.spec.persistSpawn == false then ents[h] = nil end end
+    do local f = observers["HomesteadService.HomesteadSaved"]; if f then f(nil) end end   -- (the save loaded is one made now)
+    for h, e in pairs(ents) do if e.spec.persistSpawn == false or e.static then ents[h] = nil end end
+    for h, u in pairs(unborn) do if u.e.static then unborn[h] = nil end end
+    SIM.detached = {}
     observers["HomesteadService.HomesteadSession"](nil, true)
 end
+-- a check of a walk starts with its person standing on the navmesh: up from a seat they stand in its box here (the
+-- game's workspot walks them out of it; a walk from inside a box is not what those checks are of)
+function SIM.afoot(e)
+    local B, p = SIM.mod.life.backend(), e.pos
+    if B.free(p.x, p.y, p.z) then return end
+    local f = B.near(p.x, p.y, p.z, 3)
+    if f then p.x, p.y, p.z = f.x, f.y, f.z end
+end
+function SIM.again() observers["HomesteadService.HomesteadSession"](nil, true) end   -- (the game tells of one load twice: the same world)
 function SIM.handlers() return handlers end
 package.path = MOD_DIR .. "/?.lua;" .. package.path
 SIM.ns = { opts = {} }                         -- Native Settings UI (GetMod("nativeSettings")): records the options
@@ -678,7 +754,6 @@ check(st.place.ok and st.place.yaw == y_held, 'walked round to its other side, t
 stand(cell_c[0], cell_c[1]); look_at(cell_c[0] + 0.2, cell_c[1] - 1.2, Z); SIM.tick(3)
 SIM.key('IK_E'); SIM.tick(2)
 w1 = pieces('wall')[0]
-wit = w1.it
 face = lua('function(p) local a = SIM.axes(p.yaw) return p.o.x + a[1]*p.it.cx + a[3]*p.it.face, p.o.y + a[2]*p.it.cx + a[4]*p.it.face, a[3], a[4] end')(w1)
 fx, fy, nx, ny = face
 check(abs(fy - ZY) < 0.02 and abs(fx - cell_c[0]) < 0.02, 'the wall\'s outer face sits on the south edge line, centred on the cell (%.2f, %.2f)' % (fx, fy))
@@ -865,7 +940,7 @@ ring = lua('''function() local S = SIM.mod.state
     return #ids, #e.comps, c.mesh, c.visualScale.x, c.visualScale.y, c.visualScale.z, cols, e.spec.persistSpawn, e.spec.alwaysSpawned,
         e.spec.position.x - z.x, e.spec.position.y - z.y, e.spec.position.z - z.z, c.castShadows, S.byId[tostring(ids[1].hash)] ~= nil, S.ring.id.hash == ids[1].hash
 end''')()
-check(isinstance(ring, tuple) and ring[:9] == (1, 1, 'homestead\\border.mesh', R, R, 60, 0, False, True) and ring[9:12] == (0, 0, -30) and ring[12] == 'Never' and not ring[13] and ring[14],
+check(isinstance(ring, tuple) and ring[:7] == (1, 1, 'homestead\\border.mesh', R, R, 60, 0) and ring[7:9] == ((None, None) if STATIC else (False, True)) and ring[9:12] == (0, 0, -30) and ring[12] == 'Never' and not ring[13] and ring[14],
       'workshop mode: the border is one entity round the centre - one mesh scaled to the radius, 30 m below the ground to 30 m over it, no collider, no shadows, not saved, not a piece (%s)' % (ring,))
 stand(ZX + 44, ZY); SIM.fwd.x, SIM.fwd.y, SIM.fwd.z = 1, 0, 0; SIM.tick(2)        # (6 m inside the wall, looking straight out through it)
 thru = lua('function() local a = SIM.mod.aim() return a.piece == nil and a.point == nil end')()
@@ -942,6 +1017,8 @@ SIM.key('IK_E'); SIM.tick(2)
 judy = pieces('npc_judy')
 spec = lua('function(h) return SIM.ents[h].spec end')(judy[0].id.hash) if judy else None
 check(judy and spec.recordID == 'Character.Judy' and spec.templatePath is None and spec.persistSpawn, 'E places Judy from her record, saved with the game')
+check(judy and lua('function(h) return SIM.ents[h].wrap end')(judy[0].id.hash) == 'droidLocomotionUnarmed',
+      "someone placed has the droids' standing animations switched on (the bar droid: no T-pose)")
 to_tabs()
 
 # reload: pieces come back from their tags and transforms alone. The save is one from before the circle (2026-10-03):
@@ -951,7 +1028,7 @@ lua('function() SIM.said, SIM.print = {}, print print = function(s) SIM.said[#SI
 far = lua('''function() local C, z = SIM.mod.C, SIM.mod.zone()
     local id = C.spawnPiece("barrel", "default", { x = z.x + 70, y = z.y, z = 180.4 }, 0, false) C.index()
     for _, d in ipairs({ { -40, -20 }, { 30, -25 }, { 80, 30 }, { -30, 35 } }) do
-        Game.GetDynamicEntitySystem():CreateEntity({ position = Vector4.new(z.x + d[1], z.y + d[2], 180.4, 1), orientation = EulerAngles.new(0, 0, 0):ToQuat(),
+        SIM.DES:CreateEntity({ position = Vector4.new(z.x + d[1], z.y + d[2], 180.4, 1), orientation = EulerAngles.new(0, 0, 0):ToQuat(),
             persistSpawn = true, post = true, tags = { CName.new("Homestead"), CName.new("hs:boundary"), CName.new("hsapp:default") } })
     end
     return id.hash end''')()
@@ -971,11 +1048,26 @@ check(per < 40, 'finding what an entity is takes few tag checks with %d items (%
 after = sorted((p.key, round(p.o.x, 2), round(p.o.y, 2), round(p.o.z, 2), p.yaw % 360) for p in st.pieces.values())
 check(before == after and count('Homestead.bench') == 1, 'every piece is found again where it was (%d), one workbench' % len(after))
 said_posts = lua('function() local n = 0 for _, s in ipairs(SIM.said) do if s:find("Boundary Posts", 1, true) then n = n + 1 end end return n end')
-kept_far = [p for p in pieces('barrel') if p.id.hash == far and abs(p.o.x - (ZX + 70)) < 0.01]
+kept_far = [p for p in pieces('barrel') if (STATIC or p.id.hash == far) and abs(p.o.x - (ZX + 70)) < 0.01]
+if STATIC and kept_far: far = kept_far[0].id.hash       # (a static piece's id is a session's: found again by its place)
 check(posts0 == 4 and count('hs:boundary') == 0 and len(kept_far) == 1 and said_posts() == 1 and st.pieces[len(st.pieces)] is not None,
       "a save with Boundary Posts: its %d posts are deleted at the load, logged once (%d); the barrel 70 m out, past the circle, is still the settlement's (%d)" % (posts0, said_posts(), len(kept_far)))
 SIM.session(); SIM.tick(70)
-check(said_posts() == 1 and len([p for p in pieces('barrel') if p.id.hash == far]) == 1, 'the next load: no posts left, nothing logged again, the far barrel still there (%d)' % said_posts())
+if STATIC: far = ([p.id.hash for p in pieces('barrel') if abs(p.o.x - (ZX + 70)) < 0.01] or [far])[0]
+check((STATIC or said_posts() == 1) and len([p for p in pieces('barrel') if p.id.hash == far]) == 1, 'the next load: no posts left, nothing logged again, the far barrel still there (%d)' % said_posts())
+# a load told twice in one world (the game does, seconds apart: its log, 2026-10-06 19:57:22 and 19:57:27 "200 put back"
+# both times; the user: "Two walls, two doors in the same place"): nothing is put back a second time, every piece is
+# found again as it was, and what is built after it is in the file once
+def statics(): return lua('function() local n = 0 for _, set in ipairs({ SIM.ents, SIM.detached }) do for _, e in pairs(set) do if e.static then n = n + 1 end end end return n end')()
+def placed(): return sorted((p.key, round(p.o.x, 2), round(p.o.y, 2), round(p.o.z, 2), p.yaw % 360) for p in st.pieces.values())
+_s0, _p0 = statics(), placed()
+SIM.again(); SIM.tick(70)
+_s1, _p1 = statics(), placed()
+SIM.again(); SIM.session(); SIM.tick(70)                     # (told at its end too, the world still there; then a load)
+_s2, _p2 = statics(), placed()
+check(_s0 == _s1 == _s2 and _p0 == _p1 == _p2 and (_s0 > 0) == STATIC,
+      'a load told twice in one world: no piece put back a second time (%d static entities, then %d; after the next load %d), every piece found as it was (%s, %s)' % (_s0, _s1, _s2, _p0 == _p1, _p0 == _p2))
+if STATIC: far = ([p.id.hash for p in pieces('barrel') if abs(p.o.x - (ZX + 70)) < 0.01] or [far])[0]   # (its id is a session's)
 lua('function(h) local S = SIM.mod.state SIM.mod.C.removePiece(S.byId[tostring(h)]) SIM.mod.C.index() end')(far); SIM.tick(4)
 # a save from 0.1 can hold two workbenches: one is removed
 lua('function() local spec = { position = Vector4.new(4930, 1580, 180.4, 1), orientation = EulerAngles.new(0,0,0):ToQuat(), tags = { CName.new("Homestead"), CName.new("hs:workbench"), CName.new("hsapp:default"), CName.new("Homestead.bench") } } Game.GetDynamicEntitySystem():CreateEntity(spec) end')()
@@ -986,9 +1078,9 @@ check(count('Homestead.bench') == 1, 'an extra workbench is removed')
 # "hsas" tag) is made again where it stands, once, never in workshop mode
 check(lua("""function() for _, e in pairs(SIM.ents) do local mine = false
     for _, t in ipairs(e.spec.tags or {}) do mine = mine or t.hash == "hsv2" end
-    if mine and e.spec.alwaysSpawned ~= true then return false end end return true end""")(), 'every piece, part and preview the mod made is always spawned')
+    if mine and not e.static and e.spec.alwaysSpawned ~= true then return false end end return true end""")(), 'every piece, part and preview the mod made is always spawned (or static: never the population\'s)')
 def old_piece(key, x, y):                                    # (as a save from before the fix streams it in)
-    return lua("""function(k, x, y) return Game.GetDynamicEntitySystem():CreateEntity({ position = Vector4.new(x, y, 180.4, 1),
+    return lua("""function(k, x, y) return SIM.DES:CreateEntity({ position = Vector4.new(x, y, 180.4, 1),
         orientation = EulerAngles.new(0, 0, 90):ToQuat(), tags = { CName.new("Homestead"), CName.new("hs:" .. k), CName.new("hsapp:default") } }).hash end""")(key, x, y)
 def at_spot(key, x, y): return [p for p in pieces(key) if abs(p.o.x - x) < 0.01 and abs(p.o.y - y) < 0.01]
 lua('function() SIM.said = {} end')()                        # (print is caught since the reload above)
@@ -996,13 +1088,13 @@ SIM.mod.build(); h_old = old_piece('floor', ZX + 9, ZY + 9); SIM.mod.refresh(); 
 kept = [p.id.hash for p in at_spot('floor', ZX + 9, ZY + 9)] == [h_old]
 SIM.mod.exit(); SIM.tick(10)
 now = at_spot('floor', ZX + 9, ZY + 9)
-spec = lua('function(h) local s = SIM.ents[h] and SIM.ents[h].spec if not s then return "gone" end local t = false for _, x in ipairs(s.tags) do t = t or x.hash == "hsas" end return tostring(s.alwaysSpawned) .. " " .. tostring(t) end')(now[0].id.hash) if now else 'none'
+spec = lua('function(h) local s = SIM.ents[h] and SIM.ents[h].spec if not s then return "gone" end local t = false for _, x in ipairs(s.tags) do t = t or x.hash == "hsas" end return tostring(s.alwaysSpawned or SIM.ents[h].static) .. " " .. tostring(t) end')(now[0].id.hash) if now else 'none'
 gone = lua('function(h) return SIM.ents[h] == nil end')(h_old)
 SIM.tick(10)
 again = [p.id.hash for p in at_spot('floor', ZX + 9, ZY + 9)] == [now[0].id.hash] if now else False
 said = lua('function() print = SIM.print local n = 0 for _, l in ipairs(SIM.said) do if l:find("made 1 pieces again", 1, true) then n = n + 1 end end return n end')()
 check(kept and len(now) == 1 and now[0].yaw % 360 == 90 and spec == 'true true' and gone and again and said == 1,
-      'a piece saved streamed (no hsas tag): kept as it is in workshop mode (%s); out of it made again in place, always spawned and tagged (%d, yaw %s, %s), the old one gone (%s), only once (%s), logged once (%d)' %
+      'a piece saved streamed (no hsas tag): kept as it is in workshop mode (%s); out of it made again in place, always spawned (or static) and tagged (%d, yaw %s, %s), the old one gone (%s), only once (%s), logged once (%d)' %
       (kept, len(now), now[0].yaw if now else None, spec, gone, again, said))
 lua('function(h) local S = SIM.mod.state for _, p in ipairs(S.pieces) do if p.id.hash == h then SIM.mod.C.removePiece(p) end end SIM.mod.C.index() end')(now[0].id.hash); SIM.tick(3)
 
@@ -1343,10 +1435,8 @@ if fo4_in:
     # an upper floor aimed at a wall's top sits on it (its underside P-Ceiling on the wall's P-Ceiling-Dif); a wall
     # aimed there doesn't (two P-Ceiling-Dif never pair)
     site((SF, 0, 0, FZ), (SW, 0, 0, FZ, 180))
-    stand(SX, SY - 1); fo4_hold(SU); look_at(SX + 0.2, SY + 1.7, FZ + 2.75); SIM.tick(3)
-    s, ok = snap(), st.place.ok
-    fo4_hold(SW); held_yaw(180); SIM.tick(3)
-    s2 = snap()
+    s, ok, _ = hold_at(SU, SX + 0.3, SY + 0.3, FZ + 3.2, 0, (SX, SY - 8))   # (held 0.4 m off where it sits, whatever its hold depth)
+    s2 = hold_at(SW, SX + 0.3, SY + 0.3, FZ + 3.2, 180, (SX, SY - 8))[0]
     check(at(s, SX, SY, FZ + 3.2) and s[4] % 90 < 1e-6 and ok and not s2[0],'an upper floor aimed at a wall top sits on it (square: at whichever quarter turn its nearest point gives); a wall aimed there does not stack on it (%s; %s)' % (s[:5], s2[:5]))
     # point names (Fallout's rule): the same name, or a -Dif suffix on one side; a suffixed name never with itself
     names = ('P-Floor', 'P-Floor', 'P-Door-Dif', 'P-Door-Dif', 'P-Door-Dif', 'P-Door-Dif2', 'P-Wall-Dif015', 'P-Wall-Dif016',
@@ -1650,6 +1740,30 @@ if fo4_in:
             check(l0 == (SIM.it(NL).off, True, False) and l1[1:] == (False, True) and l2[1:] == (True, False),
                   "a Night City lamp switched off shows its mesh's off look, on again its lit one (%s, %s, %s)" % (l0, l1, l2))
         else: check(False, 'a Night City lamp placed for the off-look check')
+        lua('function() SIM.mod.build() end')(); SIM.tick(1)
+        # a spotlight's beam: the game's own shaft mesh from the lens to the light's reach; the floor one's turns with its
+        # head (modules/turret.lua), the wall one's goes out and on with its lamp
+        beams = []
+        for n, SP in enumerate(('fo4_workshopturretspotlight', 'fo4_dlc01_workshopturretspotlight')):
+            stand(Dd[0].o.x + 12 + 6 * n, Dd[0].o.y - 10); fo4_hold(SP); look_at(Dd[0].o.x + 12 + 6 * n, Dd[0].o.y - 7, Z); SIM.tick(3)
+            SIM.key('IK_E'); SIM.release('IK_E'); SIM.tick(2)
+            beams.append(pieces(SP))
+        lua('function() SIM.mod.exit() end')(); SIM.tick(40)
+        beam = lambda p: tuple(lua('''function(h) local b = SIM.ents[h]:FindComponentByName(CName.new("hs_beam1"))
+            if not b then return "none" end
+            local on = b.isEnabled if b.on ~= nil then on = b.on end
+            return tostring(b.mesh), b.meshAppearance.hash, b.visualScale.x, b.visualScale.y, b.lq ~= nil, on end''')(p.id.hash))
+        if all(beams):
+            fl, wl = beam(beams[0][0]), beam(beams[1][0])
+            W = beams[1][0]
+            stand(W.o.x + 1.5, W.o.y); look_at(W.o.x, W.o.y, W.o.z); SIM.tick(4)
+            SIM.key('IK_F'); SIM.release('IK_F'); SIM.tick(4)
+            off = beam(W)
+            SIM.key('IK_F'); SIM.release('IK_F'); SIM.tick(4)
+            check(len(fl) == 6 and 'spotlight_a_beam_mesh' in fl[0] and abs(fl[2] - 0.24 / 0.12) < 1e-3 and abs(fl[3] - 14.63 / 4.795) < 1e-3
+                  and fl[4] and fl[5] and len(wl) == 6 and not wl[4] and wl[5] and off[5] == False and beam(W)[5] == True,
+                  "a spotlight's beam: the game's shaft mesh, twice its own width and as long as the light reaches, turned with the floor one's head; the wall one's goes out and on with its lamp (%s; %s; off %s)" % (fl, wl, off[5:]))
+        else: check(False, 'both spotlights placed for the beam check (%s)' % [len(b) for b in beams])
         lua('function() SIM.mod.build() end')(); SIM.tick(1)
     # a Fallout container stores things: the game's stash device rides in it (Open Stash on it opens V's stash)
     FL = 'fo4_footlocker01'
@@ -2111,10 +2225,16 @@ if fo4_in:
             for _, p in ipairs(S.pieces) do local k = tostring(p.id.hash) if p.it.npc and not before[k] then nh = k end end
             local n = 0 for _, j in pairs(L.jobs) do if j == ch then n = n + 1 end end
             local f = io.open((HS_DIR or "") .. "jobs.txt", "r") local txt = f and f:read("*a") or "" if f then f:close() end
+            local top, cur = 0, ""                               -- (the file keeps revisions: the latest is what there is now)
+            for r in txt:gmatch("(%d+)|") do top = math.max(top, tonumber(r)) end
+            for line in txt:gmatch("[^\\n]+") do if line:match("^" .. top .. "|") then cur = cur .. line .. "\\n" end end
+            txt = cur
             local r = string.format("%s %s %d %s", tostring(nh ~= nil and L.jobs[nh] == ch), tostring(L.jobs[h] == nil), n,
-                tostring(nh ~= nil and txt:find(nh .. "=" .. ch, 1, true) ~= nil and not txt:find(h .. "=", 1, true)))
+                tostring(nh ~= nil and (txt:find(nh .. "=" .. ch, 1, true) or txt:find(nh .. "=U", 1, true)) ~= nil and not txt:find(h .. "=", 1, true)))
+            SIM.chairKey = chair.key
             if not nh then return r end
             L.jobs["1ULL"], L.jobs[ch] = ch, "2ULL"           -- (no such person; one of ours on no such piece)
+            L.rejob("none", "none")                              -- (written out: a load reads the file)
             SIM.said, SIM.print = {}, print
             print = function(s) SIM.said[#SIM.said + 1] = tostring(s) SIM.print(s) end
             return r .. "|" .. nh end''')(wh, ch)
@@ -2123,11 +2243,12 @@ if fo4_in:
         jp = lua('''function(nh, ch) local L = SIM.mod.life
             print = SIM.print
             local logs = 0 for _, s in ipairs(SIM.said) do if s:find("jobs: 2 dropped", 1, true) then logs = logs + 1 end end
-            local r = string.format("%s %s %s %d", tostring(L.jobs["1ULL"] == nil), tostring(L.jobs[ch] == nil), tostring(L.jobs[nh] == ch), logs)
+            local seat = SIM.mod.state.byId[L.jobs[nh] or ""]     -- (a static seat: the same chair under this session's id)
+            local r = string.format("%s %s %s %d", tostring(L.jobs["1ULL"] == nil), tostring(L.jobs[ch] == nil), tostring(L.jobs[nh] == ch or (seat ~= nil and seat.key == SIM.chairKey)), logs)
             L.unjob(nh)
             return r end''')(jmp[1], ch) if len(jmp) == 2 else 'not run'
-        check(jmp[0] == 'true true 1 true' and jp == 'true true true 1',
-              'jobs: a person with a job picked up and put back - one entry, under the new id (jobs.txt too), none under the old (%s); a session drops a job whose person or whose piece is gone, keeps theirs, logged once (%s)' % (jmp[0], jp))
+        check(jmp[0] == 'true true 1 true' and jp == 'true true true 0',
+              'jobs: a person with a job picked up and put back - one entry, under the new id (jobs.txt too), none under the old (%s); a load keeps every job but those under a past session\'s raw id (<n>ULL: nobody\'s now - Codeware gives ids anew at each load: %s)' % (jmp[0], jp))
     else: check(False, 'a person and a chair for the Command mode check')
     scenario(114)
     # navigation off (Settings > People > Navigation; the backend changes at the next load, never mid-walk), and LiveNav
@@ -2215,9 +2336,10 @@ if fo4_in:
         for _, q in ipairs(S.pieces) do if q.it.npc then p = q break end end
         if not p then return "nobody" end
         local h, e = tostring(p.id.hash), SIM.ents[p.id.hash]
-        L.unjob(h)
+        L.unjob(h) SIM.afoot(e)
         local x, y, z = e.pos.x + 6, e.pos.y, Homestead.TerrainBelow(Vector4.new(e.pos.x + 6, e.pos.y, e.pos.z + 1, 1)).z
         LiveNav.AddBoxes("sim:island", { 0, 0, 1.25, 1, 1, 1.25, 0, 0, 0, 1 }, { pos = Vector4.new(x, y, z, 1), q = { i = 0, j = 0, k = 0, r = 1 } }, true)
+        for _, st in L.people() do if st.h == h then st.like = { relax = 0, work = 0, look = 0, chat = 0, idle = 1, wander = 0 } end end
         local function send(pt)
             S.cmd, S.target = { t = 0, who = { h = h, name = "X", p = p } , point = pt }, nil
             local n0 = LN.probes or 0
@@ -2232,6 +2354,7 @@ if fo4_in:
         local up = send({ x = x, y = y, z = z + 2.5 })
         local down = send({ x = x - 2.5, y = y, z = z })
         L.unjob(h)
+        for _, st in L.people() do if st.h == h then st.like = nil end end
         LiveNav.RemoveObject("sim:island")
         return up .. "|" .. down end''')()
     iu, idn = (isl.split('|') + ['', ''])[:2]
@@ -2371,9 +2494,18 @@ if fo4_in:
         for _, q in ipairs(S.pieces) do if q.it.npc then p = q break end end
         local h, e, k = tostring(p.id.hash), SIM.ents[p.id.hash], p.id.hash
         L.unjob(h)
-        for i = 1, 5 do L.tick(1) SIM.step() end                -- (up from whatever they did)
+        for i = 1, 5 do L.tick(1) SIM.step() end SIM.afoot(e)   -- (up from whatever they did)
         local s0, w0, bare, seen, out = SIM.stacked, SIM.walks or 0, {}, false, ""
-        L.moveTo(h, { x = e.pos.x + 3, y = e.pos.y, z = e.pos.z })
+        local tx, ty = e.pos.x + 3, e.pos.y                     -- (3 m off, where nobody else stands or sits: a spot taken is not gone to)
+        for n, d in ipairs({ { 3, 0 }, { -3, 0 }, { 0, 3 }, { 0, -3 }, { 3, 3 }, { -3, -3 } }) do
+            local x, y, free = e.pos.x + d[1], e.pos.y + d[2], true
+            for oh, o in L.people() do
+                local oe = oh ~= h and SIM.ents[o.id.hash]
+                if oe and ((oe.pos.x - x) ^ 2 + (oe.pos.y - y) ^ 2 < 2.25 or o.seat and (o.seat.x - x) ^ 2 + (o.seat.y - y) ^ 2 < 2.25) then free = false end
+            end
+            if free then tx, ty = x, y break end
+        end
+        L.moveTo(h, { x = tx, y = ty, z = e.pos.z })
         for i = 1, 12 do
             L.tick(1) SIM.step()
             local st = L.state()[h]
@@ -2394,7 +2526,7 @@ if fo4_in:
         for _, q in ipairs(S.pieces) do if q.it.npc then p = q break end end
         local h, e, k = tostring(p.id.hash), SIM.ents[p.id.hash], p.id.hash
         L.unjob(h)
-        for i = 1, 5 do L.tick(1) SIM.step() end                -- (up from whatever they did)
+        for i = 1, 5 do L.tick(1) SIM.step() end SIM.afoot(e)   -- (up from whatever they did)
         for _, o in L.people() do o.t = 1e9 end                 -- (everyone stays at what they do)
         local st, B, npc = L.state()[h], L.backend(), e
         st.mode = "idle"
@@ -2902,9 +3034,10 @@ check(_bo is not None and LD + MORE <= R1[_bo][4][0][1] <= LD + MORE + 1 and R1[
       (R1[_bo][4][0][1] if _bo else -1, LD, MORE, B0[2], _lnOut, _lnB, _trB, R1[_ai][4][1][1] if _ai is not None else -1,
        R1[_ai + _ad][4][1][1] if _ad is not None else -1, VIEW, _flips))
 _out = lua('''function(k) local S, n, tagged, kept = SIM.mod.state, 0, 0, 0 for _, s in ipairs(SIM.mod.sites.list) do if s.key == k then
-    for i, id in ipairs(s.ids) do if SIM.off[id.hash] then n = n + 1
-        local sp = SIM.off[id.hash].spec for _, t in ipairs(sp.tags) do if t.hash == "hsin" .. k then tagged = tagged + 1 end end
-        if sp.persistSpawn ~= false then kept = kept + 1 end end end end end
+    for i, id in ipairs(s.ids) do local e = SIM.off[id.hash] or SIM.detached[id.hash] if e then n = n + 1
+        local sp = e.spec for _, t in ipairs(e.static and {} or sp.tags) do if t.hash == "hsin" .. k then tagged = tagged + 1 end end
+        if e.static and SIM.mod.world:IsTagged(id, "hsin" .. k) then tagged = tagged + 1 end
+        if e.static or sp.persistSpawn ~= false then kept = kept + 1 end end end end end
     return n, tagged, kept, #Game.GetDynamicEntitySystem():GetTaggedIDs(CName.new("Homestead")) end''')(BK)
 check(_out[0] == B0[2] and _out[1] == B0[2] and _out[2] == B0[2],
       'out of the world, the save untouched: all %d of its entities disabled, not deleted - each still tagged and saved (persistSpawn %d), tagged with its settlement for a load (%d), still listed by tag (%d)' % (_out[0], _out[2], _out[1], _out[3]))
@@ -2941,7 +3074,7 @@ check(_ln2.get('add', 0) + _ln2.get('file', 0) >= _lnB and _ln2.get('rebuild') =
       'back in it: LiveNav %s (%d objects of it before), one Rebuild; its shut door stops traffic again (%s); the person has their chair job still (the same id) and sits on it (%s); the piece saved streamed made again, always spawned (%s)' % (_ln2, _lnB, _door, _sat, _old))
 # along the edge, no flip: out and in only past the band's far side and near side, back and forth across either alone
 def hover(e, n=20):                                           # V e m off the settlement's east edge, n frames
-    b = site(BK); x1 = lua('function(k) for _, s in ipairs(SIM.mod.sites.list) do if s.key == k then return s.x1 end end end')(BK)
+    x1 = lua('function(k) for _, s in ipairs(SIM.mod.sites.list) do if s.key == k then return s.x1 end end end')(BK)
     stand(x1 + e, BY); SIM.tick(n); return site(BK)[0]
 _seq = [hover(LD + MORE + 30, 120)]
 for _ in range(5): _seq += [hover(LD + 10), hover(LD + MORE + 30)]
@@ -2992,12 +3125,195 @@ _si = first(R3, 0, lambda s: s[0] is True)
 _left = lua('function(k) local n = 0 for _, e in pairs(SIM.off) do for _, t in ipairs(e.spec.tags) do if t.hash == "hsin" .. k then n = n + 1 end end end return n end')(BK)
 SIM.tick(600)
 _b3 = site(BK)
-check(_sv[0] is False and _si is not None and _left == 0 and _b3[0] is True and _b3[2] == B0[2] and _b3[3] == 0 and job_of(_judy) == _jobs0[0],
-      'saved out: after a fresh load it stays out (%s) and comes in from its tags as V drives up (%.0f m off its edge, as far as posts reach; %d still out), all %d of it back, the job kept (%s)' % (_sv[0], R3[_si][4][0][1] if _si is not None else -1, _left, _b3[2], job_of(_judy) == _jobs0[0]))
+_kept = job_of(_judy) == _jobs0[0]
+if STATIC:                                                  # (a static seat's id is a session's: the same seat under its new one)
+    _kept = lua('function(p, c) local j = SIM.mod.life.jobOf(tostring(p.id.hash)) local q = j and SIM.mod.state.byId[j] return q ~= nil and q.key == c.key and q.o.x == c.o.x and q.o.y == c.o.y end')(_judy, _chair)
+    _left = lua('function(k) local n = 0 for _, e in pairs(SIM.detached) do for _, t in ipairs(e.spec.tags) do if t.hash == "hsin" .. k then n = n + 1 end end end return n end')(BK) + _left
+check(_sv[0] is False and _si is not None and _left == 0 and _b3[0] is True and _b3[2] == B0[2] and _b3[3] == 0 and _kept,
+      'saved out: after a fresh load it stays out (%s) and comes in from its tags as V drives up (%.0f m off its edge, as far as posts reach; %d still out), all %d of it back, the job kept (%s)' % (_sv[0], R3[_si][4][0][1] if _si is not None else -1, _left, _b3[2], _kept))
 _outN = max([j for j in range(len(R1)) if R1[j][3] > 0] or [0]) - (_bo or 0) + 1
 print('     perf by distance: the 300-piece settlement in after %d frames (%d components; worst %.2f ms, at most %d components in a frame of several), out over %d frames (worst %.2f ms)' %
       (_frames, sum(r[1] for r in _win), _worst, _most, _outN, max(r[0] for r in R1[(_bo or 0):(_bo or 0) + _outN])))
 stand(ZX, ZY - 10); SIM.tick(600)
+
+# a ball (modules/ball.lua; user, 2026-10-06: "it needs to roll as well", "its 'delete' position ... Make sure that it
+# follows the ball"): dropped over a slope it lands, rolls down it and on over the level ground till it rests - the
+# mesh turned by its travel, the piece where the ball is (its entity, p.o, the grid: what the crosshair and scrap
+# find); V walking into it sends it on; a load (the entity back where it was made) finds it where it came to rest
+BALL = 'fo4_dlc05workshopballtrackball01'
+if lua('function(k) return SIM.it(k) ~= nil end')(BALL):
+    _bx, _by = ZX - 40, ZY - 40
+    stand(_bx - 14, _by + 6); SIM.tick(2)
+    lua('''function(k, bx, by, g)                            -- (the slope: 0.3 up per metre east of bx)
+        local C, world = SIM.mod.C, Homestead.RayHit
+        if C.S.build then SIM.mod.exit() end
+        SIM.flat = world
+        Homestead.RayHit = function(a, b)
+            local fa, fb = a.z - g - 0.3 * (a.x - bx), b.z - g - 0.3 * (b.x - bx)
+            local t = fa > 0 and fb <= 0 and fa / (fa - fb)
+            local x = t and a.x + (b.x - a.x) * t
+            if not x or x < bx then return world(a, b) end
+            return { Vector4.new(x, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t, 1), Vector4.new(-0.3 / math.sqrt(1.09), 0, 1 / math.sqrt(1.09), 0) }
+        end
+        SIM.ball = C.spawnPiece(k, "default", { x = bx + 3, y = by, z = g + 0.9 + 1 }, 0, false) C.index() end''')(BALL, _bx, _by, Z)
+    _ball = lua('''function()                                -- x, y, z, how far from it its mesh is drawn, the mesh's turn (r), what a ray down on it finds, still, its saved place
+        local C, S = SIM.mod.C, SIM.mod.state
+        local h = tostring(SIM.ball.hash)
+        local p, e = S.byId[h], SIM.ents[SIM.ball.hash]
+        if not (p and e) then return nil end
+        local m = e:FindComponentByName(CName.new("hs_mesh1"))
+        local d = C.cast({ x = p.o.x - 0.1, y = p.o.y, z = p.o.z + 2 }, { x = 0, y = 0, z = -1 }, 5)   -- (its west side: the next cell's, at a cell's edge)
+        local l = m and m.lp or { x = 0, y = 0, z = 0 }           -- (the piece's yaw is 0: its own space is the world's)
+        return p.o.x, p.o.y, p.o.z, math.sqrt((e.pos.x + l.x - p.o.x) ^ 2 + (e.pos.y + l.y - p.o.y) ^ 2 + (e.pos.z + l.z - p.o.z) ^ 2),
+               m and m.lq and m.lq.r or 1, d.piece == p, SIM.mod.life.jobs[h .. "a"] or "" end''')
+    _tp = SIM.teleports or 0
+    SIM.tick(150); _b0 = _ball()                              # (landed, on its way down)
+    _lost = 0                                                 # (found all the way: the grid's cells follow it)
+    for _ in range(1500):
+        SIM.tick(1); _b1 = _ball(); _lost += not (_b1 and _b1[5] is True)
+    _r = lua('function(k) local it = SIM.it(k) return (it.max[3] - it.min[3]) / 2 end')(BALL)
+    if _b1:
+        stand(_b1[0] + 0.6, _b1[1])                           # (V walks west into it, 3 m/s)
+        for _ in range(20): SIM.player.x -= 0.05; SIM.tick(1)
+    SIM.tick(1500); _b2 = _ball()
+    _tp = (SIM.teleports or 0) - _tp                          # (the entity stays: its mesh is what moves - seen in game)
+    lua('''function() local e = SIM.ents[SIM.ball.hash]       -- (a load: made anew where it was put, its mesh in its middle)
+        local m = e and e:FindComponentByName(CName.new("hs_mesh1")) if m then m.lp, m.lq = nil, nil end end''')()
+    SIM.session(); SIM.tick(200)
+    if STATIC: lua('function(k) for _, p in ipairs(SIM.mod.state.pieces) do if p.key == k then SIM.ball = p.id end end end')(BALL)   # (its id is a session's)
+    _b3 = _ball()
+    lua('function() Homestead.RayHit = SIM.flat end')()
+    check(bool(_b0 and _b1 and _b2 and _b3) and _b0[0] < _bx + 3 - 0.05 and _b1[0] < _bx - 1 and abs(_b1[2] - Z - _r) < 0.01
+          and abs(_b1[1] - _by) < 0.01 and _b1[3] < 1e-3 and abs(_b1[4]) < 0.999 and _lost == 0 and _b1[6] != '' and _tp == 0
+          and _b2[0] < _b1[0] - 0.5 and _b2[3] < 1e-3 and _b2[5] is True and _b2[6] != _b1[6]
+          and abs(_b3[0] - _b2[0]) < 0.01 and abs(_b3[2] - _b2[2]) < 0.01 and _b3[3] < 1e-3 and _b3[5] is True,
+          'a ball rolls: down the slope and on over level ground to rest (x %s -> %s -> %s, on the ground: %s), its mesh turned (r %s), the piece with it (drawn %s m off, under the crosshair all the way: %s), kept (%s); V walking into it sends it on (to x %s, kept %s); a load finds it there (x %s, drawn %s m off)'
+          % ((_bx + 3, _b0 and round(_b0[0], 2), _b1 and round(_b1[0], 2), _b1 and round(_b1[2] - Z - _r, 4), _b1 and round(_b1[4], 3), _b1 and round(_b1[3], 4), _lost == 0, _b1 and _b1[6],
+              _b2 and round(_b2[0], 2), _b2 and _b2[6], _b3 and round(_b3[0], 2), _b3 and round(_b3[3], 4))))
+    stand(ZX, ZY - 10); SIM.tick(10)
+    # on one of our own pieces (the game's ray doesn't find them: their boxes): set down on a foundation it stays on
+    # its top; V walking into it sends it off the edge, down to the ground
+    FND = 'fo4_workshop_shackmidfloor01foundation'
+    if lua('function(k) return SIM.it(k) ~= nil end')(FND):
+        _fx, _fy = ZX + 20, ZY - 30
+        _fz = lua('function(k) local it = SIM.it(k) return it.min[3], it.max[3], it.cx, it.cy end')(FND)
+        clear(_fx, _fy, 5); put(FND, _fx, _fy, Z - _fz[0]); refresh(); SIM.tick(5)
+        _top = Z + _fz[1] - _fz[0]
+        SIM.ball = lua('function(k, x, y, z) local C = SIM.mod.C local id = C.spawnPiece(k, "default", { x = x, y = y, z = z }, 0, false) C.index() return id end')(BALL, _fx + _fz[2], _fy + _fz[3], _top + _r)
+        SIM.tick(200); _f1 = _ball()
+        _pz = SIM.player.z
+        SIM.player.z = _top; stand(_fx + _fz[2] + 0.6, _fy + _fz[3])
+        for _ in range(20): SIM.player.x -= 0.05; SIM.tick(1)
+        SIM.player.z = _pz
+        SIM.tick(900); _f2 = _ball()
+        check(bool(_f1 and _f2) and abs(_f1[2] - _top - _r) < 0.01 and abs(_f1[0] - _fx - _fz[2]) < 0.01 and _f1[3] < 1e-3
+              and _f2[0] < _f1[0] - 2 and abs(_f2[2] - Z - _r) < 0.01 and _f2[3] < 1e-3,
+              'a ball on a foundation: it stays on its top (%s over it, drawn %s m off); V walking into it rolls it off the edge to the ground (x %s -> %s, %s over the ground, drawn %s m off)'
+              % (_f1 and round(_f1[2] - _top - _r, 4), _f1 and round(_f1[3], 4), _f1 and round(_f1[0], 2), _f2 and round(_f2[0], 2), _f2 and round(_f2[2] - Z - _r, 4), _f2 and round(_f2[3], 4)))
+        clear(_fx, _fy, 5); stand(ZX, ZY - 10); SIM.tick(10)
+    # on a ball track (two rails either side of the ball's middle: a ray down from it passes between them - it is
+    # held as a sphere against their boxes): set down over a sloped track 1 m up, it stays between the rails and
+    # rolls down them, still up on the track 0.6 m on
+    TRK = 'fo4_wksballtrackstraight02'
+    if lua('function(k) return SIM.it(k) ~= nil end')(TRK):
+        _tx, _ty = ZX + 32, ZY - 30
+        _tz = lua('function(k) local it = SIM.it(k) return it.min[3], it.max[3] end')(TRK)
+        _to = Z - _tz[0] + 1                                  # (the track's own height: its lowest point 1 m over the ground)
+        clear(_tx, _ty, 5); put(TRK, _tx, _ty, _to); refresh(); SIM.tick(5)
+        stand(_tx + 3, _ty)
+        SIM.ball = lua('function(k, x, y, z) local C = SIM.mod.C local id = C.spawnPiece(k, "default", { x = x, y = y, z = z }, 0, false) C.index() return id end')(BALL, _tx, _ty - 0.5, _to + 0.6)
+        _t0, _side, _on, _t1 = None, 0.0, None, None
+        for _ in range(900):
+            SIM.tick(1); _t1 = _ball(); _t0 = _t0 or _t1
+            if not _t1: continue                              # (not in the piece list yet)
+            if _t1[1] > _ty + 0.6: break
+            _side = max(_side, abs(_t1[0] - _tx))
+            if _t1[1] < _ty + 0.5: _on = _t1                  # (the last of it over the track's middle stretch)
+        check(bool(_t0 and _t1 and _on) and _t1[1] > _ty + 0.6 and _side < 0.03 and _on[2] > Z + _r + 0.5 and _on[2] < _t0[2] and _on[3] < 1e-3,
+              'a ball on a track: it stays between the rails and rolls down them (y %s -> %s, at most %s m to a side, %s m over the ground there, set down %s over it; drawn %s m off)'
+              % (_t0 and round(_t0[1] - _ty, 2), _t1 and round(_t1[1] - _ty, 2), round(_side, 4), _on and round(_on[2] - Z - _r, 3), _t0 and round(_t0[2] - Z - _r, 3), _on and round(_on[3], 4)))
+        clear(_tx, _ty, 5); stand(ZX, ZY - 10); SIM.tick(10)
+
+# the bar droid's own standing animations don't play when he is placed from his record (user, 2026-10-06: "when spawned
+# he is tposed"): with no job he stands in a workspot (life.lua REST), nothing saved; anyone else with no job is left
+ROBOT = 'npc_cz_con_foodshop_01'
+SIM.press('Navigation')(False); SIM.tick(60)                 # (people as props: the user's game, no LiveNav)
+if lua('function(k) return SIM.it(k) ~= nil and not SIM.mod.life.walks() end')(ROBOT):
+    _rb = lua('''function(k, x, y, z) local C = SIM.mod.C if C.S.build then SIM.mod.exit() end
+        local a = C.spawnPiece(k, "default", { x = x, y = y, z = z }, 0, false)
+        local b = C.spawnPiece("npc_judy", "default", { x = x + 2, y = y, z = z }, 0, false) C.index() return a, b end''')(ROBOT, ZX - 20, ZY - 20, Z)
+    _in = lua('function(id) return SIM.ws[id.hash] ~= nil, SIM.mod.life.jobOf(tostring(id.hash)) end')
+    SIM.tick(400); _r1, _j1 = tuple(_in(_rb[0])), tuple(_in(_rb[1]))
+    _pose = lua('function(id, v) return SIM.mod.life.setPose(SIM.mod.state.byId[tostring(id.hash)], v) end')
+    _pose(_rb[0], 'stand-ground.guard.01'); SIM.tick(400); _r2 = tuple(_in(_rb[0]))
+    _pose(_rb[0], 'none'); SIM.tick(400); _r3 = tuple(_in(_rb[0]))
+    check(_r1 == (True, None) and _j1 == (False, None) and _r2 == (True, 'p-stand-ground.guard.01') and _r3 == (True, None),
+          'the bar droid with no job stands in a workspot, no job saved (%s; Judy beside him: %s); given a pose he has it (%s), taken off it he stands again (%s)' % (_r1, _j1, _r2, _r3))
+    lua('function(a, b) local C = SIM.mod.C for _, id in ipairs({ a, b }) do local p = C.S.byId[tostring(id.hash)] if p then C.removePiece(p) end end end')(_rb[0], _rb[1])
+    SIM.tick(10)
+else: check(False, 'the bar droid is in the catalog and people stand as props here')
+SIM.press('Navigation')(True); SIM.tick(60)
+
+# animals with one animation and no way to walk (user, 2026-10-06: "I would prefer they not be static"): a chicken and
+# an iguana play theirs - our looping workspots - where they are put, with navigation or without, sent nowhere and not
+# moved; the cow has no animation in the game and is left as placed (life.lua PET, tools/make_workspots.py ANIMALS)
+PETS = ['npc_q110_cage_chicken', 'npc_q005_penthouse_iguana', 'npc_sq021_fake_cow_npc']
+if all(lua('function(k) return SIM.it(k) ~= nil end')(k) for k in PETS):
+    _pets = []
+    for _nav in (False, True):
+        SIM.press('Navigation')(_nav); SIM.tick(60)
+        _ids = [lua('''function(k, x, y, z) local C = SIM.mod.C if C.S.build then SIM.mod.exit() end
+            local a = C.spawnPiece(k, "default", { x = x, y = y, z = z }, 0, false) C.index() return a end''')(k, ZX - 24 + 2 * i, ZY - 24, Z)
+                for i, k in enumerate(PETS)]
+        SIM.tick(400)
+        for i, _id in enumerate(_ids):
+            _w = lua('''function(id, x, y)
+                local d, path = SIM.ws[id.hash], nil
+                local e = d and SIM.ents[d:GetEntityID().hash]
+                for _, c in ipairs(e and e.comps or {}) do if c.workspotResource then path = c.workspotResource end end
+                local n = Game.GetDynamicEntitySystem():GetEntity(id)
+                local q = n and n:GetWorldPosition()
+                return path or "", q and math.abs(q.x - x) + math.abs(q.y - y) < 0.01 or false, SIM.cmds[id.hash] == nil,
+                    SIM.mod.life.walks(), SIM.mod.life.jobOf(tostring(id.hash)) == nil end''')(_id, ZX - 24 + 2 * i, ZY - 24)
+            _pets.append((PETS[i][4:], _nav) + tuple(_w))
+        lua('function(...) local C = SIM.mod.C for _, id in ipairs({ ... }) do local p = C.S.byId[tostring(id.hash)] if p then C.removePiece(p) end end end')(*_ids)
+        SIM.tick(10)
+    _want = ['homestead\\workspots\\animals\\chicken__stand_ground__stand_around__01.workspot',
+             'homestead\\workspots\\animals\\iguana__sit_ground__sit_around__01.workspot', '']
+    check(len(_pets) == 6 and all(r[2] == _want[i % 3] and r[3] and r[4] and r[5] == r[1] and r[6] for i, r in enumerate(_pets)),
+          'a chicken and an iguana play their own looping workspot where they are put, navigation off and on - not moved, sent nowhere, no job saved; the cow is left alone (%s)'
+          % '; '.join('%s nav %s: %s' % (r[0], r[1], r[2].split('\\')[-1] or 'none') + ('' if r[3] and r[4] and r[5] == r[1] and r[6] else ' moved/sent %r' % (r[3:],)) for r in _pets))
+    SIM.press('Navigation')(True); SIM.tick(60)
+else: check(False, 'the chicken, the iguana and the cow are in the catalog')
+
+# a workspot is played once its file is loaded (user, 2026-10-06: a T-pose for a moment, "only happens when I first
+# command them to interact with something"): asked for through Codeware's depot when the device is made, not played
+# while it loads, played all the same after the spawn's 5 s when it never does (life.lua fetch, ready)
+SIM.press('Navigation')(False); SIM.tick(60)
+if lua('function(k) return SIM.it(k) ~= nil and not SIM.mod.life.walks() end')(ROBOT):
+    _ld = []
+    for _late in (20, 10 ** 9):
+        SIM.late, SIM.token = _late, None
+        _id = lua('''function(k, x, y, z) local C = SIM.mod.C if C.S.build then SIM.mod.exit() end
+            local a = C.spawnPiece(k, "default", { x = x, y = y, z = z }, 0, false) C.index() return a end''')(ROBOT, ZX - 28, ZY - 28, Z)
+        _row = None
+        for _f in range(1200):
+            SIM.tick(1)
+            _w = lua('''function(id) local d, t, path = SIM.ws[id.hash], SIM.token, nil
+                local e = d and SIM.ents[d:GetEntityID().hash]
+                for _, c in ipairs(e and e.comps or {}) do if c.workspotResource then path = c.workspotResource end end
+                return d ~= nil, t and t.n or -1, t and t.path, path end''')(_id)
+            if _w[1] >= 0 and _row is None: _row = [_f]          # (the device made, its file asked for)
+            if _w[0]: _row = (_row or [_f]) + [_f, _w[1], _w[2] == _w[3] and bool(_w[2])]; break   # (no file asked for: look -1)
+        _ld.append(tuple(_row or ()))
+        lua('function(id) local C = SIM.mod.C local p = C.S.byId[tostring(id.hash)] if p then C.removePiece(p) end end')(_id)
+        SIM.tick(10)
+    SIM.late = None
+    check(len(_ld) == 2 and all(len(r) == 4 and r[3] for r in _ld) and _ld[0][2] == 21 and 4.5 < (_ld[1][1] - _ld[1][0]) / 60 < 6.5,
+          'a workspot is played once its file is loaded: asked for with the device, played at the first look that finds it in (look %s of a file in at the 21st, %.1f s on), and after %.1f s when it never loads'
+          % (_ld and len(_ld[0]) == 4 and _ld[0][2], _ld and len(_ld[0]) == 4 and (_ld[0][1] - _ld[0][0]) / 60 or -1, len(_ld) == 2 and len(_ld[1]) == 4 and (_ld[1][1] - _ld[1][0]) / 60 or -1))
+else: check(False, 'the bar droid is in the catalog and people stand as props here')
+SIM.press('Navigation')(True); SIM.tick(60)
 
 # reset (CET console): every piece of every settlement, parts, fires and sounds with them
 lua('function() SIM.mod.reset() end')(); SIM.tick(240)   # (pieces the sim deleted behind the mod's back: pending three looks)
@@ -3024,15 +3340,15 @@ lua('function() SIM.importRow().args[3]() end')(); SIM.tick(2)
 check(SIM.started is None and SIM.opt('Quit to the main menu'), 'settings: in a game, Import says to quit to the main menu first')
 SIM.mainMenu = True                                           # (no game loaded: the main menu)
 lua('function() SIM.importRow().args[3]() end')(); SIM.tick(2)
-check(SIM.started == 0 and SIM.opt('Importing'), 'settings: on the main menu, Import starts the importer (mode %s)' % SIM.started)
+check(SIM.started == 0 and SIM.opt('Starting the import'), 'settings: on the main menu, Import starts the importer (mode %s)' % SIM.started)
 SIM.started, SIM.running = None, False                       # (that one done)
 SIM.press('Overwrite already imported items')(True); lua('function() SIM.importRow().args[3]() end')()
 check(SIM.started == 1 and SIM.opt('Overwrite already imported items').value is False, 'settings: the overwrite switch makes it a fresh import (mode %s), and is off again after' % SIM.started)
 open(os.path.join(SETDIR, 'import_status.txt'), 'w').write(chr(10).join(['state=running', "step=Fallout 4's textures", 'pct=46', 'eta=420']) + chr(10))
 SIM.running = True
 SIM.tick(140)
-check(SIM.opt("Importing: Fallout 4's textures  -  46%  -  about 7 min left") is not None and SIM.importRow().args[1] == 'Cancel',
-      "settings: while it imports, the status line says what it's on, how far, and about how long is left (no refresh needed), its button Cancel")
+check(SIM.opt("Fallout 4's textures  [|||||||||...........]  46%") is not None and SIM.importRow().args[1] == 'Cancel',
+      "settings: while it imports, the status line says what it's on and a bar of how far (no refresh needed), its button Cancel")
 lua('function() SIM.importRow().args[3]() end')(); SIM.tick(2)
 check(SIM.stopped and SIM.opt('Cancelled') is not None and SIM.importRow().args[1] == 'Import' and 'state=cancelled' in open(os.path.join(SETDIR, 'import_status.txt')).read(),
       'settings: Cancel stops the importer (and what it started); it says so, and the button is Import again')
@@ -3040,6 +3356,10 @@ open(os.path.join(SETDIR, 'import_status.txt'), 'w').write(chr(10).join(['state=
 SIM.running = False
 SIM.tick(140)
 check(SIM.opt('Stopped before it finished') is not None, "settings: an importer gone without a word (killed, the PC off) isn't shown importing forever")
+_lv = [lua('function() return SIM.mod.settings.level() end')()]
+open(os.path.join(SETDIR, 'imported.txt'), 'w').write('build=x\nlevel=2\n')
+_lv.append(lua('function() return SIM.mod.settings.level() end')()); os.remove(os.path.join(SETDIR, 'imported.txt'))
+check(_lv == [0, 2], "settings: the import's level is what was installed (imported.txt), whatever the status file says since - a check, a failed import (%s)" % _lv)
 SIM.importer = ''
 lua('function() SIM.importRow().args[3]() end')(); SIM.tick(2)
 check(SIM.opt("The importer isn't there") is not None, 'settings: no importer installed - they say so')
@@ -3065,7 +3385,7 @@ import re as _re
 tabs = lua('''function() HS_NATIVE = nil local m = dofile(MOD_DIR .. "/init.lua") local _, t = m.zone() local c, bad = {}, 0
     local byKey = {} for _, it in ipairs(require("catalog").items) do byKey[it.key] = it end
     local function walk(n) for _, k in ipairs(n.kids or {}) do if k.key then local it = byKey[k.key]
-        if it.stashed or not (it.fo4 or it.npc or it.cat == "Night City") then bad = bad + 1 end else walk(k) end end end
+        if it.stashed or not (it.fo4 or it.npc or it.pose or it.cat == "Night City") then bad = bad + 1 end else walk(k) end end end
     for k, n in pairs(t) do c[#c + 1] = k walk(n) end table.sort(c) HS_NATIVE = "only" return table.concat(c, ","), bad end''')()
 check(tabs[1] == 0 and 'Night City' in tabs[0] and 'Zone' not in tabs[0] and 'People' in tabs[0] and not _re.search(r'(Structure|Buildings|Roads)', tabs[0]),
       "this release: Fallout 4's pieces, Cyberpunk's props, weapons and nature in Night City, people - no Zone tab, no buildings, kits or roads (tabs %s)" % tabs[0])

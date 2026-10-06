@@ -7,12 +7,18 @@
 //   HomesteadImportRunning() -> Bool             (any HomesteadImport.exe: one started before the game restarted too)
 //   HomesteadImportStop() -> Bool                cancel: the importer and what it started (WolvenKit, its workers)
 //   HomesteadImportPath() -> String              the importer's path ("" if it isn't there)
+//   HomesteadLatest() -> String                  the newest release's tag on GitHub ("" while not known: asked once,
+//                                                in the background, at the first call - one GET of the repository's
+//                                                latest release, nothing sent but the request)
 // The import goes on after the game closes (it installs then: the archives are locked while the game runs).
 #include <RED4ext/RED4ext.hpp>
 #include <windows.h>
 #include <tlhelp32.h>
+#include <winhttp.h>
 #include <algorithm>
 #include <atomic>
+#include <mutex>
+#include <thread>
 #include <string>
 #include <vector>
 
@@ -114,7 +120,7 @@ static void ImportPath(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, RED4
     if (aOut) *aOut = RED4ext::CString(utf8.c_str());
 }
 
-// // The camera stays as it is without any restriction on it (GameplayRestriction.NoCameraControl drifts); the motion goes to Lua for its cursor.
+// The gizmo's mouse. The camera stays as it is without any restriction on it (GameplayRestriction.NoCameraControl drifts); the motion goes to Lua for its cursor.
 //   HomesteadMouseSet(on: Bool) -> Bool          on / off; false: the game's window wasn't found (nothing taken)
 //   HomesteadMouseX() / HomesteadMouseY() -> Float   the motion since last asked, in the mouse's own counts
 static std::atomic<bool> g_mouse{false};
@@ -314,46 +320,76 @@ static void GameKeysNative(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, 
     if (aOut) *aOut = RED4ext::CString(s.c_str());
 }
 
+// The newest release: api.github.com/repos/shawn-makes-stuff/homestead/releases/latest -> its "tag_name". Off line, or
+// anything else amiss: "" (the mod says nothing then).
+static std::string g_latest;
+static std::mutex g_latestLock;
+static std::atomic<bool> g_latestAsked{false};
+static void AskLatest()
+{
+    std::string body, tag;
+    if (HINTERNET s = WinHttpOpen(L"Homestead", WINHTTP_ACCESS_TYPE_AUTOMATIC_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0))
+    {
+        WinHttpSetTimeouts(s, 5000, 5000, 5000, 5000);
+        if (HINTERNET c = WinHttpConnect(s, L"api.github.com", INTERNET_DEFAULT_HTTPS_PORT, 0))
+        {
+            if (HINTERNET r = WinHttpOpenRequest(c, L"GET", L"/repos/shawn-makes-stuff/homestead/releases/latest", nullptr,
+                                                 WINHTTP_NO_REFERER, WINHTTP_DEFAULT_ACCEPT_TYPES, WINHTTP_FLAG_SECURE))
+            {
+                if (WinHttpSendRequest(r, WINHTTP_NO_ADDITIONAL_HEADERS, 0, WINHTTP_NO_REQUEST_DATA, 0, 0, 0) && WinHttpReceiveResponse(r, nullptr))
+                {
+                    char buf[4096];
+                    DWORD n = 0;
+                    while (WinHttpReadData(r, buf, sizeof(buf), &n) && n && body.size() < 200000) body.append(buf, n);
+                }
+                WinHttpCloseHandle(r);
+            }
+            WinHttpCloseHandle(c);
+        }
+        WinHttpCloseHandle(s);
+    }
+    auto i = body.find("\"tag_name\"");
+    if (i != std::string::npos) i = body.find(':', i);
+    if (i != std::string::npos) i = body.find('"', i);
+    auto j = i != std::string::npos ? body.find('"', i + 1) : std::string::npos;
+    if (j != std::string::npos && j - i - 1 < 40) tag = body.substr(i + 1, j - i - 1);
+    std::lock_guard<std::mutex> lock(g_latestLock);
+    g_latest = tag;
+}
+
+static void LatestNative(RED4ext::IScriptable*, RED4ext::CStackFrame* aFrame, RED4ext::CString* aOut, int64_t)
+{
+    aFrame->code++;
+    if (!g_latestAsked.exchange(true)) std::thread(AskLatest).detach();
+    std::string s;
+    {
+        std::lock_guard<std::mutex> lock(g_latestLock);
+        s = g_latest;
+    }
+    if (aOut) *aOut = RED4ext::CString(s.c_str());
+}
+
 RED4EXT_C_EXPORT void RED4EXT_CALL RegisterTypes() {}
 
 RED4EXT_C_EXPORT void RED4EXT_CALL PostRegisterTypes()
 {
     auto rtti = RED4ext::CRTTISystem::Get();
-    RED4ext::CBaseFunction::Flags flags = {.isNative = true, .isStatic = true};
-    auto start = RED4ext::CGlobalFunction::Create("HomesteadImportStart", "HomesteadImportStart", &ImportStart);
-    start->flags = flags;
-    start->AddParam("Int32", "mode");
-    start->SetReturnType("Bool");
-    rtti->RegisterFunction(start);
-    auto running = RED4ext::CGlobalFunction::Create("HomesteadImportRunning", "HomesteadImportRunning", &ImportRunning);
-    running->flags = flags;
-    running->SetReturnType("Bool");
-    rtti->RegisterFunction(running);
-    auto stop = RED4ext::CGlobalFunction::Create("HomesteadImportStop", "HomesteadImportStop", &ImportStop);
-    stop->flags = flags;
-    stop->SetReturnType("Bool");
-    rtti->RegisterFunction(stop);
-    auto path = RED4ext::CGlobalFunction::Create("HomesteadImportPath", "HomesteadImportPath", &ImportPath);
-    path->flags = flags;
-    path->SetReturnType("String");
-    rtti->RegisterFunction(path);
-    auto mset = RED4ext::CGlobalFunction::Create("HomesteadMouseSet", "HomesteadMouseSet", &MouseSetNative);
-    mset->flags = flags;
-    mset->AddParam("Bool", "on");
-    mset->SetReturnType("Bool");
-    rtti->RegisterFunction(mset);
-    auto mx = RED4ext::CGlobalFunction::Create("HomesteadMouseX", "HomesteadMouseX", &MouseXNative);
-    mx->flags = flags;
-    mx->SetReturnType("Float");
-    rtti->RegisterFunction(mx);
-    auto my = RED4ext::CGlobalFunction::Create("HomesteadMouseY", "HomesteadMouseY", &MouseYNative);
-    my->flags = flags;
-    my->SetReturnType("Float");
-    rtti->RegisterFunction(my);
-    auto gk = RED4ext::CGlobalFunction::Create("HomesteadGameKeys", "HomesteadGameKeys", &GameKeysNative);
-    gk->flags = flags;
-    gk->SetReturnType("String");
-    rtti->RegisterFunction(gk);
+    auto reg = [rtti](const char* name, auto fn, const char* ret, const char* paramType = nullptr, const char* param = nullptr) {
+        auto f = RED4ext::CGlobalFunction::Create(name, name, fn);
+        f->flags = {.isNative = true, .isStatic = true};
+        if (paramType) f->AddParam(paramType, param);
+        f->SetReturnType(ret);
+        rtti->RegisterFunction(f);
+    };
+    reg("HomesteadImportStart", &ImportStart, "Bool", "Int32", "mode");
+    reg("HomesteadImportRunning", &ImportRunning, "Bool");
+    reg("HomesteadImportStop", &ImportStop, "Bool");
+    reg("HomesteadLatest", &LatestNative, "String");
+    reg("HomesteadImportPath", &ImportPath, "String");
+    reg("HomesteadMouseSet", &MouseSetNative, "Bool", "Bool", "on");
+    reg("HomesteadMouseX", &MouseXNative, "Float");
+    reg("HomesteadMouseY", &MouseYNative, "Float");
+    reg("HomesteadGameKeys", &GameKeysNative, "String");
 }
 
 RED4EXT_C_EXPORT bool RED4EXT_CALL Main(RED4ext::v1::PluginHandle, RED4ext::v1::EMainReason aReason, const RED4ext::v1::Sdk*)

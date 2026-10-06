@@ -25,7 +25,7 @@ def code(src, mark):
 
 def main():
     os.chdir(ROOT)
-    changed = [f for f in subprocess.check_output(['git', 'diff', '--name-only', 'HEAD'], text=True).split('\n') if os.path.splitext(f)[1] in MARK]
+    changed = [f for f in subprocess.check_output(['git', 'diff', '--name-only', '--diff-filter=M', 'HEAD'], text=True).split('\n') if os.path.splitext(f)[1] in MARK]
     bad = 0
     for f in changed:
         mark = MARK[os.path.splitext(f)[1]]

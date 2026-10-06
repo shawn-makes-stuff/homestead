@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) 
 import paths
 import ba2
 
-DATA = paths.get('fo4')
+DATA = paths.get('fo4', required=False)                     # (None: Fallout's half is off - import.py check() asks for it when wanted)
 MASTERS = ['Fallout4.esm', 'DLCRobot.esm', 'DLCworkshop01.esm', 'DLCCoast.esm', 'DLCworkshop02.esm', 'DLCworkshop03.esm', 'DLCNukaWorld.esm']
 WANT = {b'KYWD', b'FLST', b'COBJ', b'STAT', b'SCOL', b'MSTT', b'DOOR', b'LIGH', b'ACTI', b'FURN', b'CONT', b'TERM', b'FLOR',
         b'TREE', b'MISC', b'CMPO', b'SNDR', b'ARTO', b'AVIF', b'ADDN', b'BOOK', b'MSWP',
@@ -66,10 +66,13 @@ class Strings:
         self.t = {}
         for p in MASTERS:
             stem = p[:-4].lower()
-            for arc in ('Fallout4 - Interface.ba2' if stem == 'fallout4' else p[:-4] + ' - Main.ba2',):
-                a = ba2.Archive(os.path.join(data, arc))
-                n = 'strings\\%s_en.strings' % stem
-                if n in a.index: self.t[p] = self._parse(a.read(n))
+            arc = os.path.join(data, 'Fallout4 - Interface.ba2' if stem == 'fallout4' else p[:-4] + ' - Main.ba2')
+            if not os.path.exists(arc): continue             # (a DLC the player hasn't got)
+            a = ba2.Archive(arc)
+            n = 'strings\\%s_en.strings' % stem
+            if n not in a.index:                             # (a Fallout 4 in another language: its own names)
+                n = next((k for k in a.index if k.startswith('strings\\%s_' % stem) and k.endswith('.strings')), n)
+            if n in a.index: self.t[p] = self._parse(a.read(n))
 
     @staticmethod
     def _parse(b):

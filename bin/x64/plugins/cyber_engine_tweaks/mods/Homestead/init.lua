@@ -14,6 +14,29 @@ end
 for i = #catalog.items, 1, -1 do
     if catalog.items[i].key == "boundary" then table.remove(catalog.items, i) end
 end
+-- People's animations (modules/own/poses.lua) are cards of a tab of their own, Animations: one "placed" on a person gives it to them
+-- (placement.lua place).
+for _, x in ipairs((#catalog.items > 0 and not catalog.posed) and require("modules/own/poses") or {}) do   -- (no import: no menu; once)
+    catalog.posed = true
+    catalog.items[#catalog.items + 1] = { key = "pose_" .. x.id, name = x.name, group = x.group, cat = "Animations", pose = x.id, apps = { "default" },
+                                          min = { -0.2, -0.2, 0 }, max = { 0.2, 0.2, 0.4 }, base = { 0, 0, 0 }, nmesh = 0, nent = 0 }
+end
+-- Night City's own working things (modules/own/devices.lua) are cards of the Night City tab: the game's device entity itself
+-- is what is placed (and what is held: no preview of ours), as a weapon's template is.
+for _, x in ipairs((#catalog.items > 0 and not catalog.deviced) and require("modules/own/devices") or {}) do
+    if not catalog.deviced then                               -- (once: the plain props these stand in for, out of the menu)
+        for _, it in ipairs(catalog.items) do
+            for _, pat in ipairs(it.cat == "Night City" and require("modules/own/devices").hide or {}) do
+                if it.name:lower():find(pat) then it.hidden = true end
+            end
+        end
+    end
+    catalog.deviced = true
+    local w, d, h = x.size[1], x.size[2], x.size[3]
+    catalog.items[#catalog.items + 1] = { key = "dev_" .. x.id, name = x.name, group = x.group, cat = "Night City", device = true,
+                                          template = "base\\gameplay\\devices\\" .. x.ent .. ".ent", apps = x.apps or { "default" },
+                                          min = { -w / 2, -d / 2, 0 }, max = { w / 2, d / 2, h }, base = { 0, 0, 0 }, nmesh = 0, nent = 1 }
+end
 -- an item's heavy fields (build_catalog.py HEAVY: colliders, meshes, snap points, animations...) live in
 -- data/catalog_<dat>.lua, loaded the first time any of them is read - its whole menu folder at once. Startup and the
 -- menu read catalog.lua alone.
@@ -21,6 +44,16 @@ do
     local HEAVY = { boxes = true, cboxes = true, pcol = true, anim = true, connect = true, meshes = true, ents = true,
                     lights = true, fx = true, snd = true, seats = true, profile = true }
     local byDat = {}
+    -- What the mod owns, over what the import says (modules/own/<field>.lua: key -> value, false: none). The import's
+    -- is kept for a piece not listed there (one a player's Fallout mod adds): an update changes these with no import.
+    local OWN = {}
+    for _, f in ipairs({ "lights", "seats", "snd", "fx" }) do OWN[f] = require("modules/own/" .. f) end
+    local STASH, MENU = require("modules/own/stash"), require("modules/own/menu")
+    local STASH_ENTS = { { path = "base\\gameplay\\devices\\stash\\stash.ent", app = "default", x = 0, y = 0, z = 0, q = { 0, 0, 0, 1 } } }
+    for _, it in ipairs(catalog.items) do
+        if STASH[it.key] ~= nil then it.stash = STASH[it.key] or nil end
+        for f, v in pairs(MENU[it.key] or {}) do it[f] = v end
+    end
     for _, it in ipairs(catalog.items) do if it.dat then byDat[it.dat] = byDat[it.dat] or {}; table.insert(byDat[it.dat], it) end end
     local meta = {}
     local LISTS = { boxes = true, meshes = true }             -- (never nil: a weapon has no boxes - every check counts them)
@@ -36,6 +69,10 @@ do
         byDat[n] = nil
         for _, x in ipairs(its) do
             for f, v in pairs(ok and type(d) == "table" and d[x.key] or {}) do rawset(x, f, v) end
+            for f, own in pairs(OWN) do
+                if own[x.key] ~= nil then rawset(x, f, own[x.key] or nil) end
+            end
+            if STASH[x.key] ~= nil then rawset(x, "ents", STASH[x.key] and STASH_ENTS or nil) end
         end
         if rawget(it, k) == nil and LISTS[k] then rawset(it, k, {}) end
         return rawget(it, k)
@@ -45,10 +82,10 @@ end
 
 -- settlements are where V founds them (a workbench); away from all of them, S.zone is NOWHERE (nothing to build in)
 -- A settlement: this far round its centre (m), always a circle.
-local RADIUS = 50
 -- Settings > Building > Settlement size, read here because the modules take it as they load.
-do local f = io.open("settings.txt", "r")
-    if f then RADIUS = tonumber(f:read("*a"):match("%f[%w]radius=(%d+)")) or RADIUS; f:close() end end
+local SET = ""
+do local f = io.open("settings.txt", "r") if f then SET = f:read("*a"); f:close() end end
+local RADIUS = tonumber(SET:match("%f[%w]radius=(%d+)")) or 50
 local NOWHERE = { x = -1e6, y = -1e6, z = 0, key = "none" }
 local GRID, STOREY = 3.0, 4.0 -- the Badlands building kit: 3 m cells, 4 m storeys
 local REACH = 25              -- how far the crosshair reaches (m)
@@ -76,8 +113,11 @@ local OUTLINE = { off = 0, valid = 1, invalid = 2, target = 5, usable = 1, selec
 
 local CHUNK = 100             -- meshes per entity: 141 were fine, 240 took the game down; big buildings are split
 local byKey = {}
+-- Settings > Mods > Homestead > Fallout 4 pieces / Night City pieces, off: theirs leave the menu (ones placed stay)
+local OFF = { fo4 = SET:find("%f[%w]importFo4=0") ~= nil, nc = SET:find("%f[%w]importNC=0") ~= nil }
 for i, it in ipairs(catalog.items) do
     if it.npc and TweakDB and not TweakDB:GetRecord(it.record) then it.hidden = true end
+    if (OFF.fo4 and it.fo4) or (OFF.nc and it.cat == "Night City") then it.hidden = true end
     it.cx, it.cy = (it.min[1] + it.max[1]) / 2, (it.min[2] + it.max[2]) / 2
     it.size = { it.max[1] - it.min[1], it.max[2] - it.min[2], it.max[3] - it.min[3] }
     byKey[it.key] = it
@@ -108,7 +148,7 @@ local S = {
     info = {},                   -- entity id hash -> tag info (or false), see tagInfo
     fHeld = false, fTime = 0, fUsed = false,
     cHeld = false, cTime = 0, cUsed = false,
-    nearBench = false, inZone = false, pins = {}, siteT = 0, refreshT = 0, fx = {}, after = {}, hinted = {}, orphan = {}, nostash = {}, anims = {}, playing = {}, sfx = {}, running = {}, dark = {},
+    nearBench = false, inZone = false, pins = {}, siteT = 0, refreshT = 0, fx = {}, after = {}, hinted = {}, orphan = {}, nostash = {}, anims = {}, playing = {}, sfx = {}, running = {}, dark = {}, cyc = {},
     cost = 0,                    -- the zone's pieces' mesh count, against BUDGET
     checked = {},                -- entity id hash -> true once a placed person's attitude to V was checked
     unloaded = {},               -- entity id hash -> true while its settlement is out of the world (sites.lua: by distance)
@@ -116,8 +156,8 @@ local S = {
 
 
 local atan2 = math.atan2 or math.atan                    -- LuaJIT (CET) has atan2; Lua 5.3+ has a 2-argument atan
-local desNow                                                 -- (the dynamic entity system: asked of the game once a frame -
-local function des() desNow = desNow or Game.GetDynamicEntitySystem() return desNow end   -- onUpdate forgets it)
+local World = {}                                             -- (modules/world.lua: the dynamic entity system, and the static one
+local function des() return World end                        -- for our own pieces, under one set of names)
 local function v4(x, y, z) return Vector4.new(x, y, z, 1) end
 local function hashOf(id) return tostring(id.hash) end
 local function say(text) S.toast, S.toastT = text, 3 end
@@ -134,7 +174,7 @@ end
 local C = { S = S, catalog = catalog, byKey = byKey, atan2 = atan2, des = des, v4 = v4, hashOf = hashOf, say = say,
             log = log, try = try, NOWHERE = NOWHERE, RADIUS = RADIUS, GRID = GRID, STOREY = STOREY, REACH = REACH,
             BUDGET = BUDGET, KEYS = KEYS, SFX = SFX, OUTLINE = OUTLINE, CHUNK = CHUNK,
-            Eng = {}, Anim = {}, Gizmo = {}, Border = {}, Testing = {}, Life = {}, Settings = {} }
+            Eng = {}, Anim = {}, Gizmo = {}, Border = {}, Testing = {}, Life = {}, Settings = {}, Turret = {}, Elevator = {}, Ball = {} }
 local function sfx(name)
     if type(name) == "table" then for _, n in ipairs(name) do pcall(Homestead.Sound, n) end else pcall(Homestead.Sound, name) end
 end
@@ -155,12 +195,12 @@ function C.applied()
     Border.update()
 end
 
+require("modules/world")(World, C)
 require("modules/engine")(Eng, C)
 local timed = C.timed
 
 require("modules/geometry")(C)
-local Q, zoneDist, Grid, rayBox, boundsBox, aim, pairs_ =
-    C.Q, C.zoneDist, C.Grid, C.rayBox, C.boundsBox, C.aim, C.pairs_
+local Q, zoneDist, Grid, aim, pairs_ = C.Q, C.zoneDist, C.Grid, C.aim, C.pairs_
 
 require("modules/entities")(C)
 local del, removePiece, afterAttach, onEntity, outlinePiece, retarget, refresh =
@@ -186,6 +226,10 @@ local Sites, pin, found, abandon =
     C.Sites, C.pin, C.found, C.abandon
 
 require("modules/anim")(Anim, C)
+World.gone = Anim.forget
+require("modules/turret")(C.Turret, C)
+require("modules/elevator")(C.Elevator, C)
+require("modules/ball")(C.Ball, C)
 require("modules/gizmo")(Gizmo, C)
 require("modules/border")(Border, C)
 require("modules/life")(Life, C)
@@ -204,7 +248,11 @@ local function enterBuild()
     refresh(true)
     Border.update()
     S.hold, S.level, S.dist, S.rot, S.slot = nil, 0, nil, 0, nil
-    say(Settings.stale() and "Homestead was updated: import again from the main menu (Settings > Mods > Homestead)" or "Workshop mode")
+    local told = S.toldNewer                                -- (the offer: once a session)
+    S.toldNewer = true
+    say(Settings.stale() and "Homestead was updated: import again from the main menu (Settings > Mods > Homestead)"
+        or not told and Settings.newer() and "Homestead: a new version's data is ready - import again when you like (Settings > Mods > Homestead)"
+        or "Workshop mode")
     sfx(SFX.enter)
 end
 
@@ -264,7 +312,10 @@ local function onKey(key, down, shift, rep)
         end
         return
     end
-    if not S.build then return end
+    if not S.build then                                       -- (the hand on an elevator's button: a click presses it, as F does)
+        if S.hand and S.use and down and not rep and key == KEYS.rotL then Anim.use(S.use) end
+        return
+    end
     local h = S.hold
     if key == KEYS.gizmo then
         if down then
@@ -273,7 +324,8 @@ local function onKey(key, down, shift, rep)
             elseif h then S.free = true; Gizmo.on()
             elseif S.target and not S.target.bench then
                 local p = S.target
-                if startMove(p) then S.free = true; Gizmo.on(p.o) end
+                -- (a person isn't taken up: the gizmo moves them as they are - placement.lua gizmoPickup)
+                if (p.it.npc and C.gizmoPickup(p)) or (not p.it.npc and startMove(p)) then S.free = true; Gizmo.on(p.o) end
             end
         end
         return
@@ -355,7 +407,7 @@ end
 
 
 local function session(start)
-    desNow = nil
+    World.forget()
     Life.reset(true)
     Life.navClear(true)
     Life.choose()
@@ -365,8 +417,8 @@ local function session(start)
     S.info = {}
     S.pending, S.pieces, S.byId, S.bench, S.target, S.ghost, S.hold, S.slot = {}, {}, {}, nil, nil, nil, nil, nil
     S.world, S.ring = S.world + 1, nil
-    S.pins, S.hinted, S.hintSig, S.useShown, S.nearBench, S.fHeld = {}, {}, nil, false, false, false
-    S.menuSig, S.seenIds, S.settled, S.targetShown, S.waitIds = nil, {}, nil, nil, {}
+    S.pins, S.hinted, S.hintSig, S.useShown, S.nearBench, S.fHeld, S.hand = {}, {}, nil, false, false, false, false
+    S.menuSig, S.seenIds, S.settled, S.targetShown, S.waitIds, S.checked = nil, {}, nil, nil, {}, {}
     S.unloaded = {}
     Sites.reset()
     Lines.by, Lines.dirty = {}, false
@@ -381,7 +433,33 @@ registerForEvent("onInit", function()
     Observe("HomesteadService", "HomesteadKey", function(_, key, down, shift) onKey(key, down, shift) end)
     Observe("HomesteadService", "HomesteadMouse", function(_, dx, dy) Gizmo.mouse(dx, dy) end)
     Observe("HomesteadService", "HomesteadSession", function(_, start) session(start) end)
-    print("[Homestead] loaded, " .. #catalog.items .. " pieces in the catalog")
+    Observe("HomesteadService", "HomesteadSaved", function() World.saved() end)
+    -- An import to do (the first, a needed one, or one offered: settings.lua): the game's own message box on the main
+    -- menu says so, once a session (Homestead.reds HomesteadNotice). The import itself is the settings': its progress is there.
+    local WHERE = "\n\nOpen Settings > Mods > Homestead and press Import. Its progress shows there."
+    pcall(Settings.update)                                       -- (asks now: the answer is there by the time the menu is up)
+    ObserveAfter("SingleplayerMenuGameController", "OnInitialize", function(self)
+        local msg = Settings.first() and "Homestead makes its Fallout 4 pieces from your own Fallout 4 before first use. It takes about 15-20 minutes, once." .. WHERE
+            or Settings.stale() and "Homestead was updated and needs its import run again. Only what changed is redone." .. WHERE
+            or Settings.newer() and Settings.get("seenBuild") ~= Settings.buildId() and "This version of Homestead has new data for you. It is optional: the mod works as it is, and only what changed is redone." .. WHERE
+        S.noticeSeen = msg and not Settings.first() and not Settings.stale() and { "seenBuild", Settings.buildId() } or nil
+        local tag = not msg and Settings.update()                -- (nothing to import: a newer release, if GitHub has one)
+        if tag and Settings.get("seenRelease") == tag then tag = nil end
+        if tag then S.noticeSeen = { "seenRelease", tag } end       -- (an offer is made once: closed, not again for that build / release - user)
+        if tag then msg = "Homestead " .. tag .. " is out (you have " .. tostring(Settings.version()) .. ").\n\nGet it from github.com/shawn-makes-stuff/homestead/releases" end
+        if S.toldImport or not msg then return end
+        -- (told once the player has closed it: the menu's controller is made more than once as the game starts, and a
+        -- box dies with the one that showed it - seen 2026-10-05: no box, no error)
+        try("notice", function() Homestead.Notice(self, "Homestead", msg) end)
+        log("import notice shown")
+    end)
+    -- (the menu's own method: a static one of ours wasn't found - the log, 2026-10-05: "Function NoticeClosed in class
+    -- Homestead does not exist" - so a closed box was never known closed, and an offer never remembered as made)
+    Observe("SingleplayerMenuGameController", "OnHomesteadNoticeClosed", function()
+        S.toldImport = true
+        if S.noticeSeen then Settings.set(S.noticeSeen[1], S.noticeSeen[2]) end
+    end)
+    log("loaded, " .. #catalog.items .. " pieces in the catalog")
 end)
 
 registerForEvent("onOverlayOpen", function() S.overlay = true; releaseKeys() end)
@@ -411,6 +489,7 @@ local function update(dt)
     local pos = playerPos()
     pcall(Settings.tick, dt)                                -- (Settings > Mods > Homestead: the importer's news, the
     if not pos or not des() or not des():IsReady() then return end   -- main menu too - the import starts from there)
+    World.tick(dt)
     S.siteT = S.siteT - dt
     if S.siteT <= 0 then
         S.siteT = 2
@@ -432,6 +511,8 @@ local function update(dt)
     timed("stream", Sites.stream, dt, pos)
     local out = zoneDist(pos.x, pos.y)
     local near = out < 250
+    if near then timed("turrets", C.Turret.tick, dt, pos); timed("elevators", C.Elevator.tick, dt); timed("balls", C.Ball.tick, dt, pos) end
+    if S.calm then C.calm(dt) end
     S.inZone = out < 5
     S.refreshT = S.refreshT - dt
     if S.refreshT <= 0 then
@@ -470,19 +551,30 @@ local function update(dt)
     end
     local okUI, errUI = pcall(timed, "ui", syncUI)
     if not okUI and not S.uiErr then S.uiErr = true; log("ui: " .. tostring(errUI)) end
+    if S.hand and (S.cmd or S.build) then S.hand = false; pcall(Homestead.Hand, false) end
     if S.cmd then timed("command", Cmd.tick, dt) return end
     if not S.build then
         if near then benchPrompt(pos) else S.nearBench = false end
         S.use, S.useLabel = nil, nil
         local handy = false
         if near and frame % 3 == 0 then
-            for _, p in ipairs(S.pieces) do
-                if (p.o.x - pos.x) ^ 2 + (p.o.y - pos.y) ^ 2 < 64 and (p.it.anim or p.it.lights or p.it.stash) then handy = true break end
+            if S.usableWorld ~= S.world then                    -- (what V can use: listed anew only when the pieces change)
+                S.usableWorld, S.usable = S.world, {}
+                for _, p in ipairs(S.pieces) do if Anim.usable(p.it) then S.usable[#S.usable + 1] = p end end
+            end
+            for _, p in ipairs(S.usable) do
+                if (p.o.x - pos.x) ^ 2 + (p.o.y - pos.y) ^ 2 < 64 then handy = true break end
             end
         end
-        if handy then
+        -- An elevator's button under the crosshair, on whatever floor: the game's own hand, as on its elevators' panels
+        -- (user, 2026-10-05: not our F prompt) - a click or F presses it. Kept up each frame it is there, let go once.
+        local ep, el = C.Elevator.hover(pos)
+        if ep or S.hand then pcall(Homestead.Hand, ep ~= nil) end
+        S.hand = ep ~= nil
+        if ep then S.use, S.useLabel, S.useT = ep, el, 0
+        elseif handy then
             local a = aim()
-            local lb = a.piece and a.t < 3.5 and (a.piece.it.anim or a.piece.it.lights or a.piece.it.stash) and Anim.label(a.piece)
+            local lb = a.piece and a.t < 3.5 and Anim.usable(a.piece.it) and Anim.label(a.piece)
             if lb then S.use, S.useLabel, S.useT = a.piece, lb, 0.3 end
         elseif S.useT and S.useT > 0 and S.lastUse then S.use, S.useLabel = S.lastUse, S.lastLabel end
         S.useT = (S.useT or 0) - dt
@@ -493,6 +585,15 @@ local function update(dt)
     if S.useShown then usePrompt() end
     if out > 15 or Game.GetMountedVehicle(Game.GetPlayer()) then exitBuild() return end
     if S.gz then timed("gizmo", Gizmo.tick) end
+    do                                                          -- an animation's card in hand: the person it would go to is outlined
+        local who = S.hold and byKey[S.hold.key].pose and aim().piece
+        if who and not who.it.npc then who = nil end
+        if S.poseAim ~= who then
+            if S.poseAim then outlinePiece(S.poseAim, OUTLINE.off) end
+            if who then outlinePiece(who, OUTLINE.target) end
+            S.poseAim = who or nil
+        end
+    end
     if S.hold then
         if S.rot ~= 0 and (S.free or not byKey[S.hold.key].kind) then
             S.hold.yaw = (S.hold.yaw + S.rot * SPIN * dt) % 360
@@ -520,7 +621,7 @@ local function update(dt)
     end
 end
 registerForEvent("onUpdate", function(dt)
-    desNow = nil
+    World.drop()
     Eng.frame()
     Eng.slowFrame()
     timed("update", update, dt)
@@ -546,12 +647,12 @@ local function reset()
         removePiece(p)
     end
     for _, tag in ipairs({ "Homestead", "Homestead.part" }) do
-        for _, id in ipairs(des():GetTaggedIDs(CName.new(tag)) or {}) do if not gone[hashOf(id)] then gone[hashOf(id)] = true; del(id) end end
+        for _, id in ipairs(des():GetTaggedIDs(tag) or {}) do if not gone[hashOf(id)] then gone[hashOf(id)] = true; del(id) end end
     end
     Life.reset()
     Life.navClear()
     refresh()
-    print("[Homestead] all pieces removed")
+    log("all pieces removed")
 end
 local function info()
     local pos = playerPos()
@@ -559,7 +660,7 @@ local function info()
     log(string.format("V at %.1f, %.1f, %.1f; zone centre %.0f, %.0f; in zone %s; workshop %s", pos.x, pos.y, pos.z, S.zone.x, S.zone.y, tostring(S.inZone), tostring(S.build)))
     for _, s in ipairs(Sites.list) do log(string.format("settlement %s at %.1f, %.1f%s", s.key, s.x, s.y, s == S.zone and " (here)" or "")) end
     log("dynamic entity system ready: " .. tostring(des():IsReady()) .. ", pieces " .. #S.pieces .. " (tagged " .. tostring(S.tagged) .. ")"
-        .. ", bench tag populated: " .. tostring(des():IsPopulated(CName.new("Homestead.bench"))))
+        .. ", bench tag populated: " .. tostring(des():IsPopulated("Homestead.bench")))
     if S.bench then
         local b = S.bench.at
         log(string.format("workbench at %.1f, %.1f, %.1f (%.1f m away), entity spawned: %s", b.x, b.y, b.z,
@@ -570,9 +671,9 @@ end
 -- the dev table (GetMod("Homestead")): the console's commands, and what tools/sim.py and tools/dev read
 return {
     tp = tp, info = info, build = enterBuild, exit = exitBuild, reset = reset, found = found, abandon = abandon,
-    popwatch = Testing.popwatch, prof = Eng.prof, calls = Eng, state = S, tree = tree, key = onKey, refresh = refresh,
-    placement = placement, startMove = startMove, restore = restore, aim = aim, rayBox = rayBox, boundsBox = boundsBox,
-    sites = Sites, settings = Settings, anim = Anim, life = Life, keys = Keys, C = C,
+    popwatch = Testing.popwatch, prof = Eng.prof, calls = Eng, state = S, key = onKey, refresh = refresh,
+    placement = placement, startMove = startMove, restore = restore, aim = aim,
+    sites = Sites, settings = Settings, anim = Anim, life = Life, keys = Keys, C = C, world = World,
     zone = function() return S.zone, tree, CATS end,
     picked = function() local e, n = picked() return e and e.name, S.sel[n] or 1, #n.kids end,
     pairs = function(a, b) return pairs_(Grid.named({ name = a }), Grid.named({ name = b })) end,

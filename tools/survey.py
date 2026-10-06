@@ -1,7 +1,7 @@
 """Survey the game's mesh/entity files for catalog candidates. Needs the archive listing:
 <work>/scout/alllist.txt ("<archive>|<depot path>" per line; <work>: paths.work(), ours source/ - nothing in the tree
 makes it now). Writes <work>/survey/*.txt."""
-import collections, os, re, sys
+import collections, os, sys
 import paths as hpaths
 W = hpaths.work()
 src = sys.argv[1] if len(sys.argv) > 1 else os.path.join(W, 'scout', 'alllist.txt')

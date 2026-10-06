@@ -35,7 +35,7 @@ by the importer. The only Fallout-derived files in this repository are the menu'
    Fallout 4.
 3. Start Cyberpunk. On the main menu open **Settings > Mods > Homestead**. It shows where it found Fallout 4
    ("Look again" if that is wrong).
-4. Press **Import** on the status line and leave the game at the main menu (about 15 minutes the first time; the
+4. Press **Import** on the status line and leave the game at the main menu (about 15-20 minutes the first time; the
    status line shows progress).
 5. When it says "Built - quit Cyberpunk to install it", quit the game. It installs as the game closes. Start
    Cyberpunk again: the pieces are there.
@@ -64,7 +64,8 @@ If the import fails, the status line says why and `import.log` has the details. 
 
 Every key can be changed in Settings > Mods > Homestead > Keys. Fallout's pieces are held and snap as in Fallout 4:
 the piece floats in the middle of the view, turns with you, and snaps when one of its snap points comes near one
-that fits. Placed people are props in this release.
+that fits. Placed people are animated props: put one on a seat, a bed or a work stall and they take it up, or give
+them one of the game's animations from People > Animations.
 
 More detail: [README_PLAYER.txt](README_PLAYER.txt).
 
@@ -72,6 +73,9 @@ More detail: [README_PLAYER.txt](README_PLAYER.txt).
 
 Install the new version over the old one. If the update needs an import, the status line and a message in workshop
 mode say so; import again and only what changed is remade. Otherwise there is nothing to do.
+
+What you build is kept by Homestead in `mods\Homestead\pieces*.txt`, not inside the game's save (each save knows
+which file is its own). Keep those files when you update, and copy them along with your saves.
 
 To uninstall, remove the mod, then `archive\pc\mod\Homestead_FO4.archive`, `archive\pc\mod\Homestead.archive` and
 `mods\Homestead`.

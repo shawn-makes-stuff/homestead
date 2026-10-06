@@ -17,7 +17,7 @@ return function(M, C)
         spec.persistSpawn, spec.persistState, spec.alwaysSpawned, spec.spawnInView, spec.active = false, false, true, true, true
         spec.tags = { CName.new("Homestead.border") }
         S.creating = RING
-        local id = Eng.create(spec)
+        local id = Eng.create(spec, nil, { path = C.TEMPLATE, x = z.x, y = z.y, z = z.z - BELOW, i = 0, j = 0, k = 0, r = 1, tags = { "Homestead.border" }, keep = false })
         S.creating = nil
         S.ring = { id = id, h = hashOf(id), zone = z }
     end

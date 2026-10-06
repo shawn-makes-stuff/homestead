@@ -90,5 +90,5 @@ return function(C)
         return out
     end
 
-    C.holders, C.heldUpOnlyBy = holders, heldUpOnlyBy
+    C.heldUpOnlyBy = heldUpOnlyBy
 end

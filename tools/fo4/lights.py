@@ -3,13 +3,12 @@ index n): lights (ADDN LNAM -> a LIGH record: colour, radius, fade; the workshop
 and effects (ADDN MODL: fire, smoke, sparks; SNAM: their sound, e.g. a fire's crackle). Plus a light object's own
 light (LIGH records: at the model's AttachLight node, else near its top). -> source/fo4/pieces.json: `lights`
 [{color, radius, fade, pos}] (Cyberpunk light components, init.lua addLight) and `effects` [{model, sound, pos}].
-  python tools/fo4/lights.py        (after convert.py; convert.py runs it)
+(convert.py runs it, on its rows before it writes them.)
 """
-import json, os, struct, sys
+import struct
 import numpy as np
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import esm, nif
-from convert import Files, objects, FO4, UNIT
+import nif
+from convert import UNIT
 
 
 def light_of(g, k, pos, M=None):
@@ -31,16 +30,12 @@ def light_of(g, k, pos, M=None):
     return out
 
 
-def patch(g=None, files=None):
-    g = g or esm.Game()
-    files = files or Files()
+def patch(pieces, g, by, files):
+    """by: convert's objects, by their piece's key"""
     addn = {}
     for k, (t, _) in g.rec.items():
         d = g.field(k, 'DATA') if t == 'ADDN' else None
         if d and len(d) >= 4: addn[struct.unpack_from('<I', d)[0]] = k
-    by = {('fo4_' + (o['edid'] or '').lower()): o for o in objects(g)}
-    path = os.path.join(FO4, 'pieces.json')
-    pieces = json.load(open(path))
     nl = ne = 0
     for p in pieces:
         p.pop('light', None); p.pop('lights', None); p.pop('effects', None)
@@ -72,9 +67,4 @@ def patch(g=None, files=None):
             if x: lights.append(x)
         if lights: p['lights'] = lights; nl += 1
         if effects: p['effects'] = effects; ne += 1
-    json.dump(pieces, open(path, 'w'))
     print(nl, 'pieces with lights,', ne, 'with effects')
-
-
-if __name__ == '__main__':
-    patch()

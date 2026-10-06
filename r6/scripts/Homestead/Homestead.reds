@@ -25,6 +25,7 @@ public class HomesteadService extends ScriptableService {
             .AddTarget(InputTarget.Axis(EInputKey.IK_MouseZ));
         cb.RegisterCallback(n"Session/Ready", this, n"OnSessionReady");
         cb.RegisterCallback(n"Session/BeforeEnd", this, n"OnSessionEnd");
+        cb.RegisterCallback(n"Session/BeforeSave", this, n"OnSave");   // (modules/world.lua: our pieces' file is this save's)
     }
 
     private cb func OnSessionReady(event: ref<GameSessionEvent>) { this.HomesteadSession(true); }
@@ -32,6 +33,8 @@ public class HomesteadService extends ScriptableService {
         if IsDefined(this.ui) { this.ui.Forget(); }
         this.HomesteadSession(false);
     }
+
+    private cb func OnSave(event: ref<GameSessionEvent>) { this.HomesteadSaved(); }
 
     private cb func OnEntityInit(event: ref<EntityLifecycleEvent>) {
         this.HomesteadEntity(event.GetEntity());
@@ -59,30 +62,31 @@ public class HomesteadService extends ScriptableService {
     public func HomesteadKey(key: String, down: Bool, shift: Bool) {}
     public func HomesteadMouse(dx: Float, dy: Float) {}
     public func HomesteadSession(start: Bool) {}
+    public func HomesteadSaved() {}
 }
 
 public abstract class Homestead {
+    // the first hit between two points on the terrain, and with statics on the static meshes too
+    private static func Trace(from: Vector4, to: Vector4, statics: Bool, out hit: TraceResult) -> Bool {
+        let filter: QueryFilter;
+        if statics { QueryFilter.AddGroup(filter, n"Static"); }
+        QueryFilter.AddGroup(filter, n"Terrain");
+        return GameInstance.GetSpatialQueriesSystem(GetGameInstance()).SyncRaycastByQueryFilter(from, to, filter, hit, false, false);
+    }
+
     // First hit on the world (static meshes and terrain: the Badlands ground is only in Terrain) between two points:
     // XYZ = the point, W = 1; W = 0 when nothing is hit.
     public static func Ray(from: Vector4, to: Vector4) -> Vector4 {
-        let filter: QueryFilter;
-        QueryFilter.AddGroup(filter, n"Static");
-        QueryFilter.AddGroup(filter, n"Terrain");
         let hit: TraceResult;
-        if !GameInstance.GetSpatialQueriesSystem(GetGameInstance()).SyncRaycastByQueryFilter(from, to, filter, hit, false, false) {
-            return new Vector4(0.0, 0.0, 0.0, 0.0);
-        }
+        if !Homestead.Trace(from, to, true, hit) { return new Vector4(0.0, 0.0, 0.0, 0.0); }
         return new Vector4(hit.position.X, hit.position.Y, hit.position.Z, 1.0);
     }
 
     // Ray() plus the surface normal: [point (W = 1 when hit), normal]
     public static func RayHit(from: Vector4, to: Vector4) -> array<Vector4> {
-        let filter: QueryFilter;
-        QueryFilter.AddGroup(filter, n"Static");
-        QueryFilter.AddGroup(filter, n"Terrain");
         let hit: TraceResult;
         let out: array<Vector4>;
-        if !GameInstance.GetSpatialQueriesSystem(GetGameInstance()).SyncRaycastByQueryFilter(from, to, filter, hit, false, false) {
+        if !Homestead.Trace(from, to, true, hit) {
             ArrayPush(out, new Vector4(0.0, 0.0, 0.0, 0.0));
             ArrayPush(out, new Vector4(0.0, 0.0, 1.0, 0.0));
             return out;
@@ -94,12 +98,8 @@ public abstract class Homestead {
 
     // the terrain alone straight below a point (free placement's floor: nothing placed counts); Z, W = 1 when hit
     public static func TerrainBelow(at: Vector4) -> Vector4 {
-        let filter: QueryFilter;
-        QueryFilter.AddGroup(filter, n"Terrain");
         let hit: TraceResult;
-        let from = new Vector4(at.X, at.Y, at.Z + 2.0, 1.0);
-        let to = new Vector4(at.X, at.Y, at.Z - 80.0, 1.0);
-        if !GameInstance.GetSpatialQueriesSystem(GetGameInstance()).SyncRaycastByQueryFilter(from, to, filter, hit, false, false) {
+        if !Homestead.Trace(new Vector4(at.X, at.Y, at.Z + 2.0, 1.0), new Vector4(at.X, at.Y, at.Z - 80.0, 1.0), false, hit) {
             return new Vector4(0.0, 0.0, 0.0, 0.0);
         }
         return new Vector4(hit.position.X, hit.position.Y, hit.position.Z, 1.0);
@@ -173,6 +173,79 @@ public abstract class Homestead {
     }
     public static func SfxForget(id: EntityID) { HomesteadSfxForget(id); }
 
+    // Turrets (modules/turret.lua). Who is attacking V: on V's own list of hostile threats, alive, hostile to V and
+    // in combat. Police that aren't after V are none of these.
+    public static func Attackers() -> array<ref<NPCPuppet>> {
+        let out: array<ref<NPCPuppet>>;
+        let player = GetPlayer(GetGameInstance());
+        if !IsDefined(player) || !IsDefined(player.GetTargetTrackerComponent()) { return out; }
+        let threats = player.GetTargetTrackerComponent().GetHostileThreats(false);
+        for t in threats {
+            let npc = t.entity as NPCPuppet;
+            if IsDefined(npc) && ScriptedPuppet.IsActive(npc) && NPCPuppet.IsInCombat(npc)
+                && Equals(GameObject.GetAttitudeTowards(npc, player), EAIAttitude.AIA_Hostile) {
+                ArrayPush(out, npc);
+            }
+        }
+        return out;
+    }
+
+    // A turret's hit: a percentage of the target's health, as V's doing
+    public static func TurretHit(npc: ref<NPCPuppet>, percent: Float) {
+        let player = GetPlayer(GetGameInstance());
+        if !IsDefined(npc) || !IsDefined(player) { return; }
+        GameInstance.GetStatPoolsSystem(GetGameInstance()).RequestChangingStatPoolValue(Cast<StatsObjectID>(npc.GetEntityID()), gamedataStatPoolType.Health, -percent, player, false, true);
+    }
+
+    // An entity's identity for what is kept about it across saves (modules/life.lua jobs): its tag "hsu:<uid>" -> the uid,
+    // "" if it has none. Entity ids are a session's: a load gives every piece a new one (seen 2026-10-05: jobs kept by
+    // id matched nobody after a load).
+    public static func Uid(id: EntityID) -> String {
+        let tags = GameInstance.GetDynamicEntitySystem().GetTags(id);
+        for tag in tags {
+            let text = NameToString(tag);
+            if StrBeginsWith(text, "hsu:") { return StrMid(text, 4); }
+        }
+        return "";
+    }
+
+    // A person moved the way their AI moves them (a teleport command: what Appearance Menu Mod moves people by - the
+    // teleportation facility alone left ours where they were under the gizmo, user 2026-10-05). Not a person: nothing.
+    public static func MoveNPC(e: ref<Entity>, at: Vector4, yaw: Float) {
+        let npc = e as NPCPuppet;
+        if !IsDefined(npc) || !IsDefined(npc.GetAIControllerComponent()) { return; }
+        let cmd = new AITeleportCommand();
+        cmd.position = at;
+        cmd.rotation = yaw;
+        cmd.doNavTest = false;
+        npc.GetAIControllerComponent().SendCommand(cmd);
+    }
+
+    // the import notice (below), for init.lua: shown; its closing is OnHomesteadNoticeClosed, watched there
+    public static func Notice(menu: ref<SingleplayerMenuGameController>, title: String, text: String) {
+        if IsDefined(menu) { menu.HomesteadNotice(title, text); }
+    }
+
+    // The game's own hand cursor, as over its terminals and elevator panels (an elevator's buttons: modules/elevator.lua).
+    // It is the HUD's (cursor_device.script: shown while UIGameData.InteractionData says a terminal is being used - the
+    // crosshair goes, and a click doesn't fire). Written only when it differs: the game writes it too.
+    public static func Hand(on: Bool) {
+        let bb = GameInstance.GetBlackboardSystem(GetGameInstance()).Get(GetAllBlackboardDefs().UIGameData);
+        if !IsDefined(bb) { return; }
+        let data: bbUIInteractionData;
+        let v = bb.GetVariant(GetAllBlackboardDefs().UIGameData.InteractionData);
+        if IsDefined(v) { data = FromVariant<bbUIInteractionData>(v); }
+        if Equals(data.terminalInteractionActive, on) { return; }
+        data.terminalInteractionActive = on;
+        bb.SetVariant(GetAllBlackboardDefs().UIGameData.InteractionData, ToVariant(data), true);
+    }
+
+    // a game sound event at one of our pieces (a turret's shot)
+    public static func SoundAt(id: EntityID, name: String) {
+        let obj = GameInstance.FindEntityByID(GetGameInstance(), id) as GameObject;
+        if IsDefined(obj) { GameObject.PlaySoundEvent(obj, StringToName(name)); }
+    }
+
     // A hint in the game's own list (bottom right, with Draw Weapon and Crouch): its look, its order, and it moves
     // when the list does (a weapon drawn, a menu). The key comes from an input action (init.lua gameHints), so it follows the player's own bindings.
     public static func Hint(action: String, label: String, show: Bool, hold: Bool, order: Int32) {
@@ -205,15 +278,9 @@ public abstract class Homestead {
         let res = nav.FindPointInSphereOnlyHumanNavmesh(at, r, NavGenAgentSize.Human, true);
         if NotEquals(res.status, worldNavigationRequestStatus.OK) { return new Vector4(x, y, z, 0.0); }
         let p = res.point;
-        let filter: QueryFilter;
-        QueryFilter.AddGroup(filter, n"Static");
-        QueryFilter.AddGroup(filter, n"Terrain");
         let hit: TraceResult;
-        let top = p.Z;
-        if GameInstance.GetSpatialQueriesSystem(GetGameInstance()).SyncRaycastByQueryFilter(new Vector4(p.X, p.Y, p.Z + 0.15, 1.0), new Vector4(p.X, p.Y, p.Z - 0.4, 1.0), filter, hit, false, false) {
-            top = hit.position.Z;
-        }
-        return new Vector4(p.X, p.Y, top, 1.0);
+        if Homestead.Trace(new Vector4(p.X, p.Y, p.Z + 0.15, 1.0), new Vector4(p.X, p.Y, p.Z - 0.4, 1.0), true, hit) { p.Z = hit.position.Z; }
+        return new Vector4(p.X, p.Y, p.Z, 1.0);
     }
     // the game's own path between two points on its navmesh (corners), empty when there's none
     public static func NavPath(a: Vector4, b: Vector4) -> array<Vector4> {
@@ -260,3 +327,19 @@ func HomesteadSfxForget(id: EntityID) {
 func HomesteadSfx(id: EntityID, ev: CName, play: Bool, loop: Bool, vol: Float) -> Bool { return false; }
 @if(!ModuleExists("Audioware"))
 func HomesteadSfxForget(id: EntityID) {}
+
+// The import notice on the main menu (init.lua): the game's own message box. Its token is let go when the box closes -
+// held on, the box's layer stays over the menu and takes every click.
+@addField(SingleplayerMenuGameController)
+private let hsNotice: ref<inkGameNotificationToken>;
+
+@addMethod(SingleplayerMenuGameController)
+public func HomesteadNotice(title: String, text: String) {
+    this.hsNotice = GenericMessageNotification.Show(this, title, text, GenericMessageNotificationType.OK);
+    this.hsNotice.RegisterListener(this, n"OnHomesteadNoticeClosed");
+}
+
+@addMethod(SingleplayerMenuGameController)
+protected cb func OnHomesteadNoticeClosed(data: ref<inkGameNotificationData>) -> Bool {
+    this.hsNotice = null;
+}

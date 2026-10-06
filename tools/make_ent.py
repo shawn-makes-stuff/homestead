@@ -1,5 +1,5 @@
 """<work>/json/homestead/empty.ent.json: an empty gameObject template (one targeting component), and empty_lit.ent.json
-(the same with two lights). Every Homestead piece spawns from one; the CET mod adds the mesh and collider components on
+(the same with LIGHTS lights). Every Homestead piece spawns from one; the CET mod adds the mesh and collider components on
 Entity/Initialize. main() writes them (tools/import.py: before the weapons, whose template is a copy, and the archive).
   python tools/make_ent.py"""
 import json, os, sys
@@ -23,7 +23,7 @@ ent = {'Header': {'WolvenKitVersion': '9.0.1', 'WKitJsonVersion': '0.0.9', 'Game
            'defaultAppearance': {'$type': 'CName', '$storage': 'string', '$value': 'None'},
            'entity': {'HandleId': '0', 'Data': root}, 'includeInstanceBuffer': None, 'includes': [], 'inplaceResources': [],
            'localData': None, 'resolvedDependencies': [], 'visualTagsSchema': None}, 'EmbeddedFiles': []}}
-# empty_lit.ent: the same with two point lights, their settings the game's own (a Japanese lantern's light component:
+# empty_lit.ent: the same with LIGHTS point lights (two until 2026-10-05: the mod lights as many as it finds), their settings the game's own (a Japanese lantern's light component:
 # all light channels, lumens, inverse-square falloff, diffuse on transparents and particles) - a light made in Lua
 # left its channels empty and lit nothing. Pieces with lights spawn from it; Lua sets colour, radius, intensity and
 # where each sits (init.lua addLight).
@@ -53,11 +53,12 @@ def light(name, cruid):
             'type': 'LT_Point', 'unit': 'LU_Lumen', 'useInEnvProbes': 0, 'useInFog': 0, 'useInGI': 0, 'useInParticles': 1, 'useInTransparents': 1}
 import copy
 lit = copy.deepcopy(ent)
-L = [light('hs_light1', '5810274981337241858'), light('hs_light2', '5810274981337241859')]
+LIGHTS = 12                                                  # (the most a piece has: the Quitting Time Siren)
+L = [light('hs_light%d' % (i + 1), str(5810274981337241858 + i)) for i in range(LIGHTS)]
 rc = lit['Data']['RootChunk']
 rc['components'] = rc['components'] + L
 rc['compiledData']['Data']['Chunks'] = rc['compiledData']['Data']['Chunks'] + L
-rc['compiledData']['Data']['CruidDict'] = {'0': '0', '1': CRUID, '2': L[0]['id'], '3': L[1]['id']}
+rc['compiledData']['Data']['CruidDict'] = {'0': '0', '1': CRUID, **{str(i + 2): l['id'] for i, l in enumerate(L)}}
 
 
 def main():

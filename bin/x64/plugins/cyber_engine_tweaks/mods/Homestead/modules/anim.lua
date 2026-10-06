@@ -29,15 +29,18 @@ return function(Anim, C)
             on[ev] = nil
         end
     end
+    Anim.sfx = sfx                                              -- (elevator.lua: Fallout's sounds at a piece)
     local function hum(p, on) for _, ev in ipairs(p.it.snd and p.it.snd.hum or {}) do sfx(p, ev, on) end end
 
     local function lamp(p, on)
         S.dark[hashOf(p.id)] = not on or nil
         local e = des():GetEntity(p.id)
         if not e then return end
-        for i, l in ipairs(p.it.lights) do
+        for i, l in ipairs(p.it.lights or {}) do
             local c = e:FindComponentByName(CName.new("hs_light" .. i))
             if c then if on then c:SetIntensity(lumens(l)) end c:ToggleLight(on) end
+            local b = l.beam and e:FindComponentByName(CName.new("hs_beam" .. i))
+            if b then b:Toggle(on) end
         end
         local g = p.it.glow and e:FindComponentByName(CName.new("hs_mesh" .. p.it.glow))
         if g then g:Toggle(on) end
@@ -156,18 +159,7 @@ return function(Anim, C)
         local a = st.p.it.anim
         if S.playing[hashOf(st.p.id)] or not st.at or not a.seqs[st.at] then return end
         if st.at ~= a.rest then
-            local s = a.seqs[st.at]
-            local f = s.f
-            local nf = #f / (7 * a.n)
-            for k = 1, a.n do
-                local c = st.mesh[k]
-                local i = ((nf - 1) * a.n + k - 1) * 7
-                if c then
-                    local l = math.sqrt(f[i + 4] ^ 2 + f[i + 5] ^ 2 + f[i + 6] ^ 2 + f[i + 7] ^ 2)
-                    c:SetLocalPosition(Vector4.new(f[i + 1], f[i + 2], f[i + 3], 1))
-                    c:SetLocalOrientation(Quaternion.new(f[i + 4] / l, f[i + 5] / l, f[i + 6] / l, f[i + 7] / l))
-                end
-            end
+            apply(st, st.at, math.huge)                          -- (its last frame)
             for _, c in pairs(st.col) do if c then pcall(function() c:Toggle(false) end) end end
             st.colOn = false
         end
@@ -236,11 +228,17 @@ return function(Anim, C)
         S.stashOpen, S.stashT = p, 0
     end
 
+    -- What V can use: a container, what moves on E, a lamp, a powered sign (Fallout's Power menu: neon, lightboxes -
+    -- their glow alone). Not seats or beds (user, 2026-10-05: V's sitting and lying taken out).
+    local function lit(it) return it.lights or (it.glow and not it.noglow and it.cat == "Power") end
+    function Anim.usable(it) return it.anim or it.stash or lit(it) end
+
     function Anim.label(p)
         if p.it.stash then return "Open" end
+        if C.Elevator.floors(p) then return C.Elevator.label(p) end
         local a = p.it.anim
-        if not a then return p.it.lights and (S.dark[hashOf(p.id)] and "Turn on" or "Turn off") end
-        local k = kind(a)
+        if not a and lit(p.it) then return S.dark[hashOf(p.id)] and "Turn on" or "Turn off" end
+        local k = a and kind(a)
         if not k or k == "loop" then return nil end
         local at = state(p).at
         if k == "door" then return (at == "Open") and "Close" or "Open" end
@@ -250,9 +248,11 @@ return function(Anim, C)
 
     function Anim.use(p)
         if p.it.stash then try("stash", openStash, p) return end
-        if not p.it.anim then try("light", lamp, p, S.dark[hashOf(p.id)] ~= nil) return end
+        if C.Elevator.floors(p) then try("elevator", C.Elevator.use, p) return end
+        if not p.it.anim and lit(p.it) then try("light", lamp, p, S.dark[hashOf(p.id)] ~= nil) return end
+        local k = p.it.anim and kind(p.it.anim)
+        if not k or k == "loop" then return end
         local a, st = p.it.anim, state(p)
-        local k = kind(a)
         if S.playing[hashOf(p.id)] and not a.seqs[st.seq].loop then return end
         if k == "door" then Anim.play(p, st.at == "Open" and "Close" or "Open")
         elseif k == "trap" then
@@ -272,8 +272,38 @@ return function(Anim, C)
         if p.it.anim and p.it.anim.seqs.Close and state(p).at == "Open" then Anim.play(p, "Close") end
     end
 
+    -- Lights Fallout shows one at a time (catalog item `cycle`, entities.lua): { light, seconds } in turn - a traffic
+    -- light's green, amber, red; a cycling bulb's colours 3 s each. One light component, restyled as the turn changes.
+    local CYCLE = { fo4_workshoptrafficlight = { { 2, 6 }, { 3, 2 }, { 1, 6 } } }
+    local function cycle(p)
+        local L, steps = p.it.cycle, CYCLE[p.it.key]
+        if not steps then
+            steps = {}
+            for i = 1, #L do steps[i] = { i, 3 } end
+            CYCLE[p.it.key] = steps
+        end
+        local total = 0
+        for _, s in ipairs(steps) do total = total + s[2] end
+        local t, n = os.clock() % total, steps[#steps][1]
+        for _, s in ipairs(steps) do
+            if t < s[2] then n = s[1] break end
+            t = t - s[2]
+        end
+        local h = hashOf(p.id)
+        if S.cyc[h] == n then return end
+        local e = des():GetEntity(p.id)
+        local c = e and e:FindComponentByName(CName.new("hs_light1"))
+        if not c then return end
+        local l = L[n]
+        S.cyc[h] = n
+        c:SetColor(Color.new({ Red = l.color[1], Green = l.color[2], Blue = l.color[3], Alpha = 255 }))
+        c:SetLocalPosition(Vector4.new(l.pos[1], l.pos[2], l.pos[3], 1))
+        if not S.dark[h] then c:SetIntensity(lumens(l)) end
+    end
+
     function Anim.near(pos)
         for _, p in ipairs(S.pieces) do
+            if p.it.cycle and (p.o.x - pos.x) ^ 2 + (p.o.y - pos.y) ^ 2 < LOOP_NEAR ^ 2 then try("cycle", cycle, p) end
             local a, sn = p.it.anim, p.it.snd
             if a or (sn and sn.hum[1]) then
                 local h, d2 = hashOf(p.id), (p.o.x - pos.x) ^ 2 + (p.o.y - pos.y) ^ 2
@@ -299,6 +329,6 @@ return function(Anim, C)
         local h = hashOf(id)
         for _, v in pairs(S.sfx[h] or {}) do try("sound", Homestead.Sfx, id, v, false, false, 0) end
         try("sound", Homestead.SfxForget, id)
-        S.playing[h], S.anims[h], S.sfx[h], S.running[h], S.dark[h] = nil, nil, nil, nil, nil
+        S.playing[h], S.anims[h], S.sfx[h], S.running[h], S.dark[h], S.cyc[h] = nil, nil, nil, nil, nil, nil
     end
 end

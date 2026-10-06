@@ -3,12 +3,11 @@ below-normal priority (the PC stays usable while it runs; on a quiet machine it'
 this on their own PC, low end included: nothing here assumes a dev box.
   workers(per_gb, most): processes for a step whose workers need about per_gb GB each
 """
-import ctypes, os, sys
+import ctypes, os
 
 
 def free_gb():
-    """free physical memory, GB (Windows; elsewhere a cautious 4)"""
-    if sys.platform != 'win32': return 4.0
+    """free physical memory, GB"""
     class MS(ctypes.Structure):
         _fields_ = [('dwLength', ctypes.c_ulong), ('dwMemoryLoad', ctypes.c_ulong), ('ullTotalPhys', ctypes.c_ulonglong),
                     ('ullAvailPhys', ctypes.c_ulonglong), ('ullTotalPageFile', ctypes.c_ulonglong), ('ullAvailPageFile', ctypes.c_ulonglong),
@@ -34,9 +33,5 @@ def roomy():
 def gentle():
     """this process (and the workers it starts, which inherit it) below normal priority - unless HOMESTEAD_PRIORITY
     says normal (tools/import.py, started from the game: the player waits at the main menu for it, the game idling)"""
-    if os.environ.get('HOMESTEAD_PRIORITY') == 'normal': return
-    if sys.platform == 'win32':
+    if os.environ.get('HOMESTEAD_PRIORITY') != 'normal':
         ctypes.windll.kernel32.SetPriorityClass(ctypes.windll.kernel32.GetCurrentProcess(), 0x4000)   # BELOW_NORMAL
-    else:
-        try: os.nice(10)
-        except OSError: pass

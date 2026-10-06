@@ -63,13 +63,9 @@ return function(C)
     local function slotKey(kind, x, y, z) return string.format("%s:%d:%d:%d", kind, math.floor(x * 2 + 0.5), math.floor(y * 2 + 0.5), levelKey(z)) end
 
     local function slotsOf(it, o, yaw)
-        if it.kind == "road" or it.kind == "prefab" then return {} end
-        if it.kind == "floor" then
+        if it.kind == "floor" or it.kind == "post" then
             local c = local2world(o, yaw, it.cx, it.cy)
-            return { slotKey("F", c.x, c.y, o.z) }
-        elseif it.kind == "post" then
-            local c = local2world(o, yaw, it.cx, it.cy)
-            return { slotKey("P", c.x, c.y, o.z) }
+            return { slotKey(it.kind == "floor" and "F" or "P", c.x, c.y, o.z) }
         elseif it.kind == "wall" then
             local out, n = {}, math.max(1, math.floor(it.size[1] / GRID + 0.5))
             for k = 1, n do
@@ -95,11 +91,11 @@ return function(C)
         local cells, stamp = {}, 0
         local function key(i, j) return (i + 50000) * 100000 + (j + 50000) end
         local function span(a, b) return math.floor(a / Grid.size), math.floor(b / Grid.size) end
+        function Grid.reach(it) return math.sqrt(it.size[1] ^ 2 + it.size[2] ^ 2) / 2 + math.sqrt(it.cx ^ 2 + it.cy ^ 2) end
         function Grid.build(pieces)
             cells = {}
             for _, p in ipairs(pieces) do
-                local it = p.it
-                local r = math.sqrt(it.size[1] ^ 2 + it.size[2] ^ 2) / 2 + math.sqrt(it.cx ^ 2 + it.cy ^ 2)
+                local r = Grid.reach(p.it)
                 local i0, i1 = span(p.o.x - r, p.o.x + r)
                 local j0, j1 = span(p.o.y - r, p.o.y + r)
                 for i = i0, i1 do for j = j0, j1 do
@@ -193,7 +189,7 @@ return function(C)
     local function aabb(b) return b[7] and turn(b).box or b end
 
     -- a ray (unit dir) against one of a piece's boxes (in its space; a turned one in its own frame): where it enters, t,
-    -- and the face's world normal; nil if it misses, or starts inside. through: starting inside counts too (t 0), no
+    -- and the face's world normal; nil if it misses, or starts inside. through: starting inside counts too (t 0), no normal
     local TMIN, TMAX, AXIS, SIGN
     local function slab(o, d, h, i)
         if math.abs(d) < 1e-9 then return not (o < -h or o > h) end
@@ -225,6 +221,43 @@ return function(C)
         return tmin, { nx * a[1] + ny * a[3], nx * a[2] + ny * a[4], nz }
     end
 
+    -- the point of one of a piece's boxes nearest a world point (a turned box in its own frame): that point, how far
+    -- it is, and the way from it to the asker (unit) - all in the world. The asker inside the box: the point is on the
+    -- face nearest it, the way is that face's, and how far is minus its depth under that face
+    local function nearBox(p, b, at)
+        local a = axes(p.yaw)
+        local dx, dy, dz = at.x - p.o.x, at.y - p.o.y, at.z - p.o.z
+        local l = { dx * a[1] + dy * a[2] - b[1], dx * a[3] + dy * a[4] - b[2], dz - b[3] }
+        local m = b[7] and turn(b).m
+        if m then l = { l[1] * m[1] + l[2] * m[2] + l[3] * m[3], l[1] * m[4] + l[2] * m[5] + l[3] * m[6], l[1] * m[7] + l[2] * m[8] + l[3] * m[9] } end
+        local c, d2 = {}, 0
+        for i = 1, 3 do
+            c[i] = math.max(-b[i + 3], math.min(b[i + 3], l[i]))
+            d2 = d2 + (l[i] - c[i]) ^ 2
+        end
+        local n, d
+        if d2 > 1e-12 then
+            d = math.sqrt(d2)
+            n = { (l[1] - c[1]) / d, (l[2] - c[2]) / d, (l[3] - c[3]) / d }
+        else
+            local k, least = 1, math.huge
+            for i = 1, 3 do
+                local g = b[i + 3] - math.abs(l[i])
+                if g < least then k, least = i, g end
+            end
+            n = { 0, 0, 0 }
+            n[k] = l[k] < 0 and -1 or 1
+            c[k], d = n[k] * b[k + 3], -least
+        end
+        if m then
+            c = { c[1] * m[1] + c[2] * m[4] + c[3] * m[7], c[1] * m[2] + c[2] * m[5] + c[3] * m[8], c[1] * m[3] + c[2] * m[6] + c[3] * m[9] }
+            n = { n[1] * m[1] + n[2] * m[4] + n[3] * m[7], n[1] * m[2] + n[2] * m[5] + n[3] * m[8], n[1] * m[3] + n[2] * m[6] + n[3] * m[9] }
+        end
+        local cx, cy = c[1] + b[1], c[2] + b[2]
+        return { x = p.o.x + cx * a[1] + cy * a[3], y = p.o.y + cx * a[2] + cy * a[4], z = p.o.z + c[3] + b[3] }, d,
+               { x = n[1] * a[1] + n[2] * a[3], y = n[1] * a[2] + n[2] * a[4], z = n[3] }
+    end
+
     -- how high one of a piece's boxes reaches over its point (lx, ly), give or take `grow` across: its bottom and top
     -- (the piece's z), or nil. A turned box: where the upright line there passes through it (on a ramp, the slope's
     -- height there; grow only along its level-ish axes, so a ramp's top doesn't rise with it)
@@ -253,6 +286,10 @@ return function(C)
     local function boundsBox(it)
         if not it.bb then it.bb = { it.cx, it.cy, (it.min[3] + it.max[3]) / 2, it.size[1] / 2, it.size[2] / 2, it.size[3] / 2 } end
         return it.bb
+    end
+    local function solidBoxes(it)
+        if not it.solid then it.solid = #it.boxes > 0 and it.boxes or { boundsBox(it) } end
+        return it.solid
     end
 
     -- a piece with many boxes (a walk-in shack: thousands) keeps them in groups of up to 32 by place, each with its
@@ -313,7 +350,7 @@ return function(C)
                         if tg and tg < best.t then best = nearer(p, g.boxes, eye, dir, best) end
                     end
                 else
-                    best = nearer(p, #p.it.boxes > 0 and p.it.boxes or { boundsBox(p.it) }, eye, dir, best)
+                    best = nearer(p, solidBoxes(p.it), eye, dir, best)
                 end
             end
         end
@@ -362,11 +399,8 @@ return function(C)
     end
 
     local function corners(it, o, yaw)
-        local t = {}
-        for _, c in ipairs({ { it.min[1], it.min[2] }, { it.max[1], it.min[2] }, { it.max[1], it.max[2] }, { it.min[1], it.max[2] } }) do
-            t[#t + 1] = local2world(o, yaw, c[1], c[2])
-        end
-        return t
+        local lo, hi = it.min, it.max
+        return { local2world(o, yaw, lo[1], lo[2]), local2world(o, yaw, hi[1], lo[2]), local2world(o, yaw, hi[1], hi[2]), local2world(o, yaw, lo[1], hi[2]) }
     end
 
     -- snap mode: no piece inside another, as in Fallout - their collision boxes (turned with their pieces) may touch or
@@ -428,11 +462,7 @@ return function(C)
         A1, A2, B1, B2 = a1, a2, b1, b2
         return not (flat(a1[1], a1[2]) or flat(a1[3], a1[4]) or flat(a2[1], a2[2]) or flat(a2[3], a2[4]))
     end
-    local function reach(it) return math.sqrt(it.size[1] ^ 2 + it.size[2] ^ 2) / 2 + math.sqrt(it.cx ^ 2 + it.cy ^ 2) end
-    local function solidBoxes(it)
-        if not it.solid then it.solid = #it.boxes > 0 and it.boxes or { boundsBox(it) } end
-        return it.solid
-    end
+    local reach = Grid.reach
     local function blockedBy(it, o, yaw, skip, give, box)
         GIVE = give or OVERLAP
         local mine, mygroups = box and { box } or solidBoxes(it), not box and groupsOf(it) or nil
@@ -477,8 +507,8 @@ return function(C)
 
     C.Q, C.Grid, C.U = Q, Grid, U
     C.axes, C.local2world, C.originAt, C.pivotOf, C.anchorOf, C.originFromAnchor = axes, local2world, originAt, pivotOf, anchorOf, originFromAnchor
-    C.cellOf, C.levelKey, C.slotKey, C.slotsOf = cellOf, levelKey, slotKey, slotsOf
+    C.cellOf, C.levelKey, C.slotsOf = cellOf, levelKey, slotsOf
     C.zoneDist, C.inZone, C.corners = zoneDist, inZone, corners
     C.rayBox, C.span, C.boundsBox, C.groupsOf, C.cast, C.view, C.screenInfo, C.aim, C.groundZ = rayBox, span, boundsBox, groupsOf, cast, view, screenInfo, aim, groundZ
-    C.boxHit, C.reach, C.solidBoxes, C.blockedBy, C.pairs_ = boxHit, reach, solidBoxes, blockedBy, pairs_
+    C.reach, C.blockedBy, C.pairs_, C.nearBox = reach, blockedBy, pairs_, nearBox
 end

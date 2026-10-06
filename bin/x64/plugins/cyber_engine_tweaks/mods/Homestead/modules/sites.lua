@@ -13,10 +13,10 @@ return function(C)
         local AX = { { "x", 16384, 17 }, { "y", 16384, 17 }, { "z", 1024, 14 } }      -- (0.25 m steps)
         local cache = {}
         function Sites.tags(c)
-            local t = { CName.new("hssite") }
+            local t = { "hssite" }                           -- (text: entities.lua makes the game's names of them)
             for _, a in ipairs(AX) do
                 local n = math.floor((c[a[1]] + a[2]) * 4 + 0.5)
-                for b = 0, a[3] - 1 do if math.floor(n / 2 ^ b) % 2 == 1 then t[#t + 1] = CName.new("hss" .. a[1] .. b) end end
+                for b = 0, a[3] - 1 do if math.floor(n / 2 ^ b) % 2 == 1 then t[#t + 1] = "hss" .. a[1] .. b end end
             end
             return t
         end
@@ -29,11 +29,11 @@ return function(C)
             local h = hashOf(id)
             if cache[h] == nil then
                 cache[h] = false
-                if des():IsTagged(id, CName.new("hssite")) then
+                if des():IsTagged(id, "hssite") then
                     local v = {}
                     for _, a in ipairs(AX) do
                         local n = 0
-                        for b = 0, a[3] - 1 do if des():IsTagged(id, CName.new("hss" .. a[1] .. b)) then n = n + 2 ^ b end end
+                        for b = 0, a[3] - 1 do if des():IsTagged(id, "hss" .. a[1] .. b) then n = n + 2 ^ b end end
                         v[a[1]] = n / 4 - a[2]
                     end
                     cache[h] = Sites.make(v.x, v.y, v.z)
@@ -45,7 +45,7 @@ return function(C)
             local list, known = {}, {}
             for _, s in ipairs(Sites.list) do known[s.key] = s end
             local seen = {}
-            for _, id in ipairs(des():GetTaggedIDs(CName.new("Homestead.bench")) or {}) do
+            for _, id in ipairs(des():GetTaggedIDs("Homestead.bench") or {}) do
                 local s = decode(id)
                 if s and not seen[s.key] then seen[s.key] = true; list[#list + 1] = known[s.key] or s end
             end
@@ -63,7 +63,6 @@ return function(C)
             return best, bd and math.sqrt(bd)
         end
     end
-
 
     local function pin(s)
         local ok, id = pcall(function()
@@ -140,7 +139,7 @@ return function(C)
     -- Boundary Posts (an old adjustable border, no longer in the catalog): a save's are deleted, each once it is in the world
     -- (one saved out: when its settlement comes in), through the lifetime guard's queue. Found by their tag.
     local function posts()
-        POSTS = POSTS or CName.new("hs:boundary")
+        POSTS = "hs:boundary"
         local n = 0
         for _, id in ipairs(des():GetTaggedIDs(POSTS) or {}) do
             if des():GetEntity(id) and not Eng.dying(id) then C.del(id); n = n + 1 end
@@ -155,7 +154,7 @@ return function(C)
             s.x0, s.y0, s.x1, s.y1 = s.x - RADIUS, s.y - RADIUS, s.x + RADIUS, s.y + RADIUS
         end
         posts()
-        TAGS = TAGS or { CName.new("Homestead"), CName.new("Homestead.part") }
+        TAGS = TAGS or { "Homestead", "Homestead.part" }
         for _, tag in ipairs(TAGS) do
             for _, id in ipairs(des():GetTaggedIDs(tag) or {}) do
                 local h = hashOf(id)
@@ -271,7 +270,7 @@ return function(C)
             for _, s in ipairs(Sites.list) do if s.loaded == false then out(s) end end
         end
         for _, s in ipairs(Sites.list) do
-            s.tag = s.tag or CName.new("hsin" .. s.key)
+            s.tag = s.tag or ("hsin" .. s.key)
             local d, want = edge(s, p), nil
             if d < S.loadDist or (s == S.zone and (S.build or S.cmd)) then want = true
             elseif d > S.loadDist + MORE then want = false end

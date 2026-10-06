@@ -9,13 +9,23 @@ import math
 
 RATE = 15
 PLAY = ['Open', 'Close', 'On', 'Off', 'TurningOn', 'TurningOff', 'Set', 'Arm', 'TripTransition', 'Tripped',
-        'SetTransitionFromTripped', 'Trip', 'Idle', 'Fire']
-REST = ['On', 'Close', 'Set', 'Idle', 'Off']
+        'SetTransitionFromTripped', 'Trip', 'Idle', 'Fire', 'Held']
+REST = ['On', 'Close', 'Set', 'Idle', 'Off', 'Held']
 
 
 # parts Fallout spins from its Havok behaviour graph (no keys in the model): node name -> (axis in the node's frame,
 # seconds a turn)
 SPIN = {'fanblades': ((0, 0, 1), 1.2)}
+
+
+# parts Fallout moves by script, not by any sequence (an elevator's car): each a part of its own, still - the mod
+# moves it (modules/elevator.lua). The node's name
+CARRIED = ('Car01',)
+
+
+def still(rest_t, frame=1.0 / RATE):
+    """a track that holds a node where it is (two keys: a part is what a sequence gives more than one key)"""
+    return dict(pose=None, euler=None, rot=[], scale=[], trans=[(0.0, tuple(rest_t)), (frame, tuple(rest_t))])
 
 
 # a turret's head: turns side to side about the vertical (degrees either way, seconds a sweep there and back)

@@ -1,7 +1,6 @@
 """Which meshes are one-sided: for each axis, the triangle area facing + and - (a closed mesh has both about equal).
 usage: python tools/sides.py <mesh name> ...   (default: every catalog mesh)"""
 import os, sys, warnings
-import numpy as np
 sys.path.insert(0, os.path.dirname(__file__))
 import meshes, colliders
 warnings.filterwarnings('ignore')

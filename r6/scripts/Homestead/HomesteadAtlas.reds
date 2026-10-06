@@ -22,6 +22,7 @@ public abstract class HomesteadAtlas {
         if Equals(name, "18") { return r"homestead\\ui\\thumbs_18.inkatlas"; }
         if Equals(name, "19") { return r"homestead\\ui\\thumbs_19.inkatlas"; }
         if Equals(name, "20") { return r"homestead\\ui\\thumbs_20.inkatlas"; }
+        if Equals(name, "21") { return r"homestead\\ui\\thumbs_21.inkatlas"; }
         return r"homestead\\ui\\thumbs_0.inkatlas";
     }
 }

@@ -1,7 +1,7 @@
 import Codeware.UI.*
 
 // Homestead's on-screen UI in native ink widgets (Codeware): Fallout 4's workshop layout in the game's own style
-// (salmon-red labels, cyan selection, cyan outlined key boxes, orange accent bars, dark translucent slots).
+// (salmon-red labels, cyan selection, cyan outlined key boxes, dark translucent slots).
 // Resolution: everything is designed in 3840 x 2160 units on a "stage" canvas, scaled by
 // min(screen W / 3840, screen H / 2160) (Codeware's VirtualResolution rule) and sized to cover the whole screen, so
 // anchors at the stage's edges and centre work at any resolution and aspect ratio. The HUD layer itself is in pixels.
@@ -16,7 +16,6 @@ public class HomesteadUI {
     public static func DimRed() -> HDRColor { return new HDRColor(0.58, 0.2, 0.19, 1.0); }
     public static func Cyan() -> HDRColor { return new HDRColor(0.3686, 0.9647, 1.0, 1.0); }
     public static func DimCyan() -> HDRColor { return new HDRColor(0.16, 0.42, 0.45, 1.0); }
-    public static func Orange() -> HDRColor { return new HDRColor(1.0, 0.56, 0.12, 1.0); }
     public static func Yellow() -> HDRColor { return new HDRColor(1.0, 0.87, 0.3, 1.0); }
     public static func Pale() -> HDRColor { return new HDRColor(0.82, 0.84, 0.84, 1.0); }
     public static func Dark() -> HDRColor { return new HDRColor(0.035, 0.022, 0.03, 1.0); }
@@ -65,7 +64,6 @@ public class HomesteadUI {
         return c;
     }
 
-
     private static func Box(parent: ref<inkCanvas>, anchor: inkEAnchor, px: Float, py: Float, x: Float, y: Float, w: Float, h: Float) -> ref<inkCanvas> {
         let c = new inkCanvas();
         c.SetAnchor(anchor);
@@ -94,7 +92,7 @@ public class HomesteadUI {
     }
 
     private static func Text(parent: ref<inkCanvas>, x: Float, y: Float, px: Float, py: Float, text: String, size: Int32,
-                             color: HDRColor, style: CName) {
+                             color: HDRColor, style: CName) -> ref<inkText> {
         let t = new inkText();
         t.SetAnchor(inkEAnchor.TopLeft);
         t.SetAnchorPoint(px, py);
@@ -107,6 +105,7 @@ public class HomesteadUI {
         t.SetTintColor(color);
         t.SetText(text);
         t.Reparent(parent);
+        return t;
     }
 
     public static func KeyWidth(key: String) -> Float {
@@ -121,7 +120,6 @@ public class HomesteadUI {
         HomesteadUI.Frame(parent, x, y - h / 2.0, w, h, 3.0, HomesteadUI.Cyan(), 1.0);
         HomesteadUI.Text(parent, x + w / 2.0, y + 1.0, 0.5, 0.5, key, 36, HomesteadUI.Cyan(), n"Semi-Bold");
     }
-
 
     // prompt: at the workbench. build: the workshop menu is up; level 0 = category tabs focused, 1 = the category's
     // groups, 2 = the group's items (one is held). names/thumbs: the cards in the row (groups at levels 0-1, items at
@@ -158,12 +156,14 @@ public class HomesteadUI {
             let top = 176.0;
             let m = HomesteadUI.Box(stage, inkEAnchor.TopCenter, 0.5, 0.0, 0.0, 80.0, W, 560.0);
             HomesteadUI.Text(m, 0.0, 26.0, 0.0, 0.5, crumb, 36, HomesteadUI.Red(), n"Semi-Bold");
-            HomesteadUI.Text(m, W, 26.0, 1.0, 0.5, "Size  " + IntToString(count * 100 / Max(budget, 1)) + "%", 32,
-                             HomesteadUI.Red(), n"Medium");
-            let bw = 360.0;
-            let fill = bw * MinF(1.0, Cast<Float>(count) / Cast<Float>(Max(budget, 1)));
-            HomesteadUI.Rect(m, W - bw, 52.0, bw, 5.0, HomesteadUI.DimRed(), 0.8);
-            HomesteadUI.Rect(m, W - bw, 52.0, fill, 5.0, HomesteadUI.Red(), 1.0);
+            if budget > 0 {                                  // (0: the build limit is off - no size, no bar)
+                HomesteadUI.Text(m, W, 26.0, 1.0, 0.5, "Size  " + IntToString(count * 100 / budget) + "%", 32,
+                                 HomesteadUI.Red(), n"Medium");
+                let bw = 360.0;
+                let fill = bw * MinF(1.0, Cast<Float>(count) / Cast<Float>(budget));
+                HomesteadUI.Rect(m, W - bw, 52.0, bw, 5.0, HomesteadUI.DimRed(), 0.8);
+                HomesteadUI.Rect(m, W - bw, 52.0, fill, 5.0, HomesteadUI.Red(), 1.0);
+            }
             HomesteadUI.Rect(m, 0.0, 66.0, W, 2.0, HomesteadUI.Red(), 0.45);
 
             let n = ArraySize(cats);
@@ -201,11 +201,7 @@ public class HomesteadUI {
                         HomesteadUI.Rect(m, cx, top - 16.0, 120.0, 16.0, edge, focus ? 1.0 : 0.7);
                     }
                     HomesteadUI.Rect(m, cx, top, cw, ch, HomesteadUI.Dark(), 0.75);
-                    if focus {
-                        HomesteadUI.Frame(m, cx, top, cw, ch, 3.0, HomesteadUI.Cyan(), 1.0);
-                    } else {
-                        HomesteadUI.Frame(m, cx, top, cw, ch, 2.0, sel ? HomesteadUI.Red() : HomesteadUI.DimRed(), sel ? 0.9 : 0.55);
-                    }
+                    HomesteadUI.Frame(m, cx, top, cw, ch, focus ? 3.0 : 2.0, edge, focus ? 1.0 : (sel ? 0.9 : 0.55));
                     if !folder && k < ArraySize(thumbs) && StrFindFirst(thumbs[k], "|") >= 0 {
                         let at = StrSplit(thumbs[k], "|");
                         let im = new inkImage();
@@ -236,9 +232,7 @@ public class HomesteadUI {
             if NotEquals(toast, "") {
                 HomesteadUI.Text(m, W / 2.0, top + ch + 86.0, 0.5, 0.5, toast, 36, HomesteadUI.Yellow(), n"Semi-Bold");
             }
-
         }
-
     }
 
     private let targetPane: wref<inkCanvas>;
@@ -250,25 +244,12 @@ public class HomesteadUI {
             let stage = HomesteadUI.Layer(n"HomesteadTarget");
             if !IsDefined(stage) { return; }
             let t = HomesteadUI.Box(stage, inkEAnchor.Centered, 0.0, 0.5, 70.0, -70.0, 1000.0, 80.0);
-            let tx = new inkText();
-            tx.SetAnchor(inkEAnchor.TopLeft);
-            tx.SetAnchorPoint(0.0, 0.5);
-            tx.SetFitToContent(true);
-            tx.SetTranslation(0.0, 40.0);
-            tx.SetFontFamily("base\\gameplay\\gui\\fonts\\raj\\raj.inkfontfamily");
-            tx.SetFontStyle(n"Semi-Bold");
-            tx.SetFontSize(38);
-            tx.SetLetterCase(textLetterCase.UpperCase);
-            tx.SetTintColor(HomesteadUI.Cyan());
-            tx.Reparent(t);
             ui.targetPane = stage;
-            ui.targetText = tx;
+            ui.targetText = HomesteadUI.Text(t, 0.0, 40.0, 0.0, 0.5, "", 38, HomesteadUI.Cyan(), n"Semi-Bold");
         }
         ui.targetText.SetText(name);
         ui.targetPane.SetVisible(NotEquals(name, ""));
     }
-
-
 
     private let gizmo: wref<inkCanvas>;
     private let usePane: wref<inkHorizontalPanel>;
@@ -316,8 +297,8 @@ public class HomesteadUI {
     }
 
     // segs: x1, y1, x2, y2, colour, thickness per segment, positions 0..1 across the screen (from the top left);
-    // label: a line under the cursor (what is grabbed, the offset and angles). An empty segs hides it all.
-    public static func Gizmo(segs: array<Float>, cx: Float, cy: Float, label: String) {
+    // cx, cy: the cursor there (cx < 0: none). An empty segs hides it all.
+    public static func Gizmo(segs: array<Float>, cx: Float, cy: Float) {
         let ui = HomesteadUI.Instance();
         if !IsDefined(ui) { return; }
         if ArraySize(segs) == 0 {

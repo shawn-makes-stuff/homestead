@@ -5,15 +5,14 @@ add-on effect (a fire's crackle) and a machine's own loop (ACTI SNAM). Each is a
 (.xwm / .wav in Sounds.ba2) become .ogg through ffmpeg, into source/fo4/sfx with Audioware's manifest (tools/import.py
 puts it in the game's mods\\Homestead). -> pieces.json: `sounds` {seq: {name: [[t, play, event]]}, hum: [event]} and
 source/fo4/sfx/sounds.json {event: {n, loop, vol}}.
-  python tools/fo4/sounds.py        (after lights.py; convert.py runs it)
+(convert.py runs it, after lights.py, on its rows before it writes them.)
 """
 import json, os, struct, subprocess, sys
 from concurrent.futures import ThreadPoolExecutor
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # (tools/: paths.py)
 import paths
-import esm
-from convert import Files, objects, FO4
+from convert import FO4
 
 OUT = os.path.join(FO4, 'sfx')
 FFMPEG = paths.get('ffmpeg', required=False)                # (none: sounds converted before are kept, the rest left out)
@@ -21,6 +20,11 @@ FORCE = '--force' in sys.argv or 'post' in os.environ.get('HOMESTEAD_FORCE', '')
 
 
 def event(edid): return 'hs_' + edid.lower()
+
+
+# Sounds the mod's own scripts play (no piece's record or sequence names them: Fallout plays them by script) - an
+# elevator's motor, bell and button (modules/elevator.lua)
+WANTED = ['OBJElevatorPlatformMotorLPM', 'OBJLoadElevatorUtilityDing', 'OBJLoadElevatorUtilityButtonCall']
 
 
 def descriptor(g, k):
@@ -47,17 +51,13 @@ def one(job):                                               # a file -> .ogg (ca
     return r.returncode == 0 and os.path.exists(dst)
 
 
-def patch(g=None, files=None):
-    g = g or esm.Game()
-    files = files or Files()
+def patch(pieces, g, by, files):
+    """by: convert's objects, by their piece's key"""
     sndr = {g.edid(k).lower(): k for k, (t, _) in g.rec.items() if t == 'SNDR' and g.edid(k)}
-    by = {('fo4_' + (o['edid'] or '').lower()): o for o in objects(g)}
     def ref(k, name):
         d = g.field(k, name)
         r = g.ref(k, struct.unpack('<I', d[:4])[0]) if d and len(d) >= 4 else None
         return g.edid(r).lower() if r in g.rec and g.rec[r][0] == 'SNDR' else None
-    path = os.path.join(FO4, 'pieces.json')
-    pieces = json.load(open(path))
     used = set()
     for p in pieces:
         p.pop('sounds', None)
@@ -82,6 +82,7 @@ def patch(g=None, files=None):
         if seq or hum:
             p['sounds'] = dict(seq={n: [[t, pl, event(e)] for t, pl, e in c] for n, c in seq.items()}, hum=[event(e) for e in hum])
             used |= {e for c in seq.values() for _, _, e in c} | set(hum)
+    used |= {e.lower() for e in WANTED if e.lower() in sndr}
     # the files
     os.makedirs(OUT, exist_ok=True)
     table, jobs = {}, []
@@ -89,12 +90,14 @@ def patch(g=None, files=None):
         fs, loops, vol = descriptor(g, sndr[e])
         n = 0
         for f in fs:
+            dst = os.path.join(OUT, '%s_%d.ogg' % (event(e), n))
+            if os.path.exists(dst) and not (FORCE and FFMPEG): jobs.append((event(e), f, None, dst)); n += 1; continue   # (made: not read again)
             data = None
             for cand in (f, os.path.splitext(f)[0] + '.xwm', os.path.splitext(f)[0] + '.wav'):      # (named .wav,
                 data = files.read(cand)                                                             # stored .xwm)
                 if data: break
             if not data: continue
-            jobs.append((event(e), f, data, os.path.join(OUT, '%s_%d.ogg' % (event(e), n))))
+            jobs.append((event(e), f, data, dst))
             n += 1
         if n: table[event(e)] = dict(n=n, loop=loops, vol=vol)
     with ThreadPoolExecutor(8) as ex: ok = list(ex.map(one, jobs))
@@ -114,9 +117,4 @@ def patch(g=None, files=None):
         s['seq'] = {n: cs for n, cs in s['seq'].items() if cs}
         s['hum'] = [e for e in s['hum'] if e in table]
         if not s['seq'] and not s['hum']: p.pop('sounds')
-    json.dump(pieces, open(path, 'w'))
     print(sum(1 for p in pieces if p.get('sounds')), 'pieces with sounds,', len(table), 'sounds,', len(jobs), 'files,', len(bad), 'failed', bad[:3])
-
-
-if __name__ == '__main__':
-    patch()

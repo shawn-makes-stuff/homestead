@@ -39,7 +39,6 @@ return function(C)
             for _, p in ipairs(S.pieces) do if p ~= t and Cmd.pickable(p) then outlinePiece(p, Cmd.rest(p)) end end
         end
     end
-    local function off() return Life.walks() and "" or "  -  navigation off" end
     local function told(what, why, d)
         C.log(string.format("command: %s %s probe %s", what, why or "ok", tostring(d)))
     end
@@ -56,7 +55,7 @@ return function(C)
         elseif t and Life.usable(t) then  -- no way to it now: the job is kept, said once, retried as the navmesh changes
             local _, why, d = Life.job(c.who.h, t)
             told(c.who.name .. " to " .. t.it.name, why, d)
-            say(c.who.name .. " assigned to " .. t.it.name .. (why and "  -  " .. why or off())); sfx(why and SFX.refuse or SFX.build)
+            say(c.who.name .. " assigned to " .. t.it.name .. (why and "  -  " .. why or (Life.walks() and "" or "  -  navigation off"))); sfx(why and SFX.refuse or SFX.build)
         elseif c.point then
             local ok, why, d, f = Life.moveTo(c.who.h, c.point)
             local at = f or c.point

@@ -35,7 +35,13 @@ plugin/build/
 build/
 dist/
 tools/codehash.py
+source/json/homestead/ui/
 source/thumbs_raw/
 source/thumbs_tex/
 source/thumbs_nc/
 source/thumb_items.json
+source/tpl/
+
+# scratch (dev)
+source/tmp/
+.scratch/

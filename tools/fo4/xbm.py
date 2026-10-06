@@ -26,7 +26,7 @@ FOURCC = {b'DXT1': 71, b'DXT3': 74, b'DXT5': 77, b'ATI1': 80, b'BC4U': 80, b'ATI
 BLOCK = {'bc1': 8, 'bc4': 8, 'bc3': 16, 'bc5': 16}
 
 
-def mip_sizes(w, h, mips, layout):
+def mip_sizes(w, h, mips):
     out = []
     for m in range(mips):
         mw, mh = max(1, w >> m), max(1, h >> m)
@@ -51,7 +51,7 @@ def _flip_bc4(b, rows):                                    # alpha / BC4 block: 
 def flip(body, w, h, mips, layout):
     """block-compressed mips, upside down (lossless)"""
     out, o, bs = [], 0, BLOCK[layout]
-    for mw, mh, bx, by in mip_sizes(w, h, mips, layout):
+    for mw, mh, bx, by in mip_sizes(w, h, mips):
         n = bx * by * bs
         b = np.frombuffer(body, np.uint8, n, o).reshape(by, bx, bs)[::-1].copy()
         o += n
@@ -148,7 +148,7 @@ def rough_bc4(dds, smooth):
 def _json(kind, w, h, mips):
     comp, group, gamma, layout = KINDS[kind]
     bs, info, off = BLOCK[layout], [], 0
-    for mw, mh, bx, by in mip_sizes(w, h, mips, layout):
+    for mw, mh, bx, by in mip_sizes(w, h, mips):
         size = bx * by * bs
         info.append({'$type': 'rendRenderTextureBlobMipMapInfo',
                      'layout': {'$type': 'rendRenderTextureBlobMemoryLayout', 'rowPitch': bx * bs, 'slicePitch': size},
@@ -202,7 +202,8 @@ def write(path, kind, w, h, mips, body):
     struct.pack_into('<I', hd, 32, 0xDEADBEEF)
     struct.pack_into('<I', hd, 32, zlib.crc32(bytes(hd[:160])))                                  # header CRC
     os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, 'wb') as f: f.write(hd); f.write(body)
+    with open(path + '.tmp', 'wb') as f: f.write(hd); f.write(body)
+    os.replace(path + '.tmp', path)                          # (whole or not there: one cut short was kept for good)
 
 
 def dds_parts(dds):
@@ -283,10 +284,11 @@ def _make(job):
 def _mips(w, h): return max(w, h).bit_length()           # a full chain down to 1 x 1
 
 
-def main(pieces=None, workers=None):
+def main(pieces=None, files=None):
     """every texture pieces.json's materials use (a glow's too): headers first (one WolvenKit run), then the files in
-    parallel; none when the game has the archive made from these same inputs (build.unchanged)"""
-    import build, collections, convert, time
+    parallel; none when the game has the archive made from these same inputs (build.unchanged). files: convert's
+    Files, when it has them open"""
+    import budget, build, collections, convert, time
     from multiprocessing import Pool
     t0 = time.time()
     pieces = pieces or json.load(open(os.path.join(convert.FO4, 'pieces.json')))
@@ -299,7 +301,7 @@ def main(pieces=None, workers=None):
                 n, kind = m.get(slot), 'color' if slot == 'emissive' else slot
                 if n and '__pal__' in n: jobs[n] = (n, 'pal', 'textures\\' + n.split('__pal__')[0] + '.dds')
                 elif n: jobs[n] = (n, kind, 'textures\\' + (n.rsplit('_r', 1)[0] if kind == 'rough' else n) + '.dds')
-    files = convert.Files()
+    files = files or convert.Files()
     combos = set()
     for n, kind, src in jobs.values():                      # sizes from the archives' index (no reading)
         a = files.where.get(src)
@@ -310,10 +312,9 @@ def main(pieces=None, workers=None):
         if k: combos.add((k, e['w'], e['h'], _mips(e['w'], e['h']) if k == 'rough' else e['mips']))
     make_heads(combos)
     print(len(jobs), 'textures,', len(combos), 'headers (%.0fs)' % (time.time() - t0), flush=True)
-    import budget
     todo, res = list(jobs.values()), []
     paths.progress('textures', 0, len(todo))
-    with Pool(workers or budget.workers(1.5)) as pool:      # (a big texture's decode: measured ~1.4 GB a worker, 2026-10-02)
+    with Pool(budget.workers(1.5)) as pool:      # (a big texture's decode: measured ~1.4 GB a worker, 2026-10-02)
         for r in pool.imap_unordered(_one, todo, chunksize=8):
             res.append(r)
             paths.progress('textures', len(res), len(todo))

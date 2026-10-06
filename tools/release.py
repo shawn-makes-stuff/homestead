@@ -13,7 +13,7 @@ TOOLS = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, TOOLS); sys.path.insert(0, os.path.join(TOOLS, 'fo4'))
 import paths
 
-VERSION = '0.2.0'
+VERSION = '0.3.0'
 ROOT = paths.ROOT
 DIST = os.path.join(ROOT, 'dist')
 OUT = os.path.join(DIST, 'Homestead')
@@ -143,7 +143,10 @@ def main():
         f.write('Homestead %s bundles these programs, unmodified, to make its pieces on your PC:\n\n' % VERSION)
         for name, (l, src) in LICENSES.items(): f.write('  %-58s %-22s source: %s\n' % (name, l, src))
     shutil.copy2(os.path.join(ROOT, 'README_PLAYER.txt'), os.path.join(OUT, CET, 'README.txt'))
-    with open(os.path.join(OUT, CET, 'build.txt'), 'w') as f: f.write('build=%s\n' % build_id())
+    bid, last = build_id(), paths.kv(os.path.join(TOOLS, 'released.txt'))
+    with open(os.path.join(OUT, CET, 'build.txt'), 'w') as f: f.write('build=%s\nversion=%s\n' % (bid, VERSION))   # (version: the update check's)
+    print('import for players of %s: %s' % (last.get('version', '?'), 'none (same importer)' if last.get('build') == bid else
+          'OFFERED (the importer changed: %s -> %s) - REQUIRED only if settings.lua NEEDS was raised' % (last.get('build'), bid)))
     z = os.path.join(DIST, 'Homestead-%s.zip' % VERSION)
     if os.path.exists(z): os.remove(z)
     with zipfile.ZipFile(z, 'w', zipfile.ZIP_DEFLATED, compresslevel=6) as zf:

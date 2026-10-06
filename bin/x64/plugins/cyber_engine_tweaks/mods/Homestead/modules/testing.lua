@@ -1,7 +1,7 @@
 -- Testing tools: a pop-in watch (GetMod("Homestead").popwatch()).
 -- init.lua requires this once everything it uses exists; M is C.Testing.
 return function(M, C)
-    local S, playerPos, say, v4, eng = C.S, C.playerPos, C.say, C.v4, C.Eng
+    local S, playerPos, say = C.S, C.playerPos, C.say
 
     -- Pop-in watch (console: GetMod("Homestead").popwatch(), again to stop): ten times a second, checks whether each
     -- piece and part has its entity; each change goes to scripting.log with distance, angle off the view and time gone.

@@ -39,14 +39,23 @@ def look_glb(depot, look):
     return os.path.join(NC, 'glb', depot[:-5] + '@' + re.sub(r'\W', '_', look) + '.glb')
 
 
+def mats():
+    """materials.json, its glbs in one spelling (D:\projects and D:\Projects are one folder: a map keyed as written
+    matched nothing after the tree moved, and every Night City icon rendered since came out grey)"""
+    return {os.path.normcase(k): v for k, v in json.load(open(MATS)).items()} if os.path.exists(MATS) else {}
+
+
 def items():
     """{glb: [depot, appearance]}: every harvested prop (items.json, items_more.json) by its first appearance, and any
     other harvest glb thumb_items.json renders (the kit's: its default)"""
     out = {}
+    lp = os.path.join(HARVEST, 'lights.json')
+    lit = json.load(open(lp)) if os.path.exists(lp) else {}   # (a lamp, a sign: its lit look, the one build_catalog.py shows first)
     for f in ('items.json', 'items_more.json'):
         p = os.path.join(HARVEST, f)
         for h in json.load(open(p)) if os.path.exists(p) else []:
-            out.setdefault(glb_of(h['mesh']), [h['mesh'], (h.get('apps') or ['default'])[0], h['key']])
+            e = lit.get(h['mesh'].lower()) or {}
+            out.setdefault(glb_of(h['mesh']), [h['mesh'], e.get('glow') and e['lit'] or (h.get('apps') or ['default'])[0], h['key']])
     for f, parts in (('weapons.json', lambda v: [(w['preset'], w['parts']) for w in v]), (os.path.join('survey', 'people_looks.json'), dict.items)):
         p = os.path.join(paths.work(), f)
         for key, ps in parts(json.load(open(p))) if os.path.exists(p) else []:
@@ -175,13 +184,15 @@ def bake(R, m):
     base = os.path.basename(mt)
     aref = float(d.get('AlphaThreshold') or 0.5) if m.get('EnableMask') or 'speedtree' in base else None
     if 'multilayered' in base: return [multilayer(R, d), None]
-    if base.startswith('hair'):                             # hair cards: the profile's colour along the strand ids, cut
-        hp = R.json(path(d.get('HairProfile'))) or {}       # by the strands' alpha
-        es = sorted((e['value'], colour(e['color'])) for e in hp.get('gradientEntriesID') or [])
-        g, a = R.tex(first(d, 'Strand_Gradient') or ''), R.tex(first(d, 'Strand_Alpha') or '')
-        if not es or a is None: return [flat([0, 0, 0], 0), 0.5]
-        v = lin_to_srgb(g[..., 1]) if g is not None else np.full((SIZE, SIZE), 0.5, np.float32)
-        col = np.dstack([np.interp(v, [e[0] for e in es], [e[1][k] for e in es]) for k in range(3)])
+    if base.startswith('hair'):                             # hair cards: the profile's two gradients multiplied - root to
+        hp = R.json(path(d.get('HairProfile'))) or {}       # tip along the strand, and by strand id (one alone: dark hair
+        a = R.tex(first(d, 'Strand_Alpha') or '')           # came out grey) - cut by the strands' alpha
+        if not hp.get('gradientEntriesID') or a is None: return [flat([0, 0, 0], 0), 0.5]
+        col = np.ones((SIZE, SIZE, 3), np.float32)
+        for key, tex, ch in (('gradientEntriesRootToTip', 'Strand_Gradient', 1), ('gradientEntriesID', 'Strand_ID', 0)):
+            es, g = sorted((e['value'], colour(e['color'])) for e in hp.get(key) or []), R.tex(first(d, tex) or '')
+            v = lin_to_srgb(g[..., ch]) if g is not None else np.full((SIZE, SIZE), 0.5, np.float32)
+            if es: col = col * np.dstack([np.interp(v, [e[0] for e in es], [e[1][k] for e in es]) for k in range(3)])
         return [np.dstack([col, lin_to_srgb(a[..., 0])]), 0.25]
     if re.search(r'mesh_decal_(gradientmap_recolor|double_diffuse)', base) and re.search(r'cap|brow|beard', (m.get('BaseMaterial') or '') + m['Name'], re.I):
         t = R.tex(first(d, 'DiffuseTexture') or '')         # the scalp's hair, brows, stubble: painted on, cut by its alpha
@@ -193,7 +204,7 @@ def bake(R, m):
         t = R.tex(first(d, 'Diffuse') or '')
         if t is not None and t[..., :3].max() > 0.02: return [np.dstack([t[..., :3] / float(t[..., :3].max()), t[..., 3]]), None]
         return [flat(lit(colour(d['SurfaceColor'])) if 'SurfaceColor' in d else np.ones(3)), None]
-    if 'glass' in base:                                     # glass: see-through, in its tint (a bottle, a tank: else nothing to see)
+    if 'glass' in base or 'fillable_fluid' in base:         # glass, a drink: see-through, in its tint (a bottle, a tank: else nothing to see)
         c = colour(d['TintColor']) if 'TintColor' in d else np.ones(3, np.float32)
         return [flat(0.5 + 0.5 * c), None, 0.5]
     if re.search(r'decal|window|invisible|fx_|particle|volumetric|blackwall|eye_shadow|eye_gradient', mt) or             path(d.get('BaseColor')).endswith('alpha_empty.xbm'):
@@ -279,14 +290,14 @@ def batch(job):
 
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
-    have = json.load(open(MATS)) if os.path.exists(MATS) else {}
+    have = mats()
     every = items()
-    todo = [[g, d, a] for g, (d, a, k) in every.items() if (not args or k in args) and ('--all' in sys.argv or g not in have)]
+    todo = [[g, d, a] for g, (d, a, k) in every.items() if (not args or k in args) and ('--all' in sys.argv or os.path.normcase(g) not in have)]
     print(len(todo), 'meshes to texture', flush=True)
     jobs = [(n, todo[i:i + BATCH], '--keep' in sys.argv) for n, i in enumerate(range(0, len(todo), BATCH))]
     with Pool(budget.workers(2.5, 4)) as pool:
         for k, res in enumerate(pool.imap_unordered(batch, jobs)):
-            have.update(res)
+            have.update({os.path.normcase(g): m for g, m in res.items()})
             os.makedirs(NC, exist_ok=True)
             json.dump(have, open(MATS, 'w'), indent=0)       # (saved as it goes: a stopped run resumes)
             print('batch', k + 1, len(jobs), flush=True)

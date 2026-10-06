@@ -5,13 +5,11 @@ height, made for Fallout's seats: so each marker also gets the top of what's und
 piece's mesh: the seat, the mattress), which life.lua matches the Cyberpunk animation to.
 -> source/fo4/pieces.json: `seats` [[x, y, z, yaw, kind, top]] (metres and degrees in the piece's space; init's
 modules/life.lua plays a Cyberpunk workspot of that kind there).
-  python tools/fo4/furniture.py     (after convert.py; convert.py runs it)
+(convert.py runs it, on its rows before it writes them.)
 """
-import json, math, os, struct, sys
+import math, os, struct
 import numpy as np, trimesh
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import esm
-from convert import FO4, UNIT
+from convert import UNIT
 
 KIND = {                                                    # Fallout's animation keyword -> what life.lua plays
     'AnimFurnChairSitAnims': 'chair', 'AnimFurnBarberChair': 'chair', 'AnimFurnCouch': 'couch',
@@ -109,11 +107,8 @@ def seats_of(g, k):
     return out                                              # (Fallout turns clockwise: Cyberpunk's yaw the other way)
 
 
-def patch(g=None):
-    g = g or esm.Game()
+def patch(pieces, g):
     by = {'fo4_' + (g.edid(k) or '').lower(): k for k, (t, _) in g.rec.items() if t == 'FURN'}
-    path = os.path.join(FO4, 'pieces.json')
-    pieces = json.load(open(path))
     n = 0
     for p in pieces:
         p.pop('seats', None)
@@ -126,9 +121,4 @@ def patch(g=None):
                 mid = T is not None and m[4] in SITS and m[5] > 0.2 and seat_mid(T, m)
                 if mid is not None and mid is not False: m.append(mid)   # (seats[7]; without it life.lua goes by the marker)
             p['seats'] = s; n += 1
-    json.dump(pieces, open(path, 'w'))
     print(n, 'pieces with seats')
-
-
-if __name__ == '__main__':
-    patch()

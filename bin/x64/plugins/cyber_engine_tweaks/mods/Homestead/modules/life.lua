@@ -57,14 +57,16 @@ return function(Life, C)
         cat = { sit = { "@animals\\cat\\cat__sit__01" }, lie = { "@animals\\cat\\cat__lie__01" },   -- (@: under workspots,
                 sleep = { "@animals\\cat\\cat__sleep__01", "@animals\\cat\\cat__sleep__02" },          -- not common)
                 clean = { "@animals\\cat\\cat__sit_ground__clean_self__01" }, scratch = { "@animals\\cat\\cat__scratching__01" } },
+        chicken = { idle = { "animals\\chicken__stand_ground__stand_around__01" } },   -- (ours: tools/make_workspots.py
+        iguana = { idle = { "animals\\iguana__sit_ground__sit_around__01" } },         -- ANIMALS)
+        cow = {},                                             -- (none: no animation in the game is made for its rig)
     }
     local GROUP = { ManAverage = "generic", WomanAverage = "generic", ManBig = "big", ManMassive = "big", ManFat = "fat",
                     WomanFat = "fat", Child = "child", ChildMale = "child", ChildFemale = "child" }
     -- what they do, the spots each uses, and for how long (seconds; a bed: till morning)
     local ACT = { relax = { "chair", "couch", "table", "stool" }, work = { "work", "counter", "kneel", "guard" },
                   sleep = { "bed", "floorbed" } }
-    local LONG = { relax = { 240, 600 }, work = { 180, 420 }, look = { 25, 70 }, chat = { 60, 180 }, idle = { 30, 90 },
- }
+    local LONG = { relax = { 240, 600 }, work = { 180, 420 }, look = { 25, 70 }, chat = { 60, 180 }, idle = { 30, 90 } }
     local ACTS = { "sleep", "relax", "work", "chat", "look", "idle", "wander" }
     local USE = {}
     for act, kinds in pairs(ACT) do for _, k in ipairs(kinds) do USE[k] = act end end
@@ -84,6 +86,20 @@ return function(Life, C)
     -- a cat: mostly sits about, lies down, naps (longer at night); now and then washes, scratches, wanders
     local CAT = { { "sit", 30, { 60, 180 } }, { "lie", 25, { 120, 300 } }, { "sleep", 15, { 300, 600 } },
                   { "clean", 10, { 20, 45 } }, { "scratch", 5, { 10, 20 } }, { "wander", 15 } }
+    -- Animals with nothing to walk with (their graph is the cinematic props': no locomotion): they play their one
+    -- animation where they are put, with navigation or without, and take no job, pose or talk. The cow has none: it
+    -- stands as placed. By the record's name (a body type is no guide: theirs is whatever the record happens to say).
+    local PET = { chicken = true, iguana = true, cow = true }
+    local ANIMAL = { cat = true, chicken = true, iguana = true, cow = true }
+    local function pet(rec)
+        rec = (rec or ""):lower()
+        return (rec:find("chicken", 1, true) and "chicken") or (rec:find("iguana", 1, true) and "iguana")
+            or (rec:find("fake_cow", 1, true) and "cow") or nil
+    end
+    local function petJob(rec, st)                              -- (off: its animation didn't play - think)
+        local s = pet(rec)
+        return s and BODY[s].idle and not (st and st.off) and "a-idle" or nil
+    end
     local NIGHT = { [22] = true, [23] = true, [0] = true, [1] = true, [2] = true, [3] = true, [4] = true, [5] = true }
 
     local PATHS = {}
@@ -107,33 +123,130 @@ return function(Life, C)
             if o[i] then return o[i], who[o[i]] end
         end
     end
-    local taken = {}
+    local taken, put = {}, {}                                   -- (put: people set where the gizmo left them, this session)
+    local carried                                               -- (who the gizmo has: Life.carry)
     -- Jobs (Command mode): person hash -> the hash of the piece they're assigned to, or a spot "x,y,z" they were sent to. They go to it and
     -- use it for good until cleared; kept in jobs.txt (entity ids survive a save: persistSpawn), checked against the pieces there are when they come up.
+    -- They are the save's own (user, 2026-10-05): every change is a new revision in the file ("<rev>|<person>=<job>", "<rev>|"
+    -- alone: that revision, with or without jobs) and the game's fact hs_jobs, kept in the save, says which this save has -
+    -- an older save loaded has what its people had then. Lines with no revision (before this) are revision 0, what a save
+    -- without the fact has. No fact to ask (no game): the latest.
     local JOBS = (HS_DIR or "") .. "jobs.txt"
-    local jobs = {}
-    do
+    local KEEP = 60                                              -- revisions kept: a save older than that many changes loses its jobs
+    local jobs, revs, top = {}, {}, 0
+    local function fact(v)
+        local ok, r = pcall(function()
+            local q = Game.GetQuestsSystem()
+            if v then q:SetFactStr("hs_jobs", v) end
+            return q:GetFactStr("hs_jobs")
+        end)
+        return ok and tonumber(r) or nil
+    end
+    -- WHO A JOB IS OF. In here jobs go by entity hash, as everything does - but an entity's id is a session's: a load
+    -- gives every piece a new one (the log, 2026-10-05: "revision 79, 9 entries" read, and nobody took theirs up; the
+    -- ids in jobs.txt only ever grew). So in the file a person and a seat go by their own tag, "hsu:<uid>" (given at
+    -- the first need: Codeware's AssignTag; read back as text by Homestead.Uid, found again by GetTaggedID): a key or a
+    -- value "U<uid>". The file's entries are `raw`; each becomes a job as soon as its entities are in the world
+    -- (resolve, every second from posts: a save's entities are listed late), and stays raw - kept, written back - till then.
+    local uids, byUid, raw = {}, {}, {}
+    local function uidOf(h)
+        if uids[h] then return uids[h] end
+        local p = S.byId[h]
+        local ok, u = pcall(function() return des():Uid(p.id) end)
+        if not (p and ok and u) then return nil end
+        if u == "" then
+            u = string.format("%d%05d", os.time(), math.random(0, 99999))   -- (digits: a key's o / a suffix stays plain)
+            local set, took = pcall(function() return des():AssignTag(p.id, "hsu:" .. u) end)
+            if not set or took == false then return nil end
+        end
+        uids[h], byUid[u] = u, h
+        return u
+    end
+    local function hashOfUid(u)
+        if byUid[u] and S.byId[byUid[u]] then return byUid[u] end
+        local ok, id = pcall(function() return des():GetTaggedID("hsu:" .. u) end)
+        local h = ok and id and hashOf(id)
+        if h and S.byId[h] then uids[h], byUid[u] = u, h; return h end
+    end
+    local function there(x)                                      -- a file's "U<uid>" (or, from before, a hash) -> the hash now, or nil
+        if x:sub(1, 1) ~= "U" then return x end
+        return hashOfUid(x:sub(2))
+    end
+    local function resolve()
+        local left = 0
+        for k, v in pairs(raw) do
+            local suffix = k:match("^U.*([oa])$") or ""
+            local who = there(suffix ~= "" and k:sub(1, -2) or k)
+            local val = v
+            if suffix == "" then
+                if v:sub(1, 1) == "U" then val = there(v)
+                elseif v:sub(1, 3) == "c-U" then local o = there(v:sub(3)); val = o and ("c-" .. o) end
+            end
+            if who and val then jobs[who .. suffix], raw[k] = val, nil else left = left + 1 end
+        end
+        return left
+    end
+    local function named(h)                                      -- a hash -> what the file calls it
+        local u = uidOf(h)
+        return u and ("U" .. u) or h
+    end
+
+    -- Read at the first need once the game runs and its first refresh is through (Life.step; whatever changes a job reads
+    -- first too). This save's revision (the game's fact hs_jobs; the log shows it read right); none to go by: the latest.
+    -- Nothing is dropped at a load.
+    local loaded = false
+    local function loadJobs()
+        if loaded then return end
+        loaded = true
+        revs, top = {}, 0
         local f = io.open(JOBS, "r")
-        if f then for line in f:lines() do local a, b = line:match("^(%w+)=([%w%.,%-]+)$") if a then jobs[a] = b end end f:close() end
+        if f then
+            for line in f:lines() do
+                local r, a, b = line:match("^(%d+)|(%w*)=?([%w%.,%-]*)$")
+                if not r then a, b = line:match("^(%w+)=([%w%.,%-]+)$"); r = a and 0 end
+                r = tonumber(r)
+                if r then
+                    revs[r], top = revs[r] or {}, math.max(top, r)
+                    if a and a ~= "" then revs[r][a] = b end
+                end
+            end
+            f:close()
+        end
+        local r = fact()
+        if not r or r == 0 or not revs[r] then r = top end
+        for a in pairs(jobs) do jobs[a] = nil end              -- (the same table: Life.jobs is it)
+        raw, uids, byUid = {}, {}, {}
+        local n = 0
+        for a, b in pairs(revs[r] or {}) do                    -- (an id of a session past - "<n>ULL", before the tags - is
+            if not (a .. b):find("ULL", 1, true) then raw[a], n = b, n + 1 end   -- nobody's now, or somebody else's)
+        end
+        local left = resolve()
+        C.log(string.format("jobs: revision %s of %d (the save's: %s), %d entries, %d of them whose people aren't here yet", tostring(r), top, tostring(fact()), n, left))
     end
     local function saveJobs()
+        top = top + 1
+        local out = {}
+        for k, v in pairs(raw) do out[k] = v end                 -- (not yet of anyone here: kept as they are)
+        for k, v in pairs(jobs) do
+            local suffix = k:match("([oa])$") and not S.byId[k] and k:sub(-1) or ""
+            local key = named(suffix ~= "" and k:sub(1, -2) or k) .. suffix
+            if suffix == "" then
+                if v:find("^c%-") then v = "c-" .. named(v:sub(3))
+                elseif not v:find("[,%-]") then v = named(v) end
+            end
+            out[key] = v
+        end
+        revs[top] = out
+        fact(top)
         local f = io.open(JOBS, "w")
         if not f then return end
-        for h, j in pairs(jobs) do f:write(h, "=", j, "\n") end
-        f:close()
-    end
-    -- Once a session, once refresh has read our entities (S.seenIds: every settlement's, Life.sync): a job whose person or piece is none of
-    -- ours any more is dropped. Never at a save: a piece placed since the last refresh isn't in S.seenIds yet.
-    local pruned = false
-    local function prune()
-        if pruned or S.settled == nil then return end
-        pruned = true
-        local ours, n = {}, 0
-        for _, h in ipairs(S.seenIds or {}) do ours[tostring(h)] = true end
-        for h, j in pairs(jobs) do
-            if not ours[h] or not (j:find(",", 1, true) or ours[j]) then jobs[h], n = nil, n + 1 end
+        for r, t in pairs(revs) do
+            if r > top - KEEP then
+                f:write(r, "|\n")
+                for h, j in pairs(t) do f:write(r, "|", h, "=", j, "\n") end
+            else revs[r] = nil end
         end
-        if n > 0 then saveJobs(); C.log(string.format("jobs: %d dropped (their person or piece is gone)", n)) end
+        f:close()
     end
 
     local function span(r) return r[1] + math.random() * (r[2] - r[1]) end
@@ -188,16 +301,38 @@ return function(Life, C)
     -- in included), entry 2 the lie loop: jumped to entry 1 a woman lay diagonally across a bed. Set onto the device
     -- first (where the loop starts from), so the jump doesn't blend in from wherever the walk ended
     local LIE_LOOP = 2
+    -- st.jump: put straight back into it (a load, the gizmo) - set onto the device and jumped to the idle they hold there
+    -- (modules/own/idles.lua), not walked through the way in again.
+    local IDLES = require("modules/own/idles")
     local function play(dev, npc, st)
         local lie = SIDE[st.seat.kind]
-        if lie then
+        if lie or st.jump then
             pcall(function() eng.teleport(npc, dev:GetWorldPosition(), EulerAngles.new(0, 0, st.devYaw or st.seat.yaw)) end)
         end
         local ok = pcall(function() Game.GetWorkspotSystem():PlayInDeviceSimple(dev, npc, false, CName.new("hs_ws"),
             CName.new("None"), CName.new("None"), 0.5, 1) end)
         if ok and lie then pcall(function() Game.GetWorkspotSystem():SendJumpCommandEnt(npc, LIE_LOOP, true) end)
-        elseif ok then ghost(st.seat.piece, 3) end
+        elseif ok then
+            ghost(st.seat.piece, 3)
+            local idle = st.jump and IDLES[(PATHS[st.wsn or 0] or ""):match("([^\\]+)%.workspot$") or ""]
+            if idle then pcall(function() Game.GetWorkspotSystem():SendJumpToAnimEnt(npc, CName.new(idle), true) end) end
+        end
         return ok
+    end
+
+    -- The workspot's file is asked for when its device is made and played once it is in (Codeware's ResourceDepot): the
+    -- device's component has it as an async ref set by script, and played before its animations were loaded the body
+    -- T-posed for a moment, the first time an animation was used after the game's start (user, 2026-10-06). st.res is
+    -- kept while they use it. No depot, a load that failed or took the spawn's 5 s: played as it was.
+    local function fetch(n)
+        local ok, t = pcall(function() return Game.GetResourceDepot():LoadResource(ResRef.FromString(PATHS[n])) end)
+        return ok and t or nil
+    end
+    local function ready(st)
+        local t = st.res
+        if not t then return true end
+        local ok, r = pcall(function() return t:IsLoaded() or t:IsFailed() end)
+        return not ok or r
     end
 
     local function device(s, n)
@@ -214,18 +349,18 @@ return function(Life, C)
         spec.persistSpawn = false
         spec.alwaysSpawned = true
         spec.tags = { CName.new("Homestead.ws"), CName.new("hsws" .. n) }
-        return eng.create(spec), yaw
+        return eng.create(spec), yaw, fetch(n)
     end
 
     local drops = {}
     local function free(st)
         if st.seat and st.seat.key then taken[st.seat.key] = nil end
         if st.dev then drops[#drops + 1] = { id = st.dev, t = 6 } end
-        st.seat, st.dev = nil, nil
+        st.seat, st.dev, st.res = nil, nil, nil
     end
 
     local function rise(npc, st)
-        if npc and st.set == "cat" then
+        if npc and ANIMAL[st.set] then
             pcall(function() Game.GetWorkspotSystem():SendSlowExitSignal(npc) end)
             npc = nil
         end
@@ -262,7 +397,10 @@ return function(Life, C)
         if st.set == nil then
             local ok, b = pcall(function() return npc:GetBodyType().value end)
             local rec = (st.rec or ""):lower()
-            st.set = (ok and GROUP[b]) or (rec:find("cat") and "cat") or false
+            -- (the photo mode's cast - Rita Wheeler - name no body type the sets know: people of average build; so are
+            -- the Fallout people we build on the game's average body - the game said "Undefined" for one, 2026-10-06)
+            st.set = pet(rec) or (ok and GROUP[b]) or (rec:find("cat") and "cat") or (rec:find("photomode", 1, true) and "generic") or false
+            if not st.set then C.log(string.format("people: no animations for %s (body type %s)", tostring(st.rec), tostring(ok and b))) end
         end
         return st.set and BODY[st.set]
     end
@@ -304,7 +442,7 @@ return function(Life, C)
     end
 
     local function free_to_talk(o)
-        return o.set and o.set ~= "cat" and not o.partner and not jobs[o.h]
+        return o.set and not ANIMAL[o.set] and not o.partner and not jobs[o.h]
             and (o.mode == "idle" or (o.mode == "use" and o.seat and (o.seat.kind == "idle" or o.seat.kind == "look")))
     end
 
@@ -417,9 +555,8 @@ return function(Life, C)
         local fav
         for _, s in ipairs(seats()) do
             if set[s.kind] and not taken[s.key] and not ((cut[s.key] or 0) > now) and dist2(s, at) < REACH * REACH then
-                for act, kinds in pairs(ACT) do
-                    for _, k in ipairs(kinds) do if k == s.kind then table.insert(free[act], s) end end
-                end
+                local f = free[USE[s.kind]]
+                if f then f[#f + 1] = s end
                 if s.key == st.fav then fav = s end
             end
         end
@@ -466,7 +603,6 @@ return function(Life, C)
 
     -- a person's piece is where they are now (aiming at them: scrap, move; the grid); true when anyone moved
     function Life.sync()
-        prune()
         local moved = false
         for _, p in ipairs(S.pieces) do
             local e = p.it.npc and des():GetEntity(p.id)
@@ -505,11 +641,23 @@ return function(Life, C)
         return st
     end
 
+    -- an animal that can't walk (PET): its animation where it is, for good
+    local function stay(npc, st, at)
+        local l = body(npc, st).idle
+        local ok, yaw = pcall(function() return npc:GetWorldYaw() end)
+        st.seat, st.act, st.dur = { x = at.x, y = at.y, z = at.z, yaw = ok and yaw or 0, kind = "idle" }, "idle", 1e9
+        st.wsn, st.jump = l[math.random(#l)], true
+        st.dev, st.devYaw, st.res = device(st.seat, st.wsn)
+        st.mode, st.t = "spawn", 5
+    end
+
     local function think(npc, st, dt)
         local at = npc:GetWorldPosition()
         st.t = st.t - dt
         B.keep(npc, st)
         if st.seat and st.seat.piece and not des():GetEntity(st.seat.piece.id) then rise(npc, st)
+        elseif st.mode == "idle" and body(npc, st) and PET[st.set] then
+            if st.t <= 0 and not st.held and petJob(st.rec, st) then stay(npc, st, at) end
         elseif st.mode == "idle" then
             local out = not B.free(at.x, at.y, at.z) and B.near(at.x, at.y, at.z, 3)
             local moved = false
@@ -528,7 +676,7 @@ return function(Life, C)
             if r then
                 local l = BODY[st.set or "generic"][st.seat.kind]
                 st.wsn = l[math.random(#l)]
-                st.dev, st.devYaw = device(st.seat, st.wsn)
+                st.dev, st.devYaw, st.res = device(st.seat, st.wsn)
                 st.mode, st.t = "spawn", 5
             elseif r == false then
                 if Life.trace then Life.trace("lost", st, st.seat, false) end
@@ -538,7 +686,7 @@ return function(Life, C)
             end
         elseif st.mode == "spawn" then
             local dev = des():GetEntity(st.dev)
-            if dev and dev:FindComponentByName(CName.new("hs_ws")) then
+            if dev and dev:FindComponentByName(CName.new("hs_ws")) and (ready(st) or st.t <= 0) then
                 B.stop(npc, st)
                 local ok = play(dev, npc, st)
                 st.mode, st.t, st.tries = ok and "use" or "idle", ok and (st.dur or span(LONG.idle)) or span(IDLE), 0
@@ -559,7 +707,10 @@ return function(Life, C)
                 st.tries = st.tries + 1
                 C.log(string.format("workspot: %s out of %s (%s), try %d", tostring(st.rec):match("[^.]+$") or "?", st.seat.kind,
                     (PATHS[st.wsn or 0] or "?"):match("([^\\]+)%.workspot$") or "?", st.tries))
-                if st.tries > 3 or not dev or (at.x - st.seat.x) ^ 2 + (at.y - st.seat.y) ^ 2 > 4 or not play(dev, npc, st) then rise(npc, st) end
+                if st.tries > 3 or not dev or (at.x - st.seat.x) ^ 2 + (at.y - st.seat.y) ^ 2 > 4 or not play(dev, npc, st) then
+                    st.off = PET[st.set] and st.tries > 3 or nil  -- (an animal's one animation not playing - an import
+                    rise(npc, st)                                 -- from before it had it: left standing, not tried on and on)
+                end
             end
         end
     end
@@ -572,6 +723,7 @@ return function(Life, C)
     -- Jobs stay in jobs.txt.
     function Life.tick(dt, away)
         letGo(dt)
+        if S.settled ~= nil then loadJobs() end
         if away or not B.caps().walk then return end
         if S.build then cut = {} return end
         now = now + dt
@@ -588,10 +740,108 @@ return function(Life, C)
         gone(alive)
     end
 
+    -- People as props (user, 2026-10-05): without navigation nobody walks, so a person with a job is put at it and kept in
+    -- its workspot till it changes. A job (jobs.txt) is a piece's hash (its seat, bed or work spot), "p-<pose>" (an
+    -- animation where they stand: POSES) or "c-<person's hash>" (talking with them: both have it). Given from workshop
+    -- mode: a person placed on a piece or by someone (placement.lua place -> Life.post), an animation's card placed on one
+    -- (People > Animations: modules/own/poses.lua, Life.setPose).
+    local POSE, had = {}, {}                                     -- id -> { name, <body set> = { workspot (PATHS), new } }
+    for _, w in ipairs(PATHS) do had[w] = true end               -- (new: not one the people's own sets use - an import
+    for _, x in ipairs(require("modules/own/poses")) do          -- since 2026-10-05, level 2, has its looping copy)
+        local e = { name = x.name }
+        for _, set in ipairs({ "generic", "big", "fat", "child", "cat" }) do
+            local w = x[set]
+            if w then
+                w = (w:sub(1, 1) == "@" and "base\\workspots\\" .. w:sub(2) or W .. w) .. ".workspot"
+                PATHS[#PATHS + 1] = w
+                e[set] = { #PATHS, new = not had[w] }
+            end
+        end
+        POSE[x.id] = e
+    end
+    local function got(w) return w and (not w.new or C.Settings.level() >= 2) end
+    -- Someone whose own standing animations don't play when placed from their record stands in this one while they
+    -- have no job (the bar droid: "takes animations now, but when spawned he is tposed" - user, 2026-10-06; the
+    -- animation wrapper entities.lua `wake` switches on did not make him stand). record -> a job, never saved.
+    local REST = { ["Character.cz_con_foodshop_01"] = "p-stand-ground.stand-around.04" }
+    local function own(p, kind) return { x = p.o.x, y = p.o.y, z = p.o.z, yaw = p.yaw or 0, kind = kind } end
+    -- a job -> where (a seat as seats() gives them, or their own spot) and the workspots to pick from; nil: nothing to do
+    local function posted(p, h, job, npc, st, all)
+        local b = body(npc, st)
+        if not b then return end
+        local kind, v = job:match("^(%a)%-(.+)$")
+        if kind == "p" then
+            local w = POSE[v] and POSE[v][st.set]
+            if got(w) then return own(p, v:find("^lie") and "floorbed" or "pose"), { w[1] } end
+        elseif kind == "a" then                                   -- (an animal's own: PET)
+            return own(p, v), b[v]
+        elseif kind == "c" then
+            if S.byId[v] then return own(p, "chat"), b.chat or b.idle end
+            jobs[h] = nil; saveJobs()
+        else
+            for _, s in ipairs(all()) do
+                if hashOf(s.piece.id) == job and USE[s.kind] and not taken[s.key] and b[s.kind] then
+                    local a, b2, c, d = (jobs[h .. "o"] or ""):match("^([^,]+),([^,]+),([^,]+),([^,]+)$")   -- (Life.nudge)
+                    if a then s = setmetatable({ x = s.x + a, y = s.y + b2, z = s.z + c, yaw = s.yaw + d }, { __index = s }) end
+                    return s, b[s.kind]
+                end
+            end
+        end
+    end
+    local postT, soon = 0, false                                -- (soon: someone's device is on its way - looked at again shortly)
+    local function posts(dt)
+        postT = postT + dt
+        if postT < (soon and 0.1 or 1) then return end
+        soon = false
+        local d, list = postT, nil
+        postT = 0
+        local function all() list = list or seats(); return list end
+        if next(raw) then resolve() end                          -- (jobs whose people weren't in the world yet)
+        local alive = {}
+        for _, p in ipairs(S.pieces) do
+            local h = p.it.npc and hashOf(p.id)
+            if h then alive[h] = true end
+            local held = h and who[h] and who[h].held           -- (under the gizmo: Life.carry has them)
+            local at = h and not held and not put[h] and jobs[h .. "a"]   -- (where the gizmo left them: Life.nudge)
+            if at then
+                local e = des():GetEntity(p.id)
+                local x, y, z, w = at:match("^([^,]+),([^,]+),([^,]+),([^,]+)$")
+                x, y, z, w = tonumber(x), tonumber(y), tonumber(z), tonumber(w)
+                if e and w and eng.teleport(e, Vector4.new(x, y, z, 1), EulerAngles.new(0, 0, w), true) ~= false then
+                    put[h], p.o, p.yaw = true, { x = x, y = y, z = z }, w
+                end
+            end
+            local job = h and not held and not at and (petJob(p.it.record, who[h]) or (not pet(p.it.record) and jobs[h])
+                or REST[p.it.record])                            -- (not in the tick they are put where they were left)
+            local npc = job and not job:find(",", 1, true) and des():GetEntity(p.id)
+            if npc then
+                local st = who[h] or newcomer(p, h)
+                if st.mode == "spawn" or st.mode == "use" then
+                    if st.mode == "use" then st.t = math.max(st.t, 60) end   -- (no getting up by the clock)
+                    think(npc, st, d)
+                    soon = soon or st.mode == "spawn"
+                else
+                    local s, l = posted(p, h, job, npc, st, all)
+                    local a = s and s.piece and approaches(s)[1]
+                    if s and l and (not a or eng.teleport(npc, Vector4.new(a.x, a.y, a.z, 1), EulerAngles.new(0, 0, s.yaw)) ~= false) then
+                        if s.key then taken[s.key] = st.h end
+                        st.seat, st.act, st.dur, st.wsn, st.jump = s, USE[s.kind] or "idle", 60, l[math.random(#l)], true
+                        st.dev, st.devYaw, st.res = device(s, st.wsn)
+                        st.mode, st.t, soon = "spawn", 5, true
+                    end
+                end
+            end
+        end
+        gone(alive)                                               -- (someone picked up or scrapped: their seat is free again)
+    end
+
     -- Every frame (init.lua update): people take turns, one a frame, each about once a second (TURN), so a settlement's thinking doesn't land in one frame.
     local TURN, clock, rollT, cursor = 1, 0, 0, 0
     function Life.step(dt, away)
         letGo(dt)
+        if S.settled == nil then return end                       -- (the game not up yet: no jobs read, none carried out)
+        loadJobs()
+        if not away and not B.caps().walk then posts(dt) end
         if away or not B.caps().walk then return end
         if S.build then cut = {} return end
         now, clock = now + dt, clock + dt
@@ -687,9 +937,9 @@ return function(Life, C)
 
     function Life.onEntity(e)
         local id = e:GetEntityID()
-        if not des():IsTagged(id, CName.new("Homestead.ws")) then return false end
+        if not des():IsTagged(id, "Homestead.ws") then return false end
         for n, path in ipairs(PATHS) do
-            if des():IsTagged(id, CName.new("hsws" .. n)) then
+            if des():IsTagged(id, "hsws" .. n) then
                 local c = workWorkspotResourceComponent.new()
                 c.name = CName.new("hs_ws")
                 c.workspotResource = ResRef.FromString(path)
@@ -709,7 +959,10 @@ return function(Life, C)
             if st.mode == "use" then rise(npc, st) else B.stop(npc, st); free(st) end
         end
         who, taken, order = {}, {}, nil
-        if lost then drops, pruned = {}, false end
+        if lost then                                              -- (a load: this save's jobs, read at its first refresh)
+            drops, loaded, put, carried = {}, false, {}, nil
+            for a in pairs(jobs) do jobs[a] = nil end
+        end
     end
 
     local function stop(st)
@@ -730,6 +983,7 @@ return function(Life, C)
     end
     function Life.jobOf(h) return jobs[h] end
     function Life.job(h, p)
+        loadJobs()
         if not Life.usable(p) then return false end
         jobs[h] = hashOf(p.id); saveJobs()
         local st = who[h]
@@ -746,6 +1000,7 @@ return function(Life, C)
         return true, why, d
     end
     function Life.unjob(h)
+        loadJobs()
         if not jobs[h] then return false end
         local j = jobs[h]
         jobs[h] = nil; saveJobs()
@@ -753,15 +1008,124 @@ return function(Life, C)
         if st and st.seat and (st.seat.spot == j or st.seat.piece and hashOf(st.seat.piece.id) == j) then stop(st) end
         return true
     end
+    -- Workshop mode's people (posts, above). Life.spot: where a person placed at `at` stands and faces - by a piece's first free
+    -- seat, or a step in front of someone, facing them; nil: no room. Life.post: the job that goes with it (at nil: put
+    -- somewhere else - a seat or a talk is left, a pose kept) -> what to say. Life.setPose: an animation of poses.lua for a
+    -- person -> whether they took it, and what to say.
+    local function set(h, v)
+        local old = jobs[h]
+        if old and old:find("^c%-") and jobs[old:sub(3)] == "c-" .. h then
+            jobs[old:sub(3)] = nil
+            if who[old:sub(3)] then stop(who[old:sub(3)]) end
+        end
+        jobs[h], jobs[h .. "o"] = v, nil
+        if who[h] then stop(who[h]) end
+        saveJobs()
+    end
+    -- The gizmo on someone at a seat, a bed or a stall: they stay on it, moved and turned by as much (jobs.txt
+    -- "<hash>o" = dx,dy,dz,dyaw from the seat, summed). -> false: no job to keep (the caller places them as usual)
+    function Life.nudge(h, dx, dy, dz, dyaw, o, yaw)
+        loadJobs()
+        local j = jobs[h]
+        if o and not (j and not j:find("[,%-]")) then            -- (moved as they are, with no seat: the game keeps where an
+            jobs[h .. "a"] = string.format("%.3f,%.3f,%.3f,%.1f", o.x, o.y, o.z, yaw)   -- entity was made, not where it was
+            put[h] = true                                         -- moved to - so their place is a job too: "<hash>a",
+            saveJobs()                                            -- put back at a load, posts)
+            return true
+        end
+        if not j or j:find(",", 1, true) then return false end
+        if j:find("-", 1, true) then return true end              -- (a pose, a talk: where they stand is theirs)
+        local a, b, c, d = (jobs[h .. "o"] or "0,0,0,0"):match("^([^,]+),([^,]+),([^,]+),([^,]+)$")
+        jobs[h .. "o"] = string.format("%.3f,%.3f,%.3f,%.1f", a + dx, b + dy, c + dz, d + dyaw)
+        saveJobs()
+        return true
+    end
+    function Life.spot(at)
+        if at.it.npc then
+            local r = math.rad(at.yaw or 0)
+            return { x = at.o.x - math.sin(r), y = at.o.y + math.cos(r), z = at.o.z }, (at.yaw or 0) + 180
+        end
+        for _, s in ipairs(seats()) do
+            if s.piece == at and USE[s.kind] and not taken[s.key] then return approaches(s)[1], s.yaw end
+        end
+    end
+    function Life.post(h, at)
+        loadJobs()
+        jobs[h .. "a"] = nil                                     -- (placed by hand: made where they stand)
+        if not at then
+            if jobs[h] and not jobs[h]:find("^p%-") then set(h, nil) end
+            return "placed"
+        end
+        if at.it.npc then
+            local o = hashOf(at.id)
+            set(o, "c-" .. h); set(h, "c-" .. o)
+            return "talking with " .. at.it.name
+        end
+        set(h, hashOf(at.id))
+        return "at the " .. at.it.name
+    end
+    function Life.setPose(p, id)
+        loadJobs()
+        local h = hashOf(p.id)
+        local st = who[h] or newcomer(p, h)
+        local npc = des():GetEntity(p.id)
+        if npc then body(npc, st) end
+        if id == "none" then
+            if (jobs[h] or ""):find("^p%-") then set(h, nil) end
+            return true, "as placed"
+        end
+        if jobs[h] and not jobs[h]:find("^p%-") then return false, "they have a spot already - put them down somewhere else first" end
+        local w = POSE[id] and st.set and POSE[id][st.set]
+        if not w then return false, "that one isn't made for their body" end
+        if not got(w) then return false, "import again to get this animation (Settings > Mods > Homestead)" end
+        set(h, "p-" .. id)
+        return true, POSE[id].name
+    end
+    -- The gizmo on someone (placement.lua, h.live): they are moved as they stand, each frame it moves. Someone at a
+    -- seat or in an animation gets up first and stands under the gizmo while it has them: in a workspot a body stays
+    -- where the workspot began, whatever is moved (seen 2026-10-05), and one started again in the frame it was stopped
+    -- isn't a thing known to work - Appearance Menu Mod, which does this for a living, stops, moves, waits and starts
+    -- again (its Poses:RestartAnimation). Let go (no arguments), they take their seat or pose up again where they now
+    -- are, by the way a load puts them there (posts): what the gizmo leaves is what the save gives back.
+    function Life.carry(p, o, yaw)
+        if not p then
+            local st = carried and who[carried.h]
+            if st and st.held then st.held = nil; postT = 0.7 end   -- (posts: in 0.3 s - AMM's wait between a move and a pose)
+            carried = nil
+            return
+        end
+        local h = hashOf(p.id)
+        local c = carried
+        if not c or c.h ~= h then
+            if c then Life.carry() end
+            c = { h = h, x = p.o.x, y = p.o.y, z = p.o.z, at = p.yaw or 0 }
+            carried = c
+        end
+        if math.abs(c.x - o.x) + math.abs(c.y - o.y) + math.abs(c.z - o.z) < 1e-3 and math.abs((c.at - yaw + 180) % 360 - 180) < 0.05 then return end
+        c.x, c.y, c.z, c.at = o.x, o.y, o.z, yaw
+        local st, npc = who[h], des():GetEntity(p.id)
+        if st and not st.held then
+            C.log(string.format("gizmo: %s moved (%s)", p.it.name, st.mode))
+            if npc and (st.mode == "use" or st.mode == "spawn") then pcall(function() Game.GetWorkspotSystem():StopInDevice(npc) end) end
+            free(st)
+            st.held, st.mode, st.t = true, "idle", 0
+        end
+        if npc then eng.teleport(npc, Vector4.new(o.x, o.y, o.z, 1), EulerAngles.new(0, 0, yaw), true) end
+    end
+
     function Life.rejob(old, new)
-        for h, j in pairs(jobs) do if j == old then jobs[h] = new end end
+        loadJobs()
+        for h, j in pairs(jobs) do if j == old then jobs[h] = new elseif j == "c-" .. old then jobs[h] = "c-" .. new end end
         if jobs[old] then jobs[new], jobs[old] = jobs[old], nil end
+        if jobs[old .. "o"] then jobs[new .. "o"], jobs[old .. "o"] = jobs[old .. "o"], nil end
+        jobs[old .. "a"] = nil                                   -- (made again where they were put: no place to restore)
         saveJobs()
     end
     -- Wait there: a spot is a job too. `at` is what the crosshair hit (any surface); the spot is the navmesh point there, the nearest within 1 m,
     -- kept only from 1 m under the hit to 0.5 m over it, so the surface aimed at wins over the ground under it. Then the probe from where they stand
     -- decides. Returns false and why when there is no spot or no way, else true, the probe's length and the spot. Navigation off: refused.
     function Life.moveTo(h, at)
+        loadJobs()
         if not B.caps().walk then return false, "navigation off" end
         local f = B.near(at.x, at.y, at.z, 1)
         if not f or f.z - at.z > 0.5 or at.z - f.z > 1 then return false, "no walkable spot there" end

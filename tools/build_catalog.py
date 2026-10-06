@@ -158,7 +158,7 @@ def _roads():
     ]
     for l, lname in L[1:]:
         out.append(('Dirt Paths', 'dirt_%s' % l, 'Dirt Path %s' % lname, 'road_dirt_a_%s_h600' % l))
-    for l, lname in [('l600', '6 m'), ('l900', '9 m'), ('l1200', '12 m'), ('l2400', '24 m')]:
+    for l, lname in L[1:]:
         out.append(('Dirt Paths', 'dirt_wide_%s' % l, 'Wide Dirt Road %s' % lname, 'road_dirt_a_%s_h1100' % l))
     out += [
         ('Dirt Paths', 'dirt_end', 'Dirt Path End', 'road_dirt_a_end_l1200_h600'),
@@ -535,7 +535,11 @@ def main():
             z.write(json.dumps(rows).encode('utf-8'))                                               # same rows, same file)
     else:
         with gzip.open(NATIVE_JSON, 'rt', encoding='utf-8') as f: rows = json.load(f)
-    fo4_rows(rows + weapon_rows())
+    # the in-game settings' Fallout 4 pieces / Night City pieces, off: theirs aren't in the catalog (people stay)
+    off = {} if not hpaths.FROZEN else hpaths.kv(os.path.join(hpaths.game_cet(), 'settings.txt'))
+    nc, fo4 = off.get('importNC') != '0', off.get('importFo4') != '0'
+    if not nc: rows = [r for r in rows if r.get('npc') or r.get('cat') == 'People' or r.get('key') in ('workbench', 'boundary')]
+    fo4_rows(rows + (weapon_rows() if nc else []), fo4)
 
 
 def weapon_rows():
@@ -622,21 +626,21 @@ def native():
     for group, record, name, g in NPCS:
         known['Character.' + record] = g
         if group == 'Locals': person('npc_' + record.lower(), name, group, 'Character.' + record, g)
-    # every named character (tools/people.py from the game's own records; attitude checked in game, hostile ones out):
+    # every named character (tools/people.py from the game's own records; hostile ones too since 2026-10-05: the mod makes
+    # whoever is placed keep the peace):
     # the main ones (a plain Character.<Name> record) together, the rest by who they are (their attitude group and
     # record: the gang, corp, police...; shops and bars), everyone else A-Z. A character whose record the player's
     # game lacks (an expansion not installed) is hidden at load (init.lua).
-    pp, pc = os.path.join(hpaths.work(), 'survey', 'people.json'), os.path.join(hpaths.work(), 'survey', 'people_check.txt')
-    rel = dict(l.rstrip('\n').split('\t')[0::2] for l in open(pc, encoding='utf-8')) if os.path.exists(pc) else {}
+    pp = os.path.join(hpaths.work(), 'survey', 'people.json')
     for p in (json.load(open(pp, encoding='utf-8')) if os.path.exists(pp) else []):
-        if 'Hostile' in rel.get(p['record'], 'Hostile'): continue
         tail = p['record'].split('.', 1)[1]
         main = p.get('main') or not re.match(r'(mq|sq|q|ma|ep1|dlc|sts|mws|cbj|sa|minor|story|side|job|hey|bd|cz)\d*_', tail, re.I) and tail.count('_') <= 1
         first = p['name'][:1].upper()
         rng = next((r for r in ('ABC', 'DEF', 'GHI', 'JKL', 'MNO', 'PQR', 'STU', 'VWXYZ') if first in r), '#')
         who = (p['attitude'] + ' ' + p['record']).lower()
-        group = 'Main Characters' if main else next((g for g, rx in FACTIONS if re.search(rx, who)), None) or             'Civilians/' + (rng[0] + '-' + rng[-1] if rng != '#' else '#')
+        group = p.get('group') or 'Main Characters' if p.get('group') or main else next((g for g, rx in FACTIONS if re.search(rx, who)), None) or             'Civilians/' + (rng[0] + '-' + rng[-1] if rng != '#' else '#')
         person('npc_' + re.sub(r'\W+', '_', p['record'].split('.', 1)[1].lower()), p['name'], group, p['record'], known.get(p['record'], 'm'))
+        if p.get('old'): rows[-1]['hidden'] = True              # (no longer offered; one placed still loads)
     # menu folders: Structure is the piece's type first, then its style (Walls > Heywood: every wall in one place);
     # everything else by tools/taxonomy.py; locals by who they are; then tiny folders fold into Other
     for r in rows:
@@ -738,7 +742,7 @@ def thumbs(rows, fo4_all):
     print(len(items), 'items to render thumbnails for (tools/make_thumbs.py)')
 
 
-def fo4_rows(rows):
+def fo4_rows(rows, fo4=True):
     # Fallout 4's own pieces, converted from the player's install (tools/fo4/convert.py + build.py; FO4_IMPORT.md): their
     # menu is Fallout's (Structures > Wood > Floors: tab Structures, folder Wood/Floors); they snap to each other through
     # their connect points (init.lua fo4Placement).
@@ -812,7 +816,7 @@ def fo4_rows(rows):
     # collider made the container's shape: init.lua onEntity), so F at it opens V's stash - one storage shared by
     # every container and V's apartments, as Fallout's workshops share theirs
     STASH = 'base\\gameplay\\devices\\stash\\stash.ent'
-    fo4_all = json.load(open(fp)) if os.path.exists(fp := os.path.join(hpaths.work(), 'fo4', 'pieces.json')) else []
+    fo4_all = json.load(open(fp)) if fo4 and os.path.exists(fp := os.path.join(hpaths.work(), 'fo4', 'pieces.json')) else []
     folders = {tuple(p['menu']) for p in fo4_all}
     def fo4_menu(p):
         m = list(p['menu'])
@@ -860,8 +864,7 @@ def fo4_rows(rows):
              'ind_wall': 'ind_upper_wall', 'hey_wall': 'hey_upper_wall'}
     byk = {r['key']: r for r in rows}
     for g, u in TWINS.items():
-        byk[g]['upper'] = u
-        byk[u]['hidden'] = True
+        if g in byk and u in byk: byk[g]['upper'] = u; byk[u]['hidden'] = True   # (Night City's pieces off: none of them)
     TYPES = ['Walls', 'Doorways', 'Windows', 'Floors', 'Roofs', 'Supports', 'Stairs']
     rows.sort(key=lambda r: (SORT.index(r['cat']), (TYPES.index(r['group'].split('/')[0]) if r['group'].split('/')[0] in TYPES else 99) if r['cat'] == 'Structure'
                              else '%06d' % r['order'] if r.get('fo4') else '' if r['cat'] == 'Roads'
@@ -882,10 +885,6 @@ def fo4_rows(rows):
         if r.get('fo4') or r.get('npc') or r['cat'] == 'People': continue
         if r['cat'] in NATIVE_OUT or DUP_GUNS.match(r['key']):
             r['stashed'] = True; continue                       # (only with HS_NATIVE)
-        if r.get('min') and not r.get('lights'):                # (rows made before native() gave lights)
-            ls, fx = native_light(r)
-            if ls: r['lights'] = ls
-            if fx: r['fx'] = fx
         if r.get('min') and r.get('base') and r['min'][2] < r['base'][2] - 0.01 and not BURIED.search(r['name']):
             r['base'] = [r['base'][0], r['base'][1], round(r['min'][2], 3)]   # (on its bottom, not sunk by what's under its origin)
         if r['cat'] in NATIVE_MOUNTS and not r.get('mount') and r.get('min'):
@@ -922,9 +921,7 @@ def fo4_rows(rows):
             f.write('-- Generated by tools/build_catalog.py: the heavy half of catalog.lua items (dat = %d)\nlocal d = {}\n' % n)
             for r in rs:                                        # (a function each: LuaJIT's 65536 constants a function)
                 f.write('d[%s] = (function() return %s end)()\n' % (lua(r['key']), lua({k: r.pop(k) for k in HEAVY if r.get(k) is not None})))
-            f.write('return d\n')
-            for r in rs:
-                for k in HEAVY: r.pop(k, None)
+            f.write('return d\n')                               # (a HEAVY field left in a row is None: lua() skips it)
     with open(OUT, 'w', newline='\n', encoding='utf-8') as f:            # (names in any script: "Mateusz Łuczak")
         f.write('-- Generated by tools/build_catalog.py; edit ITEMS there. Mesh space: Z up, min/max = bounds (back included),\n')
         f.write('-- face = a wall\'s outer plane (local Y); dat = the catalog_<n>.lua with its heavy fields (boxes, meshes...).\n')

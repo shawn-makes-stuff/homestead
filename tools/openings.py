@@ -3,9 +3,8 @@ along Y). A wall's back must have its openings in the same places, turned 180 de
 usage: python tools/openings.py <mesh> [<mesh> ...]"""
 import os, sys
 import numpy as np
-import trimesh
 sys.path.insert(0, os.path.dirname(__file__))
-import meshes, colliders
+import colliders
 
 P = 0.05
 

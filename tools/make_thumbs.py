@@ -25,7 +25,6 @@ TMP = os.path.join(W, 'thumbs_raw')
 TEX = os.path.join(W, 'thumbs_tex')
 PNGS = os.path.join(W, 'raw', 'homestead', 'ui')
 GAME = os.path.join(W, 'json', 'homestead', 'ui')
-NC = os.path.join(W, 'thumbs_nc', 'materials.json')
 
 
 def textures(items):
@@ -38,14 +37,23 @@ def textures(items):
                 if tex: need[tex] = os.path.join(TEX, tex.replace('\\', '_').replace('/', '_')[:150] + '.png')
     todo = [t for t, f in need.items() if not os.path.exists(f)]
     if todo:
-        import convert
+        import convert, xbm
         files = convert.Files()
         os.makedirs(TEX, exist_ok=True)
         for t in todo:
-            base, tint = t.split('__tint__')[0].split('__pal__')[0], t.split('__tint__')[1:]   # (a palette texture: its
-            try:                                             # greyscale base, near enough; a tinted one: times its tint)
+            (base, *pal), tint = t.split('__tint__')[0].split('__pal__'), t.split('__tint__')[1:]
+            try:                                             # (a tinted one: times its tint)
                 im = Image.open(io.BytesIO(files.read('textures\\' + base + '.dds'))).convert('RGBA')
                 im.thumbnail((512, 512))
+                if pal:                                      # greyscale to palette, as fo4/xbm.py _make: each grey looked
+                    grad, row = pal[0].rsplit('__', 1)       # up in a row of its gradient (the turret's body was white)
+                    gd = files.read('textures\\' + grad.replace('~', '\\') + '.dds')
+                    gw, gh, _, fmt, body = xbm.dds_parts(gd)     # (uncompressed BGRA / RGBA: PIL reads neither)
+                    G = Image.frombuffer('RGBA', (gw, gh), body[:gw * gh * 4], 'raw', 'BGRA' if fmt == 87 else 'RGBA', 0, 1).convert('RGB') \
+                        if fmt in (87, 28) else Image.open(io.BytesIO(gd)).convert('RGB')
+                    y = round(int(row) / 100 * (G.height - 1))
+                    lut = np.asarray(G.crop((0, y, G.width, y + 1)).resize((256, 1), Image.BILINEAR))[0]
+                    im = Image.merge('RGBA', [*Image.fromarray(lut[np.asarray(im.convert('L'))], 'RGB').split(), im.getchannel('A')])
                 if tint: im = Image.merge('RGBA', [c.point(lambda v, k=int(k, 16) / 255: v * k) for c, k in zip(im.split(), tint[0].split('_') + ['ff'])])
                 im.save(need[t])
             except Exception:
@@ -130,10 +138,11 @@ def main():
     if '--pack' not in sys.argv:
         os.makedirs(TMP, exist_ok=True)
         tex = textures(items)
-        if os.path.exists(NC):                               # Night City's (tools/nc_textures.py), by submesh
-            tex.update({g: m for g, m in json.load(open(NC)).items() if m and not tex.get(g)})
+        import nc_textures
+        nc = nc_textures.mats()                              # Night City's (tools/nc_textures.py), by submesh
+        tex = {g: m for g in {q[0] for _, parts, _, _ in items for q in parts} if (m := tex.get(g) or nc.get(os.path.normcase(g)))}
         todo = [[parts, os.path.join(TMP, k + '.png'), {g: tex[g] for g in {q[0] for q in parts} if g in tex}, view]
-                for k, parts, _, view in items if '--all' in sys.argv or k in sys.argv or not os.path.exists(os.path.join(TMP, k + '.png'))]
+                for k, parts, _, view in items if parts and ('--all' in sys.argv or k in sys.argv or not os.path.exists(os.path.join(TMP, k + '.png')))]   # (no parts: an icon made by hand, only packed)
         print(len(todo), 'to render', flush=True)
         chunks = [todo[i::PROCS * 4] for i in range(PROCS * 4) if todo[i::PROCS * 4]]
         with ThreadPoolExecutor(PROCS) as ex:

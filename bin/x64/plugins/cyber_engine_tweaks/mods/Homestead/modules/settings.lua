@@ -12,7 +12,7 @@ return function(Settings, C)
     local T, IMP = "/homestead", "/homestead/import"
     local opt, shownSig = {}, nil
     local DEFAULTS = { peopleWalk = true, peopleFurniture = true, peopleTalk = true, peopleNav = true, borderLine = true, snapPoints = false,
-                       keepImportFiles = false, loadDistance = 800, buildLimit = true, radius = 50 }
+                       keepImportFiles = false, importFo4 = true, importNC = true, checkUpdates = true, loadDistance = 800, buildLimit = true, radius = 50 }
 
     local function readKV(file)
         local t, f = {}, io.open(DIR .. file, "r")
@@ -41,16 +41,43 @@ return function(Settings, C)
     end
     function Settings.num(k) return tonumber(Settings.get(k)) or DEFAULTS[k] end
 
-    -- The mod was updated since the last import: build.txt (tools/release.py) differs from the one imported.txt recorded.
-    function Settings.stale()
+    -- The mod needs a newer import than the one installed: NEEDS against the level the importer wrote (imported.txt;
+    -- tools/import.py LEVEL - none: 0). Raised only when the mod can't work with what older importers made: the
+    -- importer may change without players importing again. imported.txt is written as an import installs, so it
+    -- says what is installed whatever the status file says since (a check leaves it at "found", a later import at
+    -- "failed" or "cancelled"); "done" without one is an import from before there were levels: 0. Neither: false.
+    local NEEDS = 0
+    local function level() return tonumber(readKV("imported.txt").level) or readKV("import_status.txt").state == "done" and 0 end
+    function Settings.stale() local l = level(); return l and l < NEEDS end
+    function Settings.level() return level() or 0 end       -- (2: the animations of modules/own/poses.lua have their copies)
+    -- This release's importer isn't the one the installed import was made with (build.txt: tools/release.py
+    -- build_id, a hash of the importer's code and data - found by itself, nothing to set): an import is offered,
+    -- not needed - the mod works as it is.
+    function Settings.newer()
         local b = readKV("build.txt").build
-        return b ~= nil and readKV("import_status.txt").state == "done" and readKV("imported.txt").build ~= b
+        return level() and b ~= nil and readKV("imported.txt").build ~= b
     end
 
     local function plugin(fn, ...)
         local ok, r = pcall(HomesteadImport[fn], ...)
         if ok then return r end
     end
+    -- A newer release on GitHub (the plugin asks once, in the background: HomesteadImport.Latest; Settings > Check for
+    -- updates) than this one (build.txt `version`, tools/release.py) -> its tag, else nil. Off line: nil.
+    local function parts(v) local t = {} for n in tostring(v):gmatch("%d+") do t[#t + 1] = tonumber(n) end return t end
+    function Settings.version() return readKV("build.txt").version end
+    function Settings.buildId() return readKV("build.txt").build end
+    function Settings.update()
+        if not Settings.on("checkUpdates") then return end
+        local mine, tag = readKV("build.txt").version, plugin("Latest")
+        if not mine or not tag or tag == "" then return end
+        local a, b = parts(tag), parts(mine)
+        for i = 1, math.max(#a, #b) do
+            if (a[i] or 0) ~= (b[i] or 0) then return (a[i] or 0) > (b[i] or 0) and tag or nil end
+        end
+    end
+    -- never imported (and an importer to do it with): the main menu's notice offers the first one
+    function Settings.first() return readKV("import_status.txt").state == nil and (plugin("Path") or "") ~= "" end
     local BUSY = { running = true, checking = true, waiting = true }
     local function busy() return BUSY[status.state] and plugin("Running") end
     local function statusLine()
@@ -62,13 +89,15 @@ return function(Settings, C)
         if st == "cancelled" then return "Cancelled - import again to finish it" end
         if st == "checking" then return "Looking for the games..." end
         if st == "running" then
-            local pct, eta = tonumber(status.pct), tonumber(status.eta)
-            local left = not eta and "" or eta < 60 and "  -  under a minute left" or ("  -  about " .. math.floor(eta / 60 + 0.5) .. " min left")
-            return "Importing: " .. (status.step or "") .. (pct and ("  -  " .. pct .. "%") or "") .. left
+            -- what it is on, a bar of 20 (the settings have no widget for one) and the percentage. No time left: its guess was off (user)
+            local pct = tonumber(status.pct)
+            local n = pct and math.max(0, math.min(20, math.floor(pct / 5 + 0.5)))
+            return (status.step or "Importing") .. (n and ("  [" .. string.rep("|", n) .. string.rep(".", 20 - n) .. "]  " .. pct .. "%") or "")
         end
         if st == "waiting" then return "Built - quit Cyberpunk to install it" end
         if st == "found" then return "Games found - ready to import" end
         if st == "done" and Settings.stale() then return "Homestead was updated - import again (only what changed is redone)" end
+        if st == "done" and Settings.newer() then return "New version: import again for its new data (optional; only what changed is redone)" end
         if st == "done" then return "Imported " .. (status.finished or "") .. "  (" .. (status.minutes or "?") .. " min)" end
         if st == "failed" then return "Failed: " .. (status.message or "?") end
         return st
@@ -108,7 +137,7 @@ return function(Settings, C)
         elseif plugin("Running") then note = "The importer is already running"
         elseif not plugin("Path") or plugin("Path") == "" then note = "The importer isn't there: install Homestead again"
         elseif plugin("Start", mode) then
-            status.state, status.step, status.started = mode == 2 and "checking" or "running", "starting", tostring(os.time())
+            status.state, status.step, status.started = mode == 2 and "checking" or "running", "Starting the import", tostring(os.time())
             say()
             if mode == 1 and opt.overwrite then force = false; pcall(NS.setOption, opt.overwrite, false) end
         else note = "The importer didn't start" end
@@ -124,7 +153,7 @@ return function(Settings, C)
         shownSig = sig
         for _, k in ipairs({ "status", "fo4", "folder" }) do if opt[k] then pcall(NS.removeOption, opt[k]) end end
         opt.status = NS.addButton(IMP, statusLine(),
-            "Makes Homestead's pieces from your own Fallout 4 (about 15 minutes the first time). From the main menu; it installs as you quit Cyberpunk. Cancel stops it: import again to finish.",
+            "Makes Homestead's pieces from your own Fallout 4 (about 15-20 minutes the first time). From the main menu; it installs as you quit Cyberpunk. Cancel stops it: import again to finish.",
             busy() and "Cancel" or "Import", 40, function() if busy() then cancel() else run(force and 1 or 0) end end, 1)
         opt.fo4 = NS.addButton(IMP, fo4, "Where Homestead found Fallout 4 (Steam, GOG, Epic, Game Pass or Bethesda's launcher).",
             "Look again", 40, function() run(2) end, 2)
@@ -160,11 +189,15 @@ return function(Settings, C)
         opt.overwrite = NS.addSwitch(IMP, "Overwrite already imported items",
             "Make every piece again, for clean data (if something broke). Off again after the import.", false, false,
             function(v) force = v end)
-        NS.addSwitch(IMP, "Keep import files", "Keep the import's working files (about 9 GB): re-imports take ~2 minutes instead of ~7.",
-            Settings.on("keepImportFiles"), false, function(v) Settings.set("keepImportFiles", v and "1" or "0") end)
         local function switch(path, label, desc, k)
             NS.addSwitch(path, label, desc, Settings.on(k), DEFAULTS[k], function(v) Settings.set(k, v and "1" or "0"); applied() end)
         end
+        switch(IMP, "Keep import files", "Keep the import's working files (about 9 GB): re-imports take ~2 minutes instead of ~7.", "keepImportFiles")
+        -- which pieces there are (user, 2026-10-05): Fallout's off - the import leaves them out (no Fallout 4 needed) and
+        -- their tabs leave the menu; Night City's off - its tab does. The menu changes at the next start (init.lua reads it).
+        switch(IMP, "Fallout 4 pieces", "Import and show Fallout 4's workshop pieces. Off: the import skips them (no Fallout 4 needed) and their tabs leave the menu. The menu changes the next time you start the game.", "importFo4")
+        switch(IMP, "Night City pieces", "Show Cyberpunk's own props, weapons and working things (the Night City tab). Off: they leave the menu. Changes the next time you start the game.", "importNC")
+        switch(IMP, "Check for updates", "At start, ask GitHub once whether a newer Homestead is out and say so on the main menu. Nothing is sent but the request; nothing is downloaded.", "checkUpdates")
         local P, B = T .. "/people", T .. "/building"
         -- LiveNav not set up: no People rows at all (placed people are props). Navigation off: its switch alone.
         -- Hidden rows keep their value in settings.txt, unused.

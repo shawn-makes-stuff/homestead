@@ -17,9 +17,9 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))   # (tools/: paths.py)
 import paths
-import ba2, bgsm, budget, esm, havok, nif
+import anim, ba2, bgsm, budget, esm, havok, nif
 
-DATA = paths.get('fo4')
+DATA = paths.get('fo4', required=False)
 WORK = paths.work()
 FO4 = os.path.join(WORK, 'fo4')                             # (the import's data: paths.work)
 RAW = os.path.join(FO4, 'raw')
@@ -54,6 +54,12 @@ def write_png(img, path):
     os.replace(tmp, path)                                   # (workers share textures: whole files only)
 
 
+# An object's colour remapping index (its record's MODC: which row of a greyscale-to-palette material's gradient it is
+# painted with - a cage's, an arena marker's colour; 27 workshop objects have one). It rides in the object's swaps
+# under REMAP_KEY (so the model is a variant of its own), and model() sets REMAP for the model it is making.
+REMAP_KEY, REMAP = '__remap__', None
+
+
 def texture(files, tex, kind, m):
     """a material's texture: its name under our tex\\ (the Fallout path; roughness named by its smoothness too), None if
     Fallout has no such file. The files themselves are written afterwards by xbm.py, straight from Fallout's blocks."""
@@ -61,7 +67,7 @@ def texture(files, tex, kind, m):
     if not r or 'textures\\' + r + '.dds' not in files.where: return None
     g = rel((m.get('textures') or {}).get('greyscale') or '')
     if kind == 'color' and m.get('palette') and g and 'textures\\' + g + '.dds' in files.where:
-        row = int(round(min(1.0, max(0.0, m.get('palette_scale', 1.0))) * 100))   # (greyscale to palette: the grey
+        row = int(round(min(1.0, max(0.0, m.get('palette_scale', 1.0) if REMAP is None else REMAP)) * 100))   # (greyscale to palette: the grey
         return r + '__pal__' + g.replace('\\', '~') + '__%03d' % row               # coloured by its gradient: xbm.py)
     smooth = round(m.get('smoothness', 1.0), 2)
     return r if kind != 'rough' else r + '_r' + ('' if smooth == 1 else '%03d' % int(smooth * 100))
@@ -137,7 +143,22 @@ def cuts(tex, ref):
     return _CUTS[r, ref]
 
 
-def filled(n, mp, pose=None, movers=None):
+# An elevator's buttons: Fallout hangs them on by script - models of their own, one a floor, its number lit - at the
+# frame's Button nodes: Button0N the car's panel (they travel with the car), Button0NL / R floor N's two call buttons
+BUTTON = 'meshes\\dlc05\\architecture\\workshop\\elevatorbuttons\\dlc05_elevatorbutton0%s.nif'
+
+
+# What an actor's skin hangs on it (ARMA ONAM -> an art object's model: a spotlight's lit lens, its beam and glow; a
+# turret's eye) rides in the object's swaps under ARTS_KEY, as its colour index does. It goes on the actor's ART_NODE
+# (the head's gun bone: it turns with the head, as a part of it). Of its shapes the glow sprites and beams are left
+# out as every such is (SOFT_FX: drawn solid they are squares); a plain plate Fallout lights through the art's own
+# sequences (its colour black in the file: the spotlight's lens) is lit in the colour of the art's glow.
+# (ART_NODES: the head's bone by its names - a turret's gun, a wall light's lamp; the first the actor has. Measured: a
+# wall spotlight's lens plate lands in its lamp's mouth so.)
+ARTS_KEY, ART_NODES = '__arts__', ('gun', 'spotlight')
+
+
+def filled(n, mp, pose=None, movers=None, arts=None):
     """a model's shapes plus what a full one shows in its slots (a bobblehead stand's bobbleheads, a magazine rack's
     magazines with their own covers): each item's shapes moved to its slot, its materials swapped as the item's are"""
     global FILL
@@ -145,11 +166,61 @@ def filled(n, mp, pose=None, movers=None):
         f = os.path.join(FO4, 'fill.json')
         FILL = json.load(open(f)) if os.path.exists(f) else {}
     out = n.shapes(pose, movers)
-    for node, sub, swaps in FILL.get(mp, []):
+    hung = [(node, BUTTON % node[7], {}) for node in n.node_worlds() if re.match(r'Button0[1-4][LR]?$', node)] if 'elevatorframe' in mp.lower() else []
+    up = n.parents() if hung else {}
+    head = arts and next((k for want in ART_NODES for k in n.node_worlds() if k.lower() == want), None)
+    worn = [(head, a, {}) for a in arts or ()]
+    if worn and not up: up = n.parents()
+    for node, sub, swaps in FILL.get(mp, []) + hung + [w for w in worn if w[0]]:
         at, b = n.node_transform(node), FILES.read(sub)
         if at is None or b is None: continue
         M, T = at
-        for sh in nif.Nif(b).shapes():
+        if sub in (arts or ()): M = np.eye(3)               # (an art object keeps the actor's axes: only where its bone is -
+                                                            # turned as the bone is, both lens plates stood out sideways)
+        part, a = None, up.get(node)                        # (on a part that moves - the car: of that part)
+        while a and not part:
+            part = next(((s['part'], s['part_at']) for s in out if s.get('part') == a), None)
+            a = up.get(a)
+        shapes = nif.Nif(b).shapes()
+        if sub in (arts or ()):
+            # An art object's lens, lit as its glow is. Fallout's spotlight (TurretSpotlightEye.nif, measured 2026-10-05):
+            # a thin ring round the lens (m_SpotGlow:2, a plain white plate, black in the file - lit by the art's own
+            # sequences) and a dish over the reflector inside it (m_SpotGlow:1, a soft glow card, r 0.06 - 0.13 m, 7 - 13 mm
+            # before the lamp's own reflector) with the bulb's tip dark in its middle. Both are kept where Fallout has
+            # them and lit solid, and the dish's own opening is closed: a filled disc that glows (user, 2026-10-05 - the
+            # ring alone, moved forward, was a ring with a hole, too far out).
+            lit = next((x['shader']['emit'] for x in shapes if x['shader'].get('effect') and max(x['shader'].get('emit') or (0,)) > 0.01), None)
+            plate = next((x for x in shapes if lit and x['shader'].get('effect') and max(x['shader'].get('emit') or (0,)) <= 0.01
+                          and 'utility' in ((x['shader'].get('textures') or [''])[0] or '').lower()), None)
+            beam = max(shapes, key=lambda x: float(np.ptp(x['pos'], axis=0).max())) if shapes else None
+            if plate is not None:
+                white = plate['shader'].get('textures')
+                stem = (plate.get('name') or '').split(':')[0]
+                lit = next((x['shader']['emit'] for x in shapes if (x.get('name') or '').split(':')[0] == stem   # (its own glow's colour,
+                            and max(x['shader'].get('emit') or (0,)) > 0.01), lit)                           # not the beam's)
+                plate['shader'] = dict(plate['shader'], emit=lit, emit_mult=3.0)
+                for x in shapes:
+                    if x is plate or x is beam or (x.get('name') or '').split(':')[0] != stem: continue
+                    x['shader'] = dict(x['shader'], textures=white, emit=lit, emit_mult=3.0)   # (the dish: solid, as the plate is)
+                    c0 = plate['pos'].mean(axis=0)
+                    ax = beam['pos'].mean(axis=0) - c0
+                    ax = ax / max(np.linalg.norm(ax), 1e-9)
+                    v = x['pos'] - c0
+                    r = np.linalg.norm(v - np.outer(v @ ax, ax), axis=1)
+                    ring = np.where(r < r.min() * 1.15)[0]            # (its opening's rim: closed by a fan from its middle)
+                    if len(ring) >= 3 and r.min() > 1e-3:
+                        mid = x['pos'][ring].mean(axis=0)
+                        w = x['pos'][ring] - mid
+                        e1 = w[0] / np.linalg.norm(w[0]); e2 = np.cross(ax, e1)
+                        order = ring[np.argsort(np.arctan2(w @ e2, w @ e1))]
+                        k = len(x['pos'])
+                        x['pos'] = np.vstack([x['pos'], mid])
+                        for key in ('uv', 'normal'):
+                            if x.get(key) is not None: x[key] = np.vstack([x[key], ax if key == 'normal' else x[key][ring].mean(axis=0)])
+                        fan = [[k, int(order[i]), int(order[(i + 1) % len(order)])] for i in range(len(order))]
+                        x['tri'] = np.vstack([np.asarray(x['tri']).reshape(-1, 3), np.asarray(fan, dtype=np.asarray(x['tri']).dtype)])
+        for sh in shapes:
+            if part: sh['part'], sh['part_at'] = part
             sh['pos'] = sh['pos'] @ M.T + T
             if sh['normal'] is not None: sh['normal'] = sh['normal'] @ M.T
             mat = sh['shader'].get('material')
@@ -300,9 +371,9 @@ def model(job):
     becomes a part - its own .glb in that node's space, its own collision shapes (the bodies on that node or under it:
     a door leaf's), and where it is in every kept sequence."""
     mp, swaps, skel = (job, {}, None) if isinstance(job, str) else (tuple(job) + (None,))[:3]
-    global FILES
+    global FILES, REMAP
+    REMAP = (swaps or {}).get(REMAP_KEY)
     if FILES is None: FILES = Files()
-    import anim
     try:
         b = FILES.read(mp)
         if b is None: return mp, None
@@ -317,6 +388,11 @@ def model(job):
                 up = M.T @ np.array([0.0, 0.0, 1.0])       # the vertical, in the head's own frame
                 seqs = {'Idle': dict(cycle=0, start=0.0, vis={}, sounds=[], stop=anim.SWEEP[head][1],
                                      tracks={head: anim.sweep(n.node_locals()[head][1], tuple(up / np.linalg.norm(up)), *anim.SWEEP[head])})}
+        carried = [c for c in anim.CARRIED if c in n.node_locals() and not any(c in s['tracks'] for s in seqs.values())]
+        if carried:                                         # (an elevator's car: a part, held where it is - 'Held', one frame long,
+            loc = n.node_locals()                           # played by nothing)
+            seqs = dict(seqs, Held=dict(cycle=2, start=0.0, stop=1.0 / anim.RATE, vis={}, sounds=[],
+                                        tracks={c: anim.still(loc[c][0]) for c in carried}))
         movers = anim.moving(seqs)
         rest = anim.rest_state(seqs)
         locals_ = n.node_locals() if seqs else {}
@@ -326,7 +402,7 @@ def model(job):
             for node, tr in s['tracks'].items():
                 if node in locals_: pose[node] = anim.local_at(tr, locals_[node], tt)
         groups, fires, part_at = {}, [], {}
-        for sh in filled(n, mp, pose, movers):              # by part, then material; a shape with no material (its
+        for sh in filled(n, mp, pose, movers, (swaps or {}).get(ARTS_KEY)):   # by part, then material; a shape with no material (its
             mat = sh['shader'].get('material')             # textures named in the model: a stool's cushion) by texture
             if mat and bgsm.path(mat) in swaps: mat = swaps[bgsm.path(mat)]
             ts = sh['shader'].get('textures') or []
@@ -508,26 +584,33 @@ def save_json(path, d):                                     # (whole or not at a
 # turrets are actors: their model is their race's skin (ARMO -> ARMA MOD2), skinned to the race's skeleton (ANAM).
 # Several share one body (Fallout gives each its gun through weapon mods on a dummy weapon): one per model, named here.
 ACTOR_NAMES = {'turretworkshop.nif': 'Turret', 'turretstanding.nif': 'Machinegun Turret',
-               'turretstandingmounted.nif': 'Heavy Machinegun Turret', 'turretspotlightworkshop.nif': 'Spotlight'}
+               'turretstandingmounted.nif': 'Heavy Machinegun Turret', 'turretspotlightworkshop.nif': 'Spotlight',
+               'spotlightturret.nif': 'Spotlight'}
 
 
 def actor_model(g, x):
-    """an actor record's (model path, skeleton path) or (None, None)"""
+    """an actor record's (model path, skeleton path, its art objects' model paths) or (None, None, ())). The skin's
+    pieces (ARMA) are a race's each: the actor's own race's are its (a wall spotlight shares its skin's first piece with
+    the floor one - taken as it came, it stood on the floor one's body)"""
     def ref(k, name):
         d = g.field(k, name)
         r = g.ref(k, struct.unpack('<I', d[:4])[0]) if d and len(d) >= 4 else None
         return r if r in g.rec else None
     race = ref(x, 'RNAM')
     skin = ref(x, 'WNAM') or (race and ref(race, 'WNAM'))
-    if not (race and skin): return None, None
+    if not (race and skin): return None, None, ()
     sk = g.field(race, 'ANAM')
-    for d in g.fields(skin, 'MODL'):
-        a = g.ref(skin, struct.unpack('<I', d[:4])[0]) if len(d) == 4 else None
-        m = g.field(a, 'MOD2') if a in g.rec else None
-        if m and b'dummy' not in m.lower():
-            path = lambda b: 'meshes\\' + b.rstrip(b'\0').decode('cp1252').lower().replace('/', '\\')
-            return path(m), sk and path(sk)
-    return None, None
+    path = lambda b: 'meshes\\' + b.rstrip(b'\0').decode('cp1252').lower().replace('/', '\\')
+    pieces = [a for a in (g.ref(skin, struct.unpack('<I', d[:4])[0]) for d in g.fields(skin, 'MODL') if len(d) == 4) if a in g.rec]
+    mine = [a for a in pieces if ref(a, 'RNAM') == race] or pieces
+    model, arts = None, []
+    for a in mine:
+        m = g.field(a, 'MOD2')
+        if m and b'dummy' not in m.lower() and not model: model = path(m)
+        art = ref(a, 'ONAM')
+        am = art and g.field(art, 'MODL')
+        if am: arts.append(path(am))
+    return (model, sk and path(sk), tuple(arts)) if model else (None, None, ())
 
 
 # power armour as display props (user, 2026-10-02): a frame and a set's six pieces, each skinned to the power armour
@@ -584,19 +667,21 @@ def objects(g):
         for x in objs:
             if x not in g.rec or x in seen: continue
             if g.rec[x][0] == 'NPC_':                        # a turret
-                model, skel = actor_model(g, x)
+                model, skel, arts = actor_model(g, x)
                 if not model or (skel, model) in seen: continue
                 seen.add(x); seen.add((skel, model))
                 name = ACTOR_NAMES.get(model.split('\\')[-1], g.full(x) or g.edid(x))
                 if 'mountedlight' in (skel or ''): name = 'Wall ' + name
                 out.append(dict(rec=x, edid=g.edid(x), name=name, menu=cats[0], order=order[tuple(cats[0])], kind='NPC_',
-                                model=model, skeleton=skel, swaps={}))
+                                model=model, skeleton=skel, swaps={ARTS_KEY: arts} if arts else {}))
                 continue
             m = g.field(x, 'MODL')
             if not m: continue
             seen.add(x)
+            mc = g.field(x, 'MODC')                         # (its colour remapping index: REMAP)
             out.append(dict(rec=x, edid=g.edid(x), name=g.full(x) or g.edid(x), menu=cats[0], order=order[tuple(cats[0])], kind=g.rec[x][0],
-                            model='meshes\\' + m.rstrip(b'\0').decode('cp1252').lower().replace('/', '\\'), swaps=swaps_of(g, x)))
+                            model='meshes\\' + m.rstrip(b'\0').decode('cp1252').lower().replace('/', '\\'),
+                            swaps=dict(swaps_of(g, x), **({REMAP_KEY: round(struct.unpack('<f', mc[:4])[0], 3)} if mc and len(mc) >= 4 else {}))))
     return out + power_armor_objects()
 
 
@@ -661,7 +746,7 @@ def main():
     new = [m for m in models if m not in done and (not want or named(m))]
     print(len(done), 'models kept,', len(new), 'to convert', flush=True)
     paths.progress('models', 0, len(new))
-    with Pool(budget.workers(1.2)) as pool:                 # (measured 2026-10-02: ~1.1 GB a worker)
+    with Pool(budget.workers(1.2) if new else 1) as pool:   # (measured 2026-10-02: ~1.1 GB a worker; nothing new: no pool to speak of)
         for i, (mp, res) in enumerate(pool.imap_unordered(run, [(m, jobs[m]) for m in new], chunksize=4)):
             done[mp] = res
             if res and 'error' not in res: cache[mp] = res  # (failures are tried again next time)
@@ -686,24 +771,25 @@ def main():
         if o['rec']: row.update(snap_props(g, o['rec']))
         pieces.append(dict(key=key(o), name=o['name'], menu=o['menu'], order=o['order'], kind=o['kind'], edid=o['edid'], **row))
     pieces = power_armor(pieces)
-    pp = os.path.join(FO4, 'pieces.json')
+    pp = os.path.join(FO4, 'pieces.json')                   # (written once, at the end: the post steps add to its rows)
     if want and os.path.exists(pp):                         # a partial run: only the named objects' rows replaced
         pa = lambda k: re.sub(r'^(fo4_pa_[^_]+)_.*', r'\1', k)   # (a power armour part: its set's row)
         redo = {pa(key(o)) for o in objs if jobkey(o) in new}
         now = {p['key']: p for p in pieces if p['key'] in redo}
         pieces = [now.pop(p['key'], p) if p['key'] in redo else p for p in json.load(open(pp))] + list(now.values())
         bad = [x for x in bad if any(w in x[1] for w in want)]
-    json.dump(pieces, open(pp, 'w'))
     json.dump(bad, open(os.path.join(FO4, 'skipped.json'), 'w'), indent=0)
     print(len(pieces), 'pieces,', len(bad), 'skipped (source/fo4/skipped.json)')
     if not pieces:                                          # (never an empty archive installed over a good one)
         raise SystemExit('no Fallout 4 workshop pieces found in %s - nothing imported' % paths.get('fo4'))
     import xbm, lights, sounds, furniture
     made = [r for m in new if (r := done.get(m)) and 'error' not in r]   # (a partial run: its own textures only)
-    if made or not want: xbm.main(made if want else pieces)
-    lights.patch(g, FILES)                                  # lamps: their light, into pieces.json
-    sounds.patch(g, FILES)                                  # doors, machines, fires: their sounds (Audioware)
-    furniture.patch(g)                                      # chairs, beds, counters: where people use them
+    if made or not want: xbm.main(made if want else pieces, FILES)
+    by = {'fo4_' + (o['edid'] or '').lower(): o for o in objs}
+    lights.patch(pieces, g, by, FILES)                      # lamps: their light, into the rows
+    sounds.patch(pieces, g, by, FILES)                      # doors, machines, fires: their sounds (Audioware)
+    furniture.patch(pieces, g)                              # chairs, beds, counters: where people use them
+    save_json(pp, pieces)
 
 
 if __name__ == '__main__':

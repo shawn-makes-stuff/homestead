@@ -1,6 +1,7 @@
 -- The game calls that cost (rays, entities made and deleted, teleports, AI moves, overlay pushes) go through here, counted per
 -- frame (GetMod("Homestead").calls: n this frame, last, peak since reset(), total). A tag (by) counts a call a second time under its
--- own name. Frame steps are clocked (timed) and entity lifetime is guarded here. init.lua requires this first; E is C.Eng.
+-- own name. Frame steps are clocked (timed; GetMod("Homestead").calls.slowlog = true logs the slow frames) and entity lifetime is
+-- guarded here. init.lua requires this first; E is C.Eng.
 return function(E, C)
     local des, try = C.des, C.try
     local n, last, peak, total = {}, {}, {}, {}
@@ -40,18 +41,16 @@ return function(E, C)
         return not born[h] and (not s or now - s > GUARD)
     end
     function E.ready(id) return readyH(key(id)) end
-    function E.pending() return next(born) ~= nil end        -- an entity of ours is still attaching
     E.readyH = readyH
     function E.dying(id) return doomed[key(id)] == true end
     function E.now() return now end
     function E.forget() born, seen, queue, doomed = {}, {}, {}, {} end
 
-    function E.ray(a, b) count("ray") return Homestead.Ray(a, b) end
     function E.rayHit(a, b, by) count("ray", by) return Homestead.RayHit(a, b) end
     function E.terrain(p, by) count("terrain", by) return Homestead.TerrainBelow(p) end
-    function E.create(spec, unhooked)
-        count("create")
-        local id = des():CreateEntity(spec)
+    function E.create(spec, unhooked, own)                   -- own: an entity of ours in plain values, one that
+        count("create")                                      -- may go outside the game's population (modules/world.lua)
+        local id = des():CreateEntity(spec, own)
         local h = key(id)
         if not seen[h] then born[h] = { id = id, f = now, unhooked = unhooked } end
         return id
@@ -88,12 +87,15 @@ return function(E, C)
         des():DisableEntity(id)
         seen[key(id)] = now
     end
-    function E.settling() return next(born) ~= nil end
-    function E.teleport(e, at, turn)                         -- -> false: not yet (a new entity; asked again next frame)
+    function E.settling() return next(born) ~= nil end       -- an entity of ours is still attaching
+    -- byAI: a person standing free, moved by their AI as well (Homestead.reds MoveNPC) - not one about to be put into a
+    -- workspot (what that command does to a workspot just begun isn't known; the facility alone seats people fine)
+    function E.teleport(e, at, turn, byAI)                   -- -> false: not yet (a new entity; asked again next frame)
         local ok, id = pcall(function() return e:GetEntityID() end)
         if ok and id and not E.ready(id) then count("teleport.wait") return false end
         count("teleport")
         Game.GetTeleportationFacility():Teleport(e, at, turn)
+        if byAI then pcall(function() Homestead.MoveNPC(e, at, turn.yaw) end) end
         return true
     end
     function E.move(npc, cmd) count("move") npc:GetAIControllerComponent():SendCommand(cmd) end
@@ -135,10 +137,12 @@ return function(E, C)
         return a, b, c, e
     end
     function E.slowFrame()
+        FRAME.depth = 0
+        if not E.slowlog then for k in pairs(FRAME.t) do FRAME.t[k] = nil end return end   -- (off: no table made a frame)
         local total, steps = 0, {}
         for k, v in pairs(FRAME.t) do total = total + v; steps[#steps + 1] = { k, v } end
-        FRAME.t, FRAME.depth = {}, 0
-        if not E.slowlog or total < SLOW or FRAME.lines <= 0 or os.clock() - FRAME.last < 2 then return end
+        FRAME.t = {}
+        if total < SLOW or FRAME.lines <= 0 or os.clock() - FRAME.last < 2 then return end
         FRAME.last, FRAME.lines = os.clock(), FRAME.lines - 1
         table.sort(steps, function(x, y) return x[2] > y[2] end)
         local t, c = {}, {}

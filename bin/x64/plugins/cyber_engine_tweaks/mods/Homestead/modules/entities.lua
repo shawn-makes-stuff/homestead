@@ -35,7 +35,7 @@ return function(C)
     local function tagInfo(id)
         local hid = hashOf(id)
         if S.info[hid] ~= nil then return S.info[hid] or nil end
-        local function has(name) return des():IsTagged(id, CName.new(name)) end
+        local function has(name) return des():IsTagged(id, name) end
         local cands = legacy
         if has("hsv2") then
             local h = 0
@@ -55,24 +55,35 @@ return function(C)
         return info or nil
     end
 
+    -- (tags are TEXT in the mod: the game's names are made of them only where a spec is handed to the game - names())
     local function tagsFor(role, key, app)
-        local tags = { CName.new(role), CName.new("hs:" .. key), CName.new("hsapp:" .. app), CName.new("hsv2"), CName.new(ALWAYS) }
+        local tags = { role, "hs:" .. key, "hsapp:" .. app, "hsv2", ALWAYS }
         local h = keyHash(key)
-        for b = 0, BITS - 1 do if math.floor(h / 2 ^ b) % 2 == 1 then table.insert(tags, CName.new("hsb" .. b)) end end
+        for b = 0, BITS - 1 do if math.floor(h / 2 ^ b) % 2 == 1 then table.insert(tags, "hsb" .. b) end end
         return tags
+    end
+    local function names(tags)
+        local out = {}
+        for i, t in ipairs(tags) do out[i] = CName.new(t) end
+        return out
     end
 
     local function spawn(key, app, o, yaw, ghost, chunk, q)
         chunk = chunk or 1
         local spec = DynamicEntitySpec.new()
         local rec, tpl = byKey[key] and byKey[key].record, byKey[key] and byKey[key].template
+        local own                                             -- (an entity of our own: its template, for modules/world.lua)
         if rec and not ghost then spec.recordID = TweakDBID.new(rec)
         elseif tpl and chunk == 1 then
             spec.templatePath = ResRef.FromString(tpl)
             spec.appearanceName = CName.new(app)
-        else spec.templatePath = (not ghost and chunk == 1 and byKey[key] and byKey[key].lights) and TEMPLATE_LIT or TEMPLATE end
+        else
+            own = (not ghost and chunk == 1 and byKey[key] and byKey[key].lights) and TEMPLATE_LIT or TEMPLATE
+            spec.templatePath = own
+        end
+        local turn = Q.toQuat(q, yaw)
         spec.position = v4(o.x, o.y, o.z)
-        spec.orientation = Q.toQuat(q, yaw)
+        spec.orientation = turn
         spec.persistSpawn = not ghost
         spec.persistState = false
         spec.alwaysSpawned = true
@@ -80,15 +91,20 @@ return function(C)
         spec.active = true
         local role = chunk > 1 and (ghost and "Homestead.ghostpart" or "Homestead.part") or (ghost and "Homestead.ghost" or "Homestead")
         local tags = tagsFor(role, key, app)
-        if chunk > 1 then table.insert(tags, CName.new("hsc" .. chunk)) end
+        if chunk > 1 then table.insert(tags, "hsc" .. chunk) end
+        -- its own identity, for what is kept about it across saves (life.lua: an entity's id is a session's)
+        if chunk == 1 and not ghost then table.insert(tags, string.format("hsu:%d%05d", os.time(), math.random(0, 99999))) end
         if key == "workbench" and not ghost then
-            table.insert(tags, CName.new("Homestead.bench"))
+            table.insert(tags, "Homestead.bench")
             for _, t in ipairs(S.zone.tags or {}) do table.insert(tags, t) end
         end
-        spec.tags = tags
+        spec.tags = names(tags)
+        -- (ours: described to modules/world.lua in plain values - nothing is read back from the game's spec)
+        if own then own = { path = own, x = o.x, y = o.y, z = o.z, i = turn.i, j = turn.j, k = turn.k, r = turn.r, tags = tags, keep = not ghost } end
         local info = { key = key, app = app, ghost = ghost, bench = key == "workbench" and not ghost, o = o, yaw = yaw, q = q, chunk = chunk }
         S.creating = info
-        local id = Eng.create(spec, (rec and not ghost) or (tpl and chunk == 1))
+        local id = Eng.create(spec, (rec and not ghost) or (tpl and chunk == 1), own)
+        if rec and not ghost then S.calm = S.calm or {}; S.calm[#S.calm + 1] = { id = id, t = 0 } end   -- (C.calm: at once)
         S.creating = nil
         if not ghost then S.pending[hashOf(id)] = info end
         return id
@@ -98,19 +114,17 @@ return function(C)
     -- spot in the building: a part of the piece, found again by where it stands
     local function spawnEnt(key, app, e, o, yaw)
         local w = local2world(o, yaw, e.x, e.y, e.z)
-        local y, b = EulerAngles.new(0, 0, yaw):ToQuat(), e.q
         local spec = DynamicEntitySpec.new()
         spec.templatePath = ResRef.FromString(e.path)
         if e.app ~= "default" then spec.appearanceName = CName.new(e.app) end
         spec.position = v4(w.x, w.y, w.z)
-        spec.orientation = Quaternion.new(y.r * b[1] + y.i * b[4] + y.j * b[3] - y.k * b[2], y.r * b[2] - y.i * b[3] + y.j * b[4] + y.k * b[1],
-                                          y.r * b[3] + y.i * b[2] - y.j * b[1] + y.k * b[4], y.r * b[4] - y.i * b[1] - y.j * b[2] - y.k * b[3])
+        spec.orientation = Q.toQuat(Q.mul(Q.yaw(yaw), { i = e.q[1], j = e.q[2], k = e.q[3], r = e.q[4] }))
         spec.persistSpawn = true
         spec.persistState = false
         spec.alwaysSpawned = true
         spec.spawnInView = true
         spec.active = true
-        spec.tags = tagsFor("Homestead.part", key, app)
+        spec.tags = names(tagsFor("Homestead.part", key, app))
         local id = Eng.create(spec, not e.path:find("stash.ent", 1, true))
         S.pending[hashOf(id)] = { key = key, app = app, ghost = false, bench = false, o = w, yaw = yaw, chunk = 1 }
         return id
@@ -151,6 +165,7 @@ return function(C)
         S.world = S.world + 1
     end
 
+    local IGNORED                                             -- (TrafficGenDynamicImpact.Ignored, made at first use)
     local BOXES_PER = 64          -- boxes per collider component: one with 168 took the game down (a 7-storey prefab)
     local function colliderOf(name, boxes, lo, hi)
         local c = entColliderComponent.new()
@@ -179,6 +194,12 @@ return function(C)
         filter.queryFilter = query
         filter.simulationFilter = sim
         c.filterData = filter
+        -- The engine's entColliderComponent has a dynamicTrafficSetting (TrafficGenDynamicImpact: Ignored / Blocking -
+        -- RED4ext SDK): ours never block the game's traffic (user, 2026-10-05: no cars or people under a settlement on
+        -- an overpass till V left and came back - UNPROVEN that this was it; what a new component's default is isn't known).
+        if IGNORED == nil then local ok, e = pcall(Enum.new, "TrafficGenDynamicImpact", "Ignored"); IGNORED = ok and e or false end
+        local t = IGNORED and c.dynamicTrafficSetting
+        if t then t.impact = IGNORED; c.dynamicTrafficSetting = t end
         return c
     end
     local function addColliders(entity, it, chunk)
@@ -193,26 +214,22 @@ return function(C)
         end
     end
 
-    -- A Fallout piece's light (tools/fo4/lights.py). Pieces with lights spawn from empty_lit.ent, whose two light components carry the game's
+    -- A Fallout piece's light (modules/lights.lua). Pieces with lights spawn from empty_lit.ent, whose light components (12; 2 from an import before 2026-10-05: the rest of a piece's lights aren't there) carry the game's
     -- own settings (made here they lit nothing); this sets colour, reach and strength. Fallout's radius is the reach, its fade a strength; strength
     -- counts much less than linearly, so a street lamp lights the street and a poster's glow stays a glow.
     local function lumens(l)
         if l.lm then return l.lm end
-        return math.min(800, 140 * math.max(1.5, l.radius) ^ 1.2 * math.max(0.15, math.min(2.5, l.fade or 1)) ^ 0.4)
+        return math.min(800, 140 * math.max(0.4, l.radius) ^ 1.2 * math.max(0.15, math.min(2.5, l.fade or 1)) ^ 0.4)
     end
+    -- A spotlight's beam is the game's own two ways (read from its files, NOTES.md "Spotlight beam"): the light scatters
+    -- in the fog (scaleVolFog, as the prison's searchlight has it), and a shaft the game's searchlights carry as a mesh
+    -- (a cone along +Y: BEAM.r0 m wide at its start, BEAM.len m long), here from the lens (l.beam: its radius) to the
+    -- light's reach. modules/turret.lua turns it with the head, Anim's lamp switches it.
+    local BEAM = { mesh = "base\\fx\\meshes\\spotlight_a_beam_mesh.mesh", app = "cz_combat_tower", r0 = 0.12, len = 4.795 }
     local function addLight(entity, l, i)
-        local c = entity:FindComponentByName(CName.new("hs_light" .. i))
-        if not c then return end
-        c.color = Color.new({ Red = l.color[1], Green = l.color[2], Blue = l.color[3], Alpha = 255 })
-        c.radius = math.max(1.5, l.radius * 1.25)
-        c.intensity = lumens(l)
         local t = WorldTransform.new()
         t:SetPosition(Vector4.new(l.pos[1], l.pos[2], l.pos[3], 1))
-        c.enableLocalShadows = true
-        c.shadowFadeDistance, c.shadowFadeRange = 30, 10
         if l.spot and l.dir then
-            pcall(function() c.type = Enum.new("ELightType", "LT_Spot") end)
-            c.outerAngle, c.innerAngle = l.spot / 2, l.spot / 2 * 0.6
             local dx, dy, dz = l.dir[1], l.dir[2], l.dir[3]
             local ax, az = dz, -dx
             local s2 = math.sqrt(ax * ax + az * az)
@@ -220,6 +237,26 @@ return function(C)
             if s2 < 1e-6 then ax, az, s2 = 1, 0, 1 end
             local h = math.sin(a / 2) / s2
             t:SetOrientation(Quaternion.new(ax * h, 0, az * h, math.cos(a / 2)))
+        end
+        if l.beam then
+            local b = entMeshComponent.new()
+            b.name, b.mesh, b.meshAppearance = CName.new("hs_beam" .. i), ResRef.FromString(BEAM.mesh), CName.new(BEAM.app)
+            b.visualScale = Vector3.new(l.beam / BEAM.r0, l.radius / BEAM.len, l.beam / BEAM.r0)
+            b.localTransform, b.isEnabled = t, S.dark[hashOf(entity:GetEntityID())] == nil
+            pcall(function() b.castShadows = Enum.new("shadowsShadowCastingMode", "Never") end)
+            entity:AddComponent(b)
+        end
+        local c = entity:FindComponentByName(CName.new("hs_light" .. i))
+        if not c then return end
+        c.color = Color.new({ Red = l.color[1], Green = l.color[2], Blue = l.color[3], Alpha = 255 })
+        c.radius = math.max(0.5, l.radius * 1.25)
+        c.intensity = lumens(l)
+        c.enableLocalShadows = l.radius >= 1                 -- (a poster's or a screen's glow casts none)
+        c.shadowFadeDistance, c.shadowFadeRange = 30, 10
+        if l.spot and l.dir then
+            pcall(function() c.type = Enum.new("ELightType", "LT_Spot") end)
+            c.outerAngle, c.innerAngle = l.spot / 2, l.spot / 2 * 0.6
+            if l.beam then c.scaleVolFog = 100 end
         end
         c.localTransform = t
         c.isEnabled = true
@@ -231,7 +268,7 @@ return function(C)
         end
     end
     local function lightsOff(entity, from)
-        for i = from, 2 do local c = entity:FindComponentByName(CName.new("hs_light" .. i)); if c then c.isEnabled = false end end
+        for i = from, 12 do local c = entity:FindComponentByName(CName.new("hs_light" .. i)); if c then c.isEnabled = false end end
     end
 
     -- Fallout's fire and smoke (catalog `fx`) as the game's own effects, spawned in the world at the piece. They don't
@@ -299,6 +336,46 @@ return function(C)
         S.after[#S.after + 1] = { id = entity:GetEntityID(), it = it, t = 0, stash = true }
     end
 
+    -- What the importer got wrong, put right here: a fix in the importer would make every player import again
+    -- (STATUS.md "Updates"). NOGLOW: Fallout effect shaders that are no lights (glass, water, a fire's sprite sheet)
+    -- came out glowing - that glow mesh isn't shown. ONE: lights Fallout shows one at a time (a cycling bulb's
+    -- colours, a traffic light's) - one component, all of them kept in it.cycle (anim.lua steps through them).
+    local NOGLOW = { "^fo4_dlc05grnhs", "^fo4_wksdisplaycase", "^fo4_dlc06workshopsodastation", "^fo4_workshopartillery$",
+                     "^fo4_waterpump01furn$", "^fo4_dlc06vault_sink_01activator$", "^fo4_dlc06workshopvault_waterfountain01$",
+                     "^fo4_dlc02_taxidermybloodbug$", "^fo4_mq206beamemitter$" }
+    local ONE = { fo4_workshopcyclinglightbulb01 = true, fo4_workshoptrafficlight = true }
+    local function fix(it)
+        if it.fixed then return end
+        it.fixed = true
+        if ONE[it.key] and it.lights then
+            it.cycle = { unpack(it.lights) }
+            for i = #it.lights, 2, -1 do it.lights[i] = nil end
+        end
+        for _, pat in ipairs(NOGLOW) do if it.glow and it.key:find(pat) then it.noglow = it.glow end end
+    end
+
+    -- Someone just placed: friendly from their first frame in the world (every frame till they are there; the refresh's
+    -- check a second later would let a drone fire first - user, 2026-10-05)
+    local function peace(e)
+        local a = e:GetAttitudeAgent()
+        a:SetAttitudeGroup(CName.new("friendly"))
+        a:SetAttitudeTowards(Game.GetPlayer():GetAttitudeAgent(), EAIAttitude.AIA_Friendly)
+    end
+    -- The bar droid (q303_droid.ent) has its standing animations (idle_stand: base ...\android\unarmed\
+    -- ma_android_unarmed_locomotion_patrolling.anims) only while this animation wrapper is on - its quest's doing, so
+    -- placed from its record it stood in a T-pose (user, 2026-10-05). Other androids' templates have the set always.
+    local function wake(e) AnimationControllerComponent.SetAnimWrapperWeight(e, CName.new("droidLocomotionUnarmed"), 1) end
+    function C.calm(dt)
+        local keep = {}
+        for _, c in ipairs(S.calm or {}) do
+            local e = des():GetEntity(c.id)
+            c.t = c.t + dt
+            if e then pcall(peace, e); pcall(wake, e) end
+            if c.t < 3 then keep[#keep + 1] = c end              -- (again for 3 s: its own start-up sets it back)
+        end
+        S.calm = #keep > 0 and keep or nil
+    end
+
     local function onEntity(entity)
         if not entity then return end
         local id = entity:GetEntityID()
@@ -312,12 +389,15 @@ return function(C)
             return
         end
         if not it then return end
+        fix(it)
         local chunk = info.chunk or 1
         -- mesh parts: { path, x, y, z, yaw[, app[, qi, qj, qk, qr, sx, sy, sz]] } in the piece's space (a part may carry
         -- its full rotation and scale)
+        local ball = C.Ball.is(it)                                 -- (a ball: no collider - modules/ball.lua rolls it)
         local list = it.meshes
         for i = (chunk - 1) * CHUNK + 1, math.min(#list, chunk * CHUNK) do
             local m = list[i]
+            if i == it.noglow then goto skip end
             local c = entMeshComponent.new()
             c.name = CName.new("hs_mesh" .. i)
             c.mesh = ResRef.FromString(m[1])
@@ -332,8 +412,9 @@ return function(C)
             end
             if m[11] then c.visualScale = Vector3.new(m[11], m[12] or 1, m[13] or 1) end
             entity:AddComponent(c)
+            ::skip::
         end
-        if not info.ghost and #it.boxes > 0 then addColliders(entity, it, chunk) end
+        if not info.ghost and #it.boxes > 0 and not ball then addColliders(entity, it, chunk) end
         if chunk == 1 and not info.ghost then
             for i, l in ipairs(it.lights or {}) do try("light", addLight, entity, l, i) end
             if it.lights then try("light", lightsOff, entity, #it.lights + 1) end
@@ -403,7 +484,7 @@ return function(C)
     end
     local function alive(tag)
         local out = {}
-        for _, id in ipairs(des():GetTaggedIDs(CName.new(tag)) or {}) do if not Eng.dying(id) then out[#out + 1] = id end end
+        for _, id in ipairs(des():GetTaggedIDs(tag) or {}) do if not Eng.dying(id) then out[#out + 1] = id end end
         return out
     end
     local function here(o)
@@ -481,7 +562,10 @@ return function(C)
                 local ok, att = pcall(function() return e and e:GetAttitudeTowards(Game.GetPlayer()) end)
                 if ok and att then
                     S.checked[hashOf(p.id)] = true
-                    if tostring(att):find("Hostile") then hostile[#hostile + 1] = p end
+                    pcall(wake, e)                                -- (after a load: nobody is placed anew, C.calm doesn't run)
+                    -- (anyone can be placed - a ganger, a mech: they keep the peace, with V and with each other; one that
+                    -- can't be made to is removed, as all hostile ones were before 2026-10-05)
+                    if tostring(att):find("Hostile") and not pcall(peace, e) then hostile[#hostile + 1] = p end
                 end
             end
         end
@@ -537,8 +621,7 @@ return function(C)
         S.refreshWorld = S.world
     end
 
-    C.tagInfo, C.tagsFor, C.spawn, C.spawnEnt, C.spawnPiece = tagInfo, tagsFor, spawn, spawnEnt, spawnPiece
-    C.killFx, C.del, C.removePiece, C.lumens = killFx, del, removePiece, lumens
+    C.spawnPiece, C.killFx, C.del, C.removePiece, C.lumens = spawnPiece, killFx, del, removePiece, lumens
     C.afterAttach, C.onEntity, C.outline, C.outlinePiece, C.retarget, C.refresh = afterAttach, onEntity, outline, outlinePiece, retarget, refresh
     C.index, C.TEMPLATE = index, TEMPLATE
     function C.ready(p)
@@ -549,13 +632,16 @@ return function(C)
 
     -- a piece saved before ALWAYS (streamed by the population system: it popped in) made again where it stands, always
     -- spawned, as a pick-up and put-back does (its people's jobs follow it). Every frame outside workshop and Command
-    -- mode, two a frame; a piece is asked once, once it has settled (the lifetime guard). Logged once a batch.
+    -- mode, two a frame; a piece is asked once, once it has settled (the lifetime guard), and a list all asked isn't
+    -- gone through again (S.asked: spawnPiece adds to it only pieces made so). Logged once a batch.
     local AS                                                  -- (made at first use: no game types while the mod loads)
     function C.remake()
-        if S.build or S.cmd or S.hold then return end
-        local n = 0
+        if S.build or S.cmd or S.hold or S.asked == S.pieces then return end
+        local n, open = 0, false
         for _, p in ipairs(S.pieces) do
-            if p.always == nil and C.ready(p) then AS = AS or CName.new(ALWAYS); p.always = des():IsTagged(p.id, AS) end
+            -- (and one still in the game's population, from a save made before our pieces were static: modules/world.lua)
+            if p.always == nil and C.ready(p) then p.always = des():IsTagged(p.id, ALWAYS) and des().static(p.id) == des().wants(p.it) end
+            open = open or p.always == nil
             if p.always == false then
                 removePiece(p)
                 local id = spawnPiece(p.key, p.app, p.o, p.yaw, false, p.q)
@@ -564,7 +650,8 @@ return function(C)
                 if n == 2 then break end
             end
         end
-        if n > 0 then S.remade = (S.remade or 0) + n; index()
-        elseif S.remade then log(string.format("made %d pieces again, always spawned (they were saved streamed: the pop-in)", S.remade)); S.remade = nil end
+        if n > 0 then S.remade = (S.remade or 0) + n; index() return end
+        if not open then S.asked = S.pieces end
+        if S.remade then log(string.format("made %d pieces again, always spawned (they were saved streamed: the pop-in)", S.remade)); S.remade = nil end
     end
 end

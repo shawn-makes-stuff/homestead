@@ -40,12 +40,14 @@ def kind(r):
 
 def textured():
     """{key: share of the item's materials that have a texture}"""
-    from make_thumbs import TEX, NC
-    nc = json.load(open(NC)) if os.path.exists(NC) else {}
+    from make_thumbs import TEX
+    import nc_textures
+    nc = nc_textures.mats()
     p, out = os.path.join(W, 'thumb_items.json'), {}
     for key, parts, mats, _ in json.load(open(p)) if os.path.exists(p) else []:
         have = n = 0
         for g in {q[0] for q in parts}:
+            g = mats.get(g) and g or os.path.normcase(g)
             if mats.get(g):
                 fs = [not t or os.path.exists(os.path.join(TEX, t.replace('\\', '_').replace('/', '_')[:150] + '.png')) for t, *_ in mats[g].values()]
                 have += sum(fs); n += len(fs)
@@ -107,7 +109,7 @@ def sheet(keys, cs, path, cols=16):
 
 def main():
     res, cs = audit()
-    tot, bad = collections.Counter(kind(r) for r, _, _ in res), collections.Counter((kind(r), w) for r, why, _ in res for w in why)
+    tot = collections.Counter(kind(r) for r, _, _ in res)
     lines = ['| category | shown | ' + ' | '.join(CAUSES) + ' | any |', '|---|---|' + '---|' * (len(CAUSES) + 1)]
     for c in sorted(tot) + ['all']:
         hit = lambda r: c in ('all', kind(r))
